@@ -115,26 +115,29 @@ input, select, button {
 
 /* === HABIT INDICATORS === */
 .habit-dot {
-  width: 8px;
-  height: 8px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   display: inline-block;
   margin: 1px;
+  vertical-align: top;
+  box-sizing: border-box;
 }
 
 .habit-emoji {
-  display: inline-block;
+  display: inline-flex;
   font-size: 12px;
   margin: 1px;
-  line-height: 1;
   cursor: help;
   border-radius: 50%;
-  padding: 2px;
-  min-width: 12px;
-  min-height: 12px;
-  text-align: center;
+  width: 20px;
+  height: 20px;
   border: 2px solid;
   background: none !important;
+  vertical-align: top;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
 }
 
 .habit-emoji.good {
@@ -170,23 +173,38 @@ input, select, button {
   justify-content: center;
 }
 
+/* === HABIT BUTTONS - BASE STYLES === */
 .habit-button {
   padding: 0.8rem 1.2rem;
-  background: white;
-  border: 2px solid black;
+  border: 2px solid;
   border-radius: 10px;
   font-size: 1rem;
   cursor: pointer;
   min-width: 100px;
   text-align: center;
   transition: background 0.2s, transform 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.habit-button:hover {
+  transform: scale(1.05);
+}
+
+/* === LIGHT MODE HABIT BUTTONS === */
+.habit-button {
+  background: white;
+  color: black;
+  border-color: black;
 }
 
 .habit-button:hover {
   background-color: #f0f0f0;
-  transform: scale(1.05);
 }
 
+/* Light mode - uncompleted with category borders */
 .habit-button.good {
   border-color: green;
 }
@@ -199,20 +217,20 @@ input, select, button {
   border-color: goldenrod;
 }
 
-.habit-button.completed {
-  background-color: #d3ffd3;
-}
-
+/* Light mode - completed with colored backgrounds */
 .habit-button.good.completed {
   background: lightgreen;
+  border-color: green;
 }
 
 .habit-button.bad.completed {
   background: lightpink;
+  border-color: red;
 }
 
 .habit-button.neutral.completed {
   background: lightgoldenrodyellow;
+  border-color: goldenrod;
 }
 
 /* === MODAL STYLES === */
@@ -329,49 +347,88 @@ input, select, button {
   border-color: #66aaff;
 }
 
+/* === DARK MODE HABIT BUTTONS === */
 .dark-mode .habit-button {
-  background: #2c2c2c;
+  background: #3a3a3a;
   color: #ddd;
   border-color: #666;
 }
 
 .dark-mode .habit-button:hover {
-  background: #444;
+  background: #4a4a4a;
 }
 
+/* Dark mode - uncompleted with category borders */
+.dark-mode .habit-button.good {
+  background: #3a3a3a;
+  border-color: #66BB6A;
+  color: #ddd;
+}
+
+.dark-mode .habit-button.bad {
+  background: #3a3a3a;
+  border-color: #EF5350;
+  color: #ddd;
+}
+
+.dark-mode .habit-button.neutral {
+  background: #3a3a3a;
+  border-color: #FFCA28;
+  color: #ddd;
+}
+
+/* Dark mode - completed with colored backgrounds */
 .dark-mode .habit-button.good.completed {
-  background: darkgreen;
+  background: #4CAF50;
+  border-color: #66BB6A;
+  color: #fff;
 }
 
 .dark-mode .habit-button.bad.completed {
-  background: darkred;
+  background: #F44336;
+  border-color: #EF5350;
+  color: #fff;
 }
 
 .dark-mode .habit-button.neutral.completed {
-  background: darkgoldenrod;
+  background: #FF9800;
+  border-color: #FFCA28;
+  color: #fff;
 }
 
 .dark-mode .habit-emoji {
-  background: rgba(255, 255, 255, 0.9) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
   border-radius: 50%;
   padding: 2px;
   min-width: 12px;
   min-height: 12px;
   text-align: center;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   border: 2px solid;
 }
 
 .dark-mode .habit-emoji.good {
-  border-color: #4CAF50;
+  border-color: #66BB6A;
 }
 
 .dark-mode .habit-emoji.bad {
-  border-color: #F44336;
+  border-color: #EF5350;
 }
 
 .dark-mode .habit-emoji.neutral {
-  border-color: #FFC107;
+  border-color: #FFCA28;
+}
+
+.dark-mode .good {
+  background: #66BB6A;
+}
+
+.dark-mode .bad {
+  background: #EF5350;
+}
+
+.dark-mode .neutral {
+  background: #FFCA28;
 }
 
 
