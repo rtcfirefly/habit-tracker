@@ -183,18 +183,18 @@ input, select, button {
 
 /* === HABIT BUTTONS - BASE STYLES === */
 .habit-button {
-  padding: 0.8rem 1.2rem;
+  padding: 0.5rem 0.8rem;
   border: 2px solid;
-  border-radius: 10px;
-  font-size: 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
   cursor: pointer;
-  min-width: 100px;
+  min-width: 80px;
   text-align: center;
   transition: background 0.2s, transform 0.2s;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .habit-button:hover {
@@ -684,15 +684,15 @@ input, select, button {
 
 /* === COUNTER HABITS - BASE STYLES === */
 .habit-counter {
-  padding: 0.8rem 1.2rem;
+  padding: 0.5rem 0.8rem;
   border: 2px solid;
-  border-radius: 10px;
-  min-width: 200px;
+  border-radius: 8px;
+  min-width: 180px;
   transition: background 0.2s, transform 0.2s;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
+  gap: 0.8rem;
 }
 
 .counter-name {
@@ -705,7 +705,7 @@ input, select, button {
 .counter-controls {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .counter-value {

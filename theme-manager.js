@@ -18,10 +18,10 @@ class ThemeManager {
   applyTheme(theme) {
     if (theme === 'dark') {
       document.body.classList.add('dark-mode');
-      this.toggleButtonElement.innerText = '☀️ Light Mode';
+      this.toggleButtonElement.innerText = '☀️';
     } else {
       document.body.classList.remove('dark-mode');
-      this.toggleButtonElement.innerText = '🌙 Dark Mode';
+      this.toggleButtonElement.innerText = '🌙';
     }
     this.currentTheme = theme;
     this.saveTheme(theme);
