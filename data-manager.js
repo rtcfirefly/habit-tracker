@@ -173,10 +173,10 @@ class DataManager {
         throw new Error('Invalid data format: completions must be an object');
       }
 
-      const validHabitTypes = ['good', 'bad', 'neutral'];
+      const validHabitTypes = ['good', 'bad', 'neutral', 'counter'];
       for (const habit of importedData.habits) {
         if (!habit.name || !habit.type || !validHabitTypes.includes(habit.type)) {
-          throw new Error('Invalid habit data: each habit must have name and type (good/bad/neutral)');
+          throw new Error('Invalid habit data: each habit must have name and type (good/bad/neutral/counter)');
         }
       }
 

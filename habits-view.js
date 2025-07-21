@@ -22,13 +22,6 @@ class HabitsView {
     }
   }
 
-  createEmptyMessage() {
-    const placeholder = document.createElement('div');
-    placeholder.style.textAlign = 'center';
-    placeholder.style.color = '#888';
-    placeholder.textContent = 'No habits yet. Click "Manage Habits" to add some!';
-    return placeholder;
-  }
 
   createHabitButton(habit) {
     if (habit.type === 'counter') {
@@ -151,7 +144,11 @@ class HabitsView {
     const habits = this.dataManager.getHabits();
     
     if (habits.length === 0) {
-      this.habitsListElement.appendChild(this.createEmptyMessage());
+      const placeholder = document.createElement('div');
+      placeholder.style.textAlign = 'center';
+      placeholder.style.color = '#888';
+      placeholder.textContent = 'No habits yet. Click "⚙️" to add some!';
+      this.habitsListElement.appendChild(placeholder);
       return;
     }
 

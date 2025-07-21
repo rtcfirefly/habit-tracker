@@ -427,18 +427,6 @@ input, select, button {
 }
 
 /* === MANAGE HABITS SECTIONS === */
-.habit-group {
-  margin-bottom: 2rem;
-}
-
-.habit-group-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid #ddd;
-  text-transform: capitalize;
-}
 
 .add-habit-section {
   background: #f8f9fa;
@@ -572,14 +560,11 @@ input, select, button {
   gap: 0.5rem;
 }
 
-.type-select, .goal-input {
+.goal-input {
   padding: 0.4rem;
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 0.9rem;
-}
-
-.goal-input {
   width: 60px;
 }
 
@@ -950,10 +935,6 @@ input, select, button {
   color: #eee;
 }
 
-.dark-mode .habit-group-title {
-  border-bottom-color: #555;
-  color: #eee;
-}
 
 .dark-mode .add-habit-section {
   background: #2a2a2a;
@@ -1012,7 +993,6 @@ input, select, button {
   color: #eee;
 }
 
-.dark-mode .type-select, 
 .dark-mode .goal-input {
   background: #3a3a3a;
   border-color: #555;
@@ -1095,8 +1075,8 @@ input, select, button {
   }
   
   .habit-button {
-    padding: 0.6rem 0.8rem;
-    font-size: 0.9rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
   }
   
   input, select, button {
