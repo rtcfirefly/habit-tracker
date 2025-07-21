@@ -2,6 +2,7 @@ class DataManager {
   constructor() {
     this.habits = this.loadHabits();
     this.completions = this.loadCompletions();
+    this.counters = this.loadCounters();
   }
 
   loadHabits() {
@@ -12,9 +13,14 @@ class DataManager {
     return JSON.parse(localStorage.getItem('completions') || '{}');
   }
 
+  loadCounters() {
+    return JSON.parse(localStorage.getItem('counters') || '{}');
+  }
+
   saveData() {
     localStorage.setItem('habits', JSON.stringify(this.habits));
     localStorage.setItem('completions', JSON.stringify(this.completions));
+    localStorage.setItem('counters', JSON.stringify(this.counters));
   }
 
   getHabits() {
@@ -25,12 +31,16 @@ class DataManager {
     return this.completions;
   }
 
-  addHabit(name, type) {
-    this.habits.push({ name, type });
+  addHabit(name, type, goal = null) {
+    const habit = { name, type };
+    if (type === 'counter' && goal !== null) {
+      habit.goal = goal;
+    }
+    this.habits.push(habit);
     this.saveData();
   }
 
-  updateHabit(index, name, type) {
+  updateHabit(index, name, type, goal = null) {
     if (this.habits[index]) {
       const oldName = this.habits[index].name;
       const newName = name;
@@ -38,6 +48,13 @@ class DataManager {
       // Update the habit
       this.habits[index].name = newName;
       this.habits[index].type = type;
+      
+      // Handle counter goal
+      if (type === 'counter' && goal !== null) {
+        this.habits[index].goal = goal;
+      } else if (type !== 'counter') {
+        delete this.habits[index].goal;
+      }
       
       // If the name changed, update all completion records
       if (oldName !== newName) {
@@ -96,12 +113,46 @@ class DataManager {
     return this.completions[dateKey] || [];
   }
 
+  getCounterValue(dateKey, habitName) {
+    if (!this.counters[dateKey]) {
+      this.counters[dateKey] = {};
+    }
+    return this.counters[dateKey][habitName] || 0;
+  }
+
+  setCounterValue(dateKey, habitName, value) {
+    if (!this.counters[dateKey]) {
+      this.counters[dateKey] = {};
+    }
+    this.counters[dateKey][habitName] = Math.max(0, value);
+    this.saveData();
+  }
+
+  incrementCounter(dateKey, habitName) {
+    const currentValue = this.getCounterValue(dateKey, habitName);
+    this.setCounterValue(dateKey, habitName, currentValue + 1);
+  }
+
+  decrementCounter(dateKey, habitName) {
+    const currentValue = this.getCounterValue(dateKey, habitName);
+    this.setCounterValue(dateKey, habitName, currentValue - 1);
+  }
+
+  isCounterHabitCompleted(dateKey, habitName) {
+    const habit = this.habits.find(h => h.name === habitName);
+    if (!habit || habit.type !== 'counter') return false;
+    
+    const currentValue = this.getCounterValue(dateKey, habitName);
+    return currentValue >= habit.goal;
+  }
+
   exportData() {
     const exportData = {
       habits: this.habits,
       completions: this.completions,
+      counters: this.counters,
       exportDate: new Date().toISOString(),
-      version: '1.0'
+      version: '1.1'
     };
     return JSON.stringify(exportData, null, 2);
   }
@@ -131,6 +182,7 @@ class DataManager {
 
       this.habits = importedData.habits;
       this.completions = importedData.completions;
+      this.counters = importedData.counters || {};
       this.saveData();
       
       return {

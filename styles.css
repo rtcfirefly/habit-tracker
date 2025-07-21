@@ -152,6 +152,10 @@ input, select, button {
   border-color: #FFC107;
 }
 
+.habit-emoji.counter {
+  border-color: #2196F3;
+}
+
 .good {
   background: green;
 }
@@ -162,6 +166,10 @@ input, select, button {
 
 .neutral {
   background: goldenrod;
+}
+
+.counter {
+  background: #2196F3;
 }
 
 /* === HABITS LIST === */
@@ -396,6 +404,206 @@ input, select, button {
   color: #fff;
 }
 
+/* === COUNTER HABITS - BASE STYLES === */
+.habit-counter {
+  padding: 0.8rem 1.2rem;
+  border: 2px solid;
+  border-radius: 10px;
+  min-width: 200px;
+  transition: background 0.2s, transform 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.counter-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.counter-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.counter-value {
+  font-weight: bold;
+  min-width: 40px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.counter-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+/* === LIGHT MODE COUNTER HABITS === */
+.habit-counter {
+  background: white;
+  color: black;
+}
+
+/* Light mode - uncompleted with category borders */
+.habit-counter.good {
+  background: white;
+  border-color: green;
+  color: black;
+}
+
+.habit-counter.bad {
+  background: white;
+  border-color: red;
+  color: black;
+}
+
+.habit-counter.neutral {
+  background: white;
+  border-color: goldenrod;
+  color: black;
+}
+
+.habit-counter.counter {
+  background: white;
+  border-color: #2196F3;
+  color: black;
+}
+
+/* Light mode - completed with colored backgrounds */
+.habit-counter.good.completed {
+  background: lightgreen;
+  border-color: green;
+  color: black;
+}
+
+.habit-counter.bad.completed {
+  background: lightpink;
+  border-color: red;
+  color: black;
+}
+
+.habit-counter.neutral.completed {
+  background: lightgoldenrodyellow;
+  border-color: goldenrod;
+  color: black;
+}
+
+.habit-counter.counter.completed {
+  background: #e3f2fd;
+  border-color: #2196F3;
+  color: black;
+}
+
+/* Light mode counter buttons */
+.counter-btn {
+  background: white;
+  border-color: #ccc;
+  color: #666;
+}
+
+.counter-btn:hover {
+  background: #f0f0f0;
+}
+
+.counter-btn.plus {
+  color: #4CAF50;
+  border-color: #4CAF50;
+}
+
+.counter-btn.minus {
+  color: #F44336;
+  border-color: #F44336;
+}
+
+/* === DARK MODE COUNTER HABITS === */
+.dark-mode .habit-counter {
+  background: #3a3a3a;
+  color: #ddd;
+}
+
+/* Dark mode - uncompleted with category borders */
+.dark-mode .habit-counter.good {
+  background: #3a3a3a;
+  border-color: #66BB6A;
+  color: #ddd;
+}
+
+.dark-mode .habit-counter.bad {
+  background: #3a3a3a;
+  border-color: #EF5350;
+  color: #ddd;
+}
+
+.dark-mode .habit-counter.neutral {
+  background: #3a3a3a;
+  border-color: #FFCA28;
+  color: #ddd;
+}
+
+.dark-mode .habit-counter.counter {
+  background: #3a3a3a;
+  border-color: #3b82f6;
+  color: #ddd;
+}
+
+/* Dark mode - completed with colored backgrounds */
+.dark-mode .habit-counter.good.completed {
+  background: #4CAF50;
+  border-color: #66BB6A;
+  color: #fff;
+}
+
+.dark-mode .habit-counter.bad.completed {
+  background: #F44336;
+  border-color: #EF5350;
+  color: #fff;
+}
+
+.dark-mode .habit-counter.neutral.completed {
+  background: #FF9800;
+  border-color: #FFCA28;
+  color: #fff;
+}
+
+.dark-mode .habit-counter.counter.completed {
+  background: #1e3a8a;
+  border-color: #3b82f6;
+  color: #dbeafe;
+}
+
+/* Dark mode counter buttons */
+.dark-mode .counter-btn {
+  background: #2c2c2c;
+  border-color: #666;
+  color: #ddd;
+}
+
+.dark-mode .counter-btn:hover {
+  background: #4a4a4a;
+}
+
+.dark-mode .counter-btn.plus {
+  color: #66BB6A;
+  border-color: #66BB6A;
+}
+
+.dark-mode .counter-btn.minus {
+  color: #EF5350;
+  border-color: #EF5350;
+}
+
 .dark-mode .habit-emoji {
   background: rgba(255, 255, 255, 0.95) !important;
   border-radius: 50%;
@@ -419,6 +627,10 @@ input, select, button {
   border-color: #FFCA28;
 }
 
+.dark-mode .habit-emoji.counter {
+  border-color: #3b82f6;
+}
+
 .dark-mode .good {
   background: #66BB6A;
 }
@@ -429,6 +641,10 @@ input, select, button {
 
 .dark-mode .neutral {
   background: #FFCA28;
+}
+
+.dark-mode .counter {
+  background: #3b82f6;
 }
 
 

@@ -24,7 +24,7 @@ class HabitManager {
   }
 
   createHabitTypeOptions() {
-    const types = ['good', 'bad', 'neutral'];
+    const types = ['good', 'bad', 'neutral', 'counter'];
     return types.map(type => {
       const option = document.createElement('option');
       option.value = type;
@@ -45,21 +45,39 @@ class HabitManager {
       typeSelect.appendChild(option);
     });
     
+    const goalInput = document.createElement('input');
+    goalInput.type = 'number';
+    goalInput.placeholder = 'Goal (for counter)';
+    goalInput.min = '1';
+    goalInput.style.display = 'none';
+    
+    typeSelect.onchange = () => {
+      if (typeSelect.value === 'counter') {
+        goalInput.style.display = 'block';
+      } else {
+        goalInput.style.display = 'none';
+      }
+    };
+    
     const addButton = document.createElement('button');
     addButton.innerText = '➕';
     addButton.onclick = () => {
       const name = nameInput.value.trim();
       const type = typeSelect.value;
+      const goal = type === 'counter' ? parseInt(goalInput.value) || 1 : null;
+      
       if (name) {
-        this.dataManager.addHabit(name, type);
+        this.dataManager.addHabit(name, type, goal);
         this.renderForm();
         this.notifyHabitsChanged();
         nameInput.value = '';
+        goalInput.value = '';
       }
     };
     
     addWrapper.appendChild(nameInput);
     addWrapper.appendChild(typeSelect);
+    addWrapper.appendChild(goalInput);
     addWrapper.appendChild(addButton);
     
     return addWrapper;
@@ -73,11 +91,13 @@ class HabitManager {
     const dragHandle = this.createDragHandle();
     const nameInput = this.createNameInput(habit, index);
     const typeSelect = this.createTypeSelect(habit, index);
+    const goalInput = this.createGoalInput(habit, index);
     const deleteButton = this.createDeleteButton(index);
     
     wrapper.appendChild(dragHandle);
     wrapper.appendChild(nameInput);
     wrapper.appendChild(typeSelect);
+    wrapper.appendChild(goalInput);
     wrapper.appendChild(deleteButton);
     
     this.addDragHandlers(wrapper, index);
@@ -111,10 +131,29 @@ class HabitManager {
       select.appendChild(option);
     });
     select.onchange = (e) => {
-      this.dataManager.updateHabit(index, habit.name, e.target.value);
+      const goal = habit.goal || null;
+      this.dataManager.updateHabit(index, habit.name, e.target.value, goal);
+      this.renderForm();
       this.notifyHabitsChanged();
     };
     return select;
+  }
+
+  createGoalInput(habit, index) {
+    const goalInput = document.createElement('input');
+    goalInput.type = 'number';
+    goalInput.placeholder = 'Goal';
+    goalInput.min = '1';
+    goalInput.value = habit.goal || '';
+    goalInput.style.display = habit.type === 'counter' ? 'block' : 'none';
+    
+    goalInput.onchange = (e) => {
+      const goal = parseInt(e.target.value) || 1;
+      this.dataManager.updateHabit(index, habit.name, habit.type, goal);
+      this.notifyHabitsChanged();
+    };
+    
+    return goalInput;
   }
 
   createDeleteButton(index) {

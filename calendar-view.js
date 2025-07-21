@@ -72,6 +72,7 @@ class CalendarView {
     const completedHabits = this.dataManager.getCompletedHabitsForDate(dayKey);
     const habits = this.dataManager.getHabits();
     
+    // Add regular completed habits
     completedHabits.forEach(habitName => {
       const habit = habits.find(h => h.name === habitName);
       if (habit) {
@@ -84,6 +85,24 @@ class CalendarView {
           dot.title = habit.name;
         } else {
           dot.className = `habit-dot ${habit.type}`;
+        }
+        
+        dayDiv.appendChild(dot);
+      }
+    });
+    
+    // Add completed counter habits
+    habits.forEach(habit => {
+      if (habit.type === 'counter' && this.dataManager.isCounterHabitCompleted(dayKey, habit.name)) {
+        const dot = document.createElement('div');
+        const emoji = this.extractEmoji(habit.name);
+        
+        if (emoji) {
+          dot.className = `habit-emoji counter`;
+          dot.textContent = emoji;
+          dot.title = habit.name;
+        } else {
+          dot.className = `habit-dot counter`;
         }
         
         dayDiv.appendChild(dot);
