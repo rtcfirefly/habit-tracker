@@ -225,6 +225,23 @@ input, select, button {
   border-color: goldenrod;
 }
 
+/* Light mode emoji backgrounds */
+.habit-emoji.good {
+  background: #a1eea1 !important;
+}
+
+.habit-emoji.bad {
+  background: #ffa1a1 !important;
+}
+
+.habit-emoji.neutral {
+  background: #fff5a1 !important;
+}
+
+.habit-emoji.counter {
+  background: #a1d1ff !important;
+}
+
 /* Light mode - completed with colored backgrounds */
 .habit-button.good.completed {
   background: lightgreen;
@@ -343,7 +360,7 @@ input, select, button {
 }
 
 .dark-mode .day {
-  background: #2a2a2a;
+  background: #2f2f2f;
   color: #eee;
 }
 
@@ -605,7 +622,6 @@ input, select, button {
 }
 
 .dark-mode .habit-emoji {
-  background: rgba(255, 255, 255, 0.95) !important;
   border-radius: 50%;
   padding: 2px;
   min-width: 12px;
@@ -616,18 +632,22 @@ input, select, button {
 }
 
 .dark-mode .habit-emoji.good {
+  background: #a1eea1 !important;
   border-color: #66BB6A;
 }
 
 .dark-mode .habit-emoji.bad {
+  background: #ffa1a1 !important;
   border-color: #EF5350;
 }
 
 .dark-mode .habit-emoji.neutral {
+  background: #fff5a1 !important;
   border-color: #FFCA28;
 }
 
 .dark-mode .habit-emoji.counter {
+  background: #a1d1ff !important;
   border-color: #3b82f6;
 }
 
@@ -649,7 +669,7 @@ input, select, button {
 
 
 .dark-mode .manage-item {
-  background: #2a2a2a;
+  background: #2f2f2f;
   border-color: #777;
 }
 
