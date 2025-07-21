@@ -28,8 +28,13 @@
   <div class="habits-list" id="habits-list"></div>
   <div class="modal" id="manage-modal">
     <div class="modal-content">
-      <div id="manage-form"></div>
-      <button onclick="closeManageModal()">Done Managing</button>
+      <div class="modal-header">
+        <h2>Manage Habits</h2>
+        <button onclick="closeManageModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="manage-form"></div>
+      </div>
     </div>
   </div>
 <script src="data-manager.js"></script>

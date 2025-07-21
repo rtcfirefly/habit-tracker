@@ -271,75 +271,336 @@ input, select, button {
   justify-content: center;
   align-items: center;
   animation: fadeIn 0.3s ease forwards;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
 .modal-content {
   background: white;
-  padding: 1.5rem;
   border-radius: 12px;
   width: 100%;
   max-width: 500px;
+  height: calc(100vh - 2rem);
+  max-height: calc(100vh - 2rem);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
   animation: scaleIn 0.3s ease forwards;
+  overflow: hidden;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  flex-shrink: 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.modal-body {
+  flex: 1;
+  overflow: hidden;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+#manage-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .modal-header button {
-  background: red;
+  background: #f0f0f0;
+  color: #666;
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.modal-header button:hover {
+  background: #e0e0e0;
+  transform: scale(1.1);
+}
+
+/* === MANAGE HABITS TABS === */
+.habit-tabs {
+  display: flex;
+  border-bottom: 2px solid #e0e0e0;
+  background: #f8f9fa;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.habit-tab {
+  flex: 1;
+  padding: 1rem;
+  background: #f0f0f0;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  position: relative;
+  border-right: 1px solid #ddd;
+}
+
+.habit-tab:last-child {
+  border-right: none;
+}
+
+.habit-tab:hover {
+  background: #e8e8e8;
+}
+
+.habit-tab.active {
+  background: white;
+  color: #333;
+  font-weight: bold;
+}
+
+.habit-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: currentColor;
+}
+
+.habit-tab.good.active::after {
+  background: #4CAF50;
+}
+
+.habit-tab.bad.active::after {
+  background: #F44336;
+}
+
+.habit-tab.neutral.active::after {
+  background: #FF9800;
+}
+
+.habit-tab.counter.active::after {
+  background: #2196F3;
+}
+
+.tab-content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.habit-tab-content {
+  display: none;
+  flex: 1;
+  min-height: 0;
+}
+
+.habit-tab-content.active {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  background: inherit;
+  min-height: 0;
+}
+
+/* === MANAGE HABITS SECTIONS === */
+.habit-group {
+  margin-bottom: 2rem;
+}
+
+.habit-group-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #ddd;
+  text-transform: capitalize;
+}
+
+.add-habit-section {
+  background: #f8f9fa;
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.add-habit-form {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.add-habit-form input, 
+.add-habit-form select {
+  flex: 1;
+  min-width: 120px;
+}
+
+.add-habit-form button {
+  background: #4CAF50;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.8rem 1.5rem;
   border-radius: 8px;
-  font-size: 1rem;
   cursor: pointer;
+  font-weight: bold;
+}
+
+.add-habit-form button:hover {
+  background: #45a049;
 }
 
 /* === MANAGE ITEMS === */
 .manage-item {
-  background: #fdfdfd;
-  padding: 0.8rem;
-  border: 2px solid black;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  background: white;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   cursor: grab;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  position: relative;
 }
 
 .manage-item:hover {
-  background-color: #f1f1f1;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transform: translateY(-1px);
 }
 
 .manage-item.good {
-  border-color: green;
+  background: linear-gradient(135deg, #f8fff8 0%, #e8f5e8 100%);
+  border-left: 4px solid #4CAF50;
 }
 
 .manage-item.bad {
-  border-color: red;
+  background: linear-gradient(135deg, #fff8f8 0%, #f5e8e8 100%);
+  border-left: 4px solid #F44336;
 }
 
 .manage-item.neutral {
-  border-color: gray;
+  background: linear-gradient(135deg, #fffef8 0%, #f5f3e8 100%);
+  border-left: 4px solid #FF9800;
+}
+
+.manage-item.counter {
+  background: linear-gradient(135deg, #f8fbff 0%, #e8f1f5 100%);
+  border-left: 4px solid #2196F3;
 }
 
 .manage-item.dragging {
   opacity: 0.5;
+  transform: rotate(2deg);
+}
+
+.manage-item-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
 }
 
 .drag-handle {
   cursor: grab;
-  margin-right: 0.5rem;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
+  color: #666;
   user-select: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.drag-handle:hover {
+  background: rgba(0,0,0,0.1);
+}
+
+.habit-name-display {
+  flex: 1;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.habit-name-display:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.habit-name-edit {
+  flex: 1;
+  border: 2px solid #4CAF50;
+  padding: 0.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.habit-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.type-select, .goal-input {
+  padding: 0.4rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.goal-input {
+  width: 60px;
+}
+
+
+.delete-btn {
+  background: #F44336;
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.delete-btn:hover {
+  background: #d32f2f;
 }
 
 /* === ANIMATIONS === */
@@ -668,14 +929,135 @@ input, select, button {
 }
 
 
+/* === DARK MODE MANAGE HABITS === */
+.dark-mode .habit-tabs {
+  background: #2a2a2a;
+  border-bottom-color: #555;
+}
+
+.dark-mode .habit-tab {
+  background: #3a3a3a;
+  color: #ccc;
+  border-right-color: #555;
+}
+
+.dark-mode .habit-tab:hover {
+  background: #4a4a4a;
+}
+
+.dark-mode .habit-tab.active {
+  background: #2a2a2a;
+  color: #eee;
+}
+
+.dark-mode .habit-group-title {
+  border-bottom-color: #555;
+  color: #eee;
+}
+
+.dark-mode .add-habit-section {
+  background: #2a2a2a;
+  border-color: #555;
+}
+
+.dark-mode .add-habit-form button {
+  background: #66BB6A;
+}
+
+.dark-mode .add-habit-form button:hover {
+  background: #4CAF50;
+}
+
 .dark-mode .manage-item {
-  background: #2f2f2f;
-  border-color: #777;
+  background: #2a2a2a;
+  border-color: #555;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.dark-mode .manage-item:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+}
+
+.dark-mode .manage-item.good {
+  background: linear-gradient(135deg, #1a2e1a 0%, #243324 100%);
+  border-left-color: #66BB6A;
+}
+
+.dark-mode .manage-item.bad {
+  background: linear-gradient(135deg, #2e1a1a 0%, #332424 100%);
+  border-left-color: #EF5350;
+}
+
+.dark-mode .manage-item.neutral {
+  background: linear-gradient(135deg, #2e2a1a 0%, #333024 100%);
+  border-left-color: #FFCA28;
+}
+
+.dark-mode .manage-item.counter {
+  background: linear-gradient(135deg, #1a222e 0%, #242933 100%);
+  border-left-color: #3b82f6;
+}
+
+.dark-mode .habit-name-display {
+  color: #eee;
+}
+
+.dark-mode .habit-name-display:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.dark-mode .habit-name-edit {
+  background: #3a3a3a;
+  border-color: #66BB6A;
+  color: #eee;
+}
+
+.dark-mode .type-select, 
+.dark-mode .goal-input {
+  background: #3a3a3a;
+  border-color: #555;
+  color: #eee;
+}
+
+
+.dark-mode .delete-btn {
+  background: #EF5350;
+}
+
+.dark-mode .delete-btn:hover {
+  background: #F44336;
 }
 
 .dark-mode .modal-content {
   background: #333;
   color: #eee;
+}
+
+.dark-mode .tab-content-wrapper {
+  background: #333;
+}
+
+.dark-mode .habit-tab-content {
+  background: #333;
+}
+
+.dark-mode .modal-header {
+  border-bottom: 1px solid #555;
+}
+
+.dark-mode .modal-header h2 {
+  color: #eee;
+  margin: 0;
+}
+
+.dark-mode .modal-header button {
+  background: #4a4a4a;
+  color: #ccc;
+  border-color: #666;
+}
+
+.dark-mode .modal-header button:hover {
+  background: #5a5a5a;
 }
 
 .dark-mode .weekdays div {
