@@ -48,6 +48,18 @@ input, select, button {
   border: 1px solid #f5c6cb;
 }
 
+.dark-mode .import-export-message.success {
+  background-color: #1b4332;
+  color: #d1e7dd;
+  border: 1px solid #2d6a4f;
+}
+
+.dark-mode .import-export-message.error {
+  background-color: #58151c;
+  color: #f8d7da;
+  border: 1px solid #842029;
+}
+
 /* === CALENDAR STYLES === */
 .calendar-header {
   display: flex;
@@ -108,6 +120,33 @@ input, select, button {
   border-radius: 50%;
   display: inline-block;
   margin: 1px;
+}
+
+.habit-emoji {
+  display: inline-block;
+  font-size: 12px;
+  margin: 1px;
+  line-height: 1;
+  cursor: help;
+  border-radius: 50%;
+  padding: 2px;
+  min-width: 12px;
+  min-height: 12px;
+  text-align: center;
+  border: 2px solid;
+  background: none !important;
+}
+
+.habit-emoji.good {
+  border-color: #4CAF50;
+}
+
+.habit-emoji.bad {
+  border-color: #F44336;
+}
+
+.habit-emoji.neutral {
+  border-color: #FFC107;
 }
 
 .good {
@@ -312,6 +351,30 @@ input, select, button {
   background: darkgoldenrod;
 }
 
+.dark-mode .habit-emoji {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 50%;
+  padding: 2px;
+  min-width: 12px;
+  min-height: 12px;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  border: 2px solid;
+}
+
+.dark-mode .habit-emoji.good {
+  border-color: #4CAF50;
+}
+
+.dark-mode .habit-emoji.bad {
+  border-color: #F44336;
+}
+
+.dark-mode .habit-emoji.neutral {
+  border-color: #FFC107;
+}
+
+
 .dark-mode .manage-item {
   background: #2a2a2a;
   border-color: #777;
@@ -328,6 +391,8 @@ input, select, button {
 
 .dark-mode .calendar-header button,
 .dark-mode #manage-habits-button,
+.dark-mode #export-button,
+.dark-mode #import-button,
 .dark-mode #theme-toggle-button {
   background: #2c2c2c;
   color: #eee;
@@ -336,6 +401,8 @@ input, select, button {
 
 .dark-mode #theme-toggle-button:hover,
 .dark-mode #manage-habits-button:hover,
+.dark-mode #export-button:hover,
+.dark-mode #import-button:hover,
 .dark-mode .calendar-header button:hover {
   background: #444;
 }

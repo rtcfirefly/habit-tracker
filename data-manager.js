@@ -32,9 +32,32 @@ class DataManager {
 
   updateHabit(index, name, type) {
     if (this.habits[index]) {
-      this.habits[index].name = name;
+      const oldName = this.habits[index].name;
+      const newName = name;
+      
+      // Update the habit
+      this.habits[index].name = newName;
       this.habits[index].type = type;
+      
+      // If the name changed, update all completion records
+      if (oldName !== newName) {
+        this.updateCompletionRecords(oldName, newName);
+      }
+      
       this.saveData();
+    }
+  }
+
+  updateCompletionRecords(oldName, newName) {
+    // Go through all dates and update habit name references
+    for (const dateKey in this.completions) {
+      const completedHabits = this.completions[dateKey];
+      const index = completedHabits.indexOf(oldName);
+      
+      if (index !== -1) {
+        // Replace old name with new name
+        completedHabits[index] = newName;
+      }
     }
   }
 
