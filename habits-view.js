@@ -10,11 +10,6 @@ class HabitsView {
     this.selectedDate = dateKey;
   }
 
-  extractEmoji(text) {
-    const emojiRegex = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u;
-    const match = text.match(emojiRegex);
-    return match ? match[0] : null;
-  }
 
   clearElement(element) {
     while (element.firstChild) {
@@ -31,7 +26,7 @@ class HabitsView {
     const button = document.createElement('button');
     button.className = `habit-button ${habit.type}`;
     
-    const emoji = this.extractEmoji(habit.name);
+    const emoji = EmojiUtils.extractEmoji(habit.name);
     if (emoji) {
       // Create emoji circle
       const emojiSpan = document.createElement('span');
@@ -84,7 +79,7 @@ class HabitsView {
     const nameSpan = document.createElement('span');
     nameSpan.className = 'counter-name';
     
-    const emoji = this.extractEmoji(habit.name);
+    const emoji = EmojiUtils.extractEmoji(habit.name);
     if (emoji) {
       const emojiSpan = document.createElement('span');
       emojiSpan.className = `habit-emoji ${habit.type}`;

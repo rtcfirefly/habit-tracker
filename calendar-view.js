@@ -62,11 +62,6 @@ class CalendarView {
     return dayDiv;
   }
 
-  extractEmoji(text) {
-    const emojiRegex = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u;
-    const match = text.match(emojiRegex);
-    return match ? match[0] : null;
-  }
 
   addHabitDots(dayDiv, dayKey) {
     const completedHabits = this.dataManager.getCompletedHabitsForDate(dayKey);
@@ -77,7 +72,7 @@ class CalendarView {
       const habit = habits.find(h => h.name === habitName);
       if (habit) {
         const dot = document.createElement('div');
-        const emoji = this.extractEmoji(habit.name);
+        const emoji = EmojiUtils.extractEmoji(habit.name);
         
         if (emoji) {
           dot.className = `habit-emoji ${habit.type}`;
@@ -95,7 +90,7 @@ class CalendarView {
     habits.forEach(habit => {
       if (habit.type === 'counter' && this.dataManager.isCounterHabitCompleted(dayKey, habit.name)) {
         const dot = document.createElement('div');
-        const emoji = this.extractEmoji(habit.name);
+        const emoji = EmojiUtils.extractEmoji(habit.name);
         
         if (emoji) {
           dot.className = `habit-emoji counter`;
