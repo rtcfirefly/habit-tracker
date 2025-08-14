@@ -47,14 +47,7 @@ class HabitManager {
     
     const nameInput = document.createElement('input');
     nameInput.placeholder = 'Habit name (e.g., "💧 Water", "Exercise")';
-    
-    const typeSelect = document.createElement('select');
-    this.createHabitTypeOptions().forEach(option => {
-      if (currentType && option.value === currentType) {
-        option.selected = true;
-      }
-      typeSelect.appendChild(option);
-    });
+    nameInput.className = 'habit-name-input';
     
     const goalInput = document.createElement('input');
     goalInput.type = 'number';
@@ -63,19 +56,12 @@ class HabitManager {
     goalInput.style.display = (currentType === 'counter') ? 'block' : 'none';
     goalInput.className = 'goal-input';
     
-    typeSelect.onchange = () => {
-      if (typeSelect.value === 'counter') {
-        goalInput.style.display = 'block';
-      } else {
-        goalInput.style.display = 'none';
-      }
-    };
-    
     const addButton = document.createElement('button');
     addButton.textContent = 'Add Habit';
+    addButton.className = 'add-habit-button';
     addButton.onclick = () => {
       const name = nameInput.value.trim();
-      const type = typeSelect.value;
+      const type = currentType || this.activeTab;
       const goal = type === 'counter' ? parseInt(goalInput.value) || 1 : null;
       
       if (name) {
@@ -88,8 +74,9 @@ class HabitManager {
     };
     
     form.appendChild(nameInput);
-    form.appendChild(typeSelect);
+    if (currentType === 'counter') {
     form.appendChild(goalInput);
+    }
     form.appendChild(addButton);
     
     section.appendChild(title);

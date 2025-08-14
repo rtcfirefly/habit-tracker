@@ -441,18 +441,29 @@ input, select, button {
 
 .add-habit-form {
   display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
-.add-habit-form input, 
-.add-habit-form select {
-  flex: 1;
-  min-width: 120px;
+.add-habit-form .habit-name-input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
 }
 
-.add-habit-form button {
+.add-habit-form .goal-input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.add-habit-form .add-habit-button {
   background: #4CAF50;
   color: white;
   border: none;
@@ -460,9 +471,10 @@ input, select, button {
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
+  align-self: flex-end;
 }
 
-.add-habit-form button:hover {
+.add-habit-form .add-habit-button:hover {
   background: #45a049;
 }
 

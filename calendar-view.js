@@ -67,13 +67,14 @@ class CalendarView {
     const completedHabits = this.dataManager.getCompletedHabitsForDate(dayKey);
     const habits = this.dataManager.getHabits();
     
-    // Add regular completed habits
+    // Add regular completed habits (both active and deleted)
     completedHabits.forEach(habitName => {
       const habit = habits.find(h => h.name === habitName);
-      if (habit) {
         const dot = document.createElement('div');
-        const emoji = EmojiUtils.extractEmoji(habit.name);
+      const emoji = EmojiUtils.extractEmoji(habitName);
         
+      if (habit) {
+        // Active habit - use its current type
         if (emoji) {
           dot.className = `habit-emoji ${habit.type}`;
           dot.textContent = emoji;
@@ -81,12 +82,24 @@ class CalendarView {
         } else {
           dot.className = `habit-dot ${habit.type}`;
         }
+      } else {
+        // Deleted habit - show as neutral with dimmed appearance
+        if (emoji) {
+          dot.className = `habit-emoji neutral`;
+          dot.textContent = emoji;
+          dot.title = `${habitName} (deleted)`;
+          dot.style.opacity = '0.6';
+        } else {
+          dot.className = `habit-dot neutral`;
+          dot.title = `${habitName} (deleted)`;
+          dot.style.opacity = '0.6';
+        }
+      }
         
         dayDiv.appendChild(dot);
-      }
     });
     
-    // Add completed counter habits
+    // Add completed counter habits (active ones)
     habits.forEach(habit => {
       if (habit.type === 'counter' && this.dataManager.isCounterHabitCompleted(dayKey, habit.name)) {
         const dot = document.createElement('div');
@@ -102,6 +115,27 @@ class CalendarView {
         
         dayDiv.appendChild(dot);
       }
+    });
+
+    // Add orphaned counter habits (deleted but had progress)
+    const orphanedCounters = this.dataManager.getOrphanedCounterHabitsForDate(dayKey);
+    orphanedCounters.forEach(habitName => {
+      const dot = document.createElement('div');
+      const emoji = EmojiUtils.extractEmoji(habitName);
+      const counterValue = this.dataManager.getCounterValue(dayKey, habitName);
+
+      if (emoji) {
+        dot.className = `habit-emoji counter`;
+        dot.textContent = emoji;
+        dot.title = `${habitName}: ${counterValue} (deleted)`;
+        dot.style.opacity = '0.6';
+      } else {
+        dot.className = `habit-dot counter`;
+        dot.title = `${habitName}: ${counterValue} (deleted)`;
+        dot.style.opacity = '0.6';
+      }
+
+      dayDiv.appendChild(dot);
     });
   }
 

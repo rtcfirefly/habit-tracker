@@ -80,6 +80,8 @@ class DataManager {
 
   deleteHabit(index) {
     if (this.habits[index]) {
+      // Only remove from active habits list - preserve all completion and counter data
+      // This allows users to see historical data even after deleting habits
       this.habits.splice(index, 1);
       this.saveData();
     }
@@ -111,6 +113,36 @@ class DataManager {
 
   getCompletedHabitsForDate(dateKey) {
     return this.completions[dateKey] || [];
+  }
+
+  getAllHistoricalHabitNames() {
+    // Get unique habit names from all completion data (including deleted habits)
+    const historicalNames = new Set();
+
+    // Add current active habits
+    this.habits.forEach(habit => historicalNames.add(habit.name));
+
+    // Add habit names from completion history
+    Object.values(this.completions).forEach(completedHabits => {
+      completedHabits.forEach(habitName => historicalNames.add(habitName));
+    });
+
+    // Add habit names from counter history
+    Object.values(this.counters).forEach(dateCounters => {
+      Object.keys(dateCounters).forEach(habitName => historicalNames.add(habitName));
+    });
+
+    return Array.from(historicalNames).sort();
+  }
+
+  getOrphanedCounterHabitsForDate(dateKey) {
+    // Returns counter habits that have data but are no longer in active habits
+    const activeHabitNames = new Set(this.habits.map(h => h.name));
+    const dateCounters = this.counters[dateKey] || {};
+
+    return Object.keys(dateCounters).filter(habitName =>
+      !activeHabitNames.has(habitName) && dateCounters[habitName] > 0
+    );
   }
 
   getCounterValue(dateKey, habitName) {
