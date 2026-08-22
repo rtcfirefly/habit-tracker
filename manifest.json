@@ -2,24 +2,19 @@
   "name": "Habit Tracker",
   "short_name": "Habit Tracker",
   "start_url": ".",
-  "display": "standalone",
-  "url": "index.html",
   "scope": ".",
+  "display": "standalone",
   "lang": "en-US",
   "description": "Track your daily habits",
   "orientation": "any",
+  "theme_color": "#2196F3",
+  "background_color": "#f5f5f5",
   "icons": [
     {
       "src": "icon.png",
-      "sizes": "192x192",
+      "sizes": "1024x1024",
       "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
