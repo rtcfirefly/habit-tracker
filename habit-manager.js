@@ -1,3 +1,13 @@
+// Tabs need a label short enough for four of them to sit across a 320px phone
+// without wrapping; the prose forms are for placeholders and empty states.
+const TYPE_TABS = { good: 'Good', bad: 'Bad', neutral: 'Neutral', counter: 'Counter' };
+const TYPE_NOUN = {
+  good: 'good habit',
+  bad: 'bad habit',
+  neutral: 'neutral habit',
+  counter: 'counter habit'
+};
+
 class HabitManager {
   constructor(modalElement, formElement, dataManager) {
     this.modalElement = modalElement;
@@ -7,6 +17,8 @@ class HabitManager {
     this.onHabitsChanged = null;
     this.activeTab = 'good';
     
+    this.previouslyFocused = null;
+
     this.setupModalCloseHandler();
   }
 
@@ -16,6 +28,8 @@ class HabitManager {
         this.close();
       }
     });
+
+    this.modalElement.addEventListener('keydown', (e) => this.handleKeydown(e));
   }
 
   clearElement(element) {
@@ -35,58 +49,90 @@ class HabitManager {
   }
 
   createAddHabitSection(currentType = null) {
+    const type = currentType || this.activeTab;
+
     const section = document.createElement('div');
     section.className = 'add-habit-section';
-    
-    const title = document.createElement('h3');
-    title.textContent = 'Add New Habit';
-    title.style.margin = '0 0 1rem 0';
-    
-    const form = document.createElement('div');
-    form.className = 'add-habit-form';
-    
+
+    const row = document.createElement('div');
+    row.className = 'add-habit-form';
+
     const nameInput = document.createElement('input');
-    nameInput.placeholder = 'Habit name (e.g., "💧 Water", "Exercise")';
     nameInput.className = 'habit-name-input';
-    
+    nameInput.placeholder = `Add a ${TYPE_NOUN[type]}…`;
+    nameInput.setAttribute('aria-label', `Name of the new ${TYPE_NOUN[type]}`);
+
     const goalInput = document.createElement('input');
     goalInput.type = 'number';
+    goalInput.className = 'goal-input';
     goalInput.placeholder = 'Goal';
     goalInput.min = '1';
-    goalInput.style.display = (currentType === 'counter') ? 'block' : 'none';
-    goalInput.className = 'goal-input';
-    
+    goalInput.setAttribute('aria-label', 'Daily goal');
+
     const addButton = document.createElement('button');
-    addButton.textContent = 'Add Habit';
     addButton.className = 'add-habit-button';
-    addButton.onclick = () => {
+    addButton.textContent = '+';
+    addButton.title = 'Add habit';
+    addButton.setAttribute('aria-label', 'Add habit');
+
+    const error = document.createElement('div');
+    error.className = 'add-habit-error';
+    error.setAttribute('role', 'alert');
+
+    const submit = () => {
       const name = nameInput.value.trim();
-      const type = currentType || this.activeTab;
-      const goal = type === 'counter' ? parseInt(goalInput.value) || 1 : null;
-      
       if (!name) {
+        nameInput.focus();
         return;
       }
 
+      const goal = type === 'counter' ? parseInt(goalInput.value) || 1 : null;
+
+      // Reported next to the field rather than in an alert(), which stole focus
+      // and threw away what had been typed
       if (!this.dataManager.addHabit(name, type, goal)) {
-        alert(`A habit named "${name}" already exists.`);
+        error.textContent = `You already have a habit called “${name}”.`;
+        nameInput.classList.add('invalid');
+        nameInput.focus();
+        nameInput.select();
         return;
       }
 
       this.renderForm();
       this.notifyHabitsChanged();
+      this.focusAddField();
     };
-    
-    form.appendChild(nameInput);
-    if (currentType === 'counter') {
-    form.appendChild(goalInput);
+
+    nameInput.oninput = () => {
+      error.textContent = '';
+      nameInput.classList.remove('invalid');
+    };
+    nameInput.onkeydown = event => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        submit();
+      }
+    };
+    goalInput.onkeydown = nameInput.onkeydown;
+    addButton.onclick = submit;
+
+    row.appendChild(nameInput);
+    if (type === 'counter') {
+      row.appendChild(goalInput);
     }
-    form.appendChild(addButton);
-    
-    section.appendChild(title);
-    section.appendChild(form);
-    
+    row.appendChild(addButton);
+
+    section.appendChild(row);
+    section.appendChild(error);
+
     return section;
+  }
+
+  focusAddField() {
+    const field = this.formElement.querySelector('.habit-tab-content.active .habit-name-input');
+    if (field) {
+      field.focus();
+    }
   }
 
   createHabitItem(habit, index) {
@@ -114,7 +160,8 @@ class HabitManager {
 
   createDragHandle() {
     const dragHandle = document.createElement('div');
-    dragHandle.innerText = '⋮';
+    dragHandle.title = 'Drag to reorder';
+    dragHandle.textContent = '⠿';
     dragHandle.className = 'drag-handle';
     return dragHandle;
   }
@@ -137,15 +184,6 @@ class HabitManager {
       }
     } else {
       display.textContent = habit.name;
-    }
-    
-    // Add goal info for counter habits
-    if (habit.type === 'counter' && habit.goal) {
-      const goalSpan = document.createElement('span');
-      goalSpan.style.opacity = '0.7';
-      goalSpan.style.fontSize = '0.9em';
-      goalSpan.textContent = ` (goal: ${habit.goal})`;
-      display.appendChild(goalSpan);
     }
     
     display.onclick = () => this.startInlineEdit(display, habit, index);
@@ -217,6 +255,12 @@ class HabitManager {
       goalInput.min = '1';
       goalInput.value = habit.goal || '';
       goalInput.title = 'Goal for this counter habit';
+      goalInput.setAttribute('aria-label', `Daily goal for ${habit.name}`);
+
+      const goalLabel = document.createElement('span');
+      goalLabel.className = 'goal-label';
+      goalLabel.textContent = 'goal';
+      controls.appendChild(goalLabel);
       
       goalInput.onchange = (e) => {
         const goal = parseInt(e.target.value) || 1;
@@ -311,21 +355,29 @@ class HabitManager {
   createTabsContainer(typeOrder, typeLabels, groupedHabits) {
     const tabsContainer = document.createElement('div');
     tabsContainer.className = 'habit-tabs';
+    tabsContainer.setAttribute('role', 'tablist');
     
     typeOrder.forEach(type => {
       const tab = document.createElement('button');
       tab.className = `habit-tab ${type}`;
-      tab.textContent = typeLabels[type];
-      
+      tab.appendChild(document.createTextNode(TYPE_TABS[type]));
+
       const habitCount = groupedHabits[type] ? groupedHabits[type].length : 0;
       if (habitCount > 0) {
-        tab.textContent += ` (${habitCount})`;
+        const badge = document.createElement('span');
+        badge.className = 'habit-tab-count';
+        badge.textContent = habitCount;
+        tab.appendChild(badge);
       }
-      
+
+      tab.setAttribute('role', 'tab');
+      tab.setAttribute('aria-selected', String(type === this.activeTab));
+      tab.setAttribute('aria-label', `${typeLabels[type]}, ${habitCount}`);
+
       if (type === this.activeTab) {
         tab.classList.add('active');
       }
-      
+
       tab.onclick = () => this.switchTab(type);
       
       tabsContainer.appendChild(tab);
@@ -371,6 +423,39 @@ class HabitManager {
     this.renderForm();
   }
 
+  // Tab, Shift+Tab and Escape have to be handled here: a dialog that leaks focus
+  // to the page behind it is unusable with a keyboard or a screen reader
+  handleKeydown(event) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.close();
+      return;
+    }
+
+    if (event.key !== 'Tab') {
+      return;
+    }
+
+    const focusable = [...this.modalElement.querySelectorAll(
+      'button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )].filter(el => !el.disabled && el.offsetParent !== null);
+
+    if (!focusable.length) {
+      return;
+    }
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
   notifyHabitsChanged() {
     if (this.onHabitsChanged) {
       this.onHabitsChanged();
@@ -378,11 +463,19 @@ class HabitManager {
   }
 
   open() {
+    this.previouslyFocused = document.activeElement;
     this.modalElement.style.display = 'flex';
     this.renderForm();
+    this.focusAddField();
   }
 
   close() {
     this.modalElement.style.display = 'none';
+
+    // Back to whatever opened it, rather than dumping focus on the body
+    if (this.previouslyFocused && this.previouslyFocused.focus) {
+      this.previouslyFocused.focus();
+    }
+    this.previouslyFocused = null;
   }
 }

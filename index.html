@@ -27,10 +27,10 @@
   <div class="calendar" id="calendar"></div>
   <div class="habits-list" id="habits-list"></div>
   <div class="modal" id="manage-modal">
-    <div class="modal-content">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="manage-modal-title">
       <div class="modal-header">
-        <h2>Manage Habits</h2>
-        <button onclick="closeManageModal()">✕</button>
+        <h2 id="manage-modal-title">Manage Habits</h2>
+        <button onclick="closeManageModal()" title="Close" aria-label="Close">✕</button>
       </div>
       <div class="modal-body">
         <div id="manage-form"></div>
