@@ -112,6 +112,11 @@ input, select, button {
   transform: scale(1.05);
 }
 
+.day:focus-visible {
+  outline: 3px solid #1a73e8;
+  outline-offset: 2px;
+}
+
 .day.other-month {
   opacity: 0.4;
 }
@@ -689,6 +694,10 @@ input, select, button {
 
 .dark-mode .day.selected {
   border-color: #66aaff;
+}
+
+.dark-mode .day:focus-visible {
+  outline-color: #66aaff;
 }
 
 /* === DARK MODE HABIT BUTTONS === */

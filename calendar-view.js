@@ -6,6 +6,7 @@ class CalendarView {
     this.currentDate = new Date();
     this.selectedDate = new Date().toDateString();
     this.onDateSelected = null;
+    this.dayElements = [];
   }
 
   isSameDay(date1, date2) {
@@ -37,7 +38,7 @@ class CalendarView {
     }
   }
 
-  createDayElement(day) {
+  createDayElement(day, index) {
     const dayDiv = document.createElement('div');
     dayDiv.className = 'day';
     const dayKey = day.toDateString();
@@ -51,15 +52,53 @@ class CalendarView {
     }
     if (this.isSameDay(day, new Date())) {
       dayDiv.classList.add('today');
+      dayDiv.setAttribute('aria-current', 'date');
     }
     if (dayKey === this.selectedDate) {
       dayDiv.classList.add('selected');
     }
 
     this.addHabitDots(dayDiv, dayKey);
-    this.addDayClickHandler(dayDiv, day, dayKey);
+    this.addDayAccessibility(dayDiv, day, dayKey);
+    this.addDayClickHandler(dayDiv, day, dayKey, index);
 
     return dayDiv;
+  }
+
+  addDayAccessibility(dayDiv, day, dayKey) {
+    const completed = dayDiv.querySelector('.day-dots').childElementCount;
+    const readableDate = day.toLocaleDateString(undefined, {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    });
+
+    dayDiv.setAttribute('role', 'button');
+    dayDiv.setAttribute('aria-label', completed ? `${readableDate}, ${completed} completed` : readableDate);
+    dayDiv.setAttribute('aria-pressed', String(dayKey === this.selectedDate));
+  }
+
+  // One tab stop for the whole grid, as a date picker should have; the arrow
+  // keys move between days from there
+  setRovingTabStop() {
+    this.dayElements.forEach(dayElement => {
+      dayElement.tabIndex = -1;
+    });
+
+    const tabStop = this.calendarElement.querySelector('.day.selected') ||
+                    this.calendarElement.querySelector('.day.today:not(.other-month)') ||
+                    this.calendarElement.querySelector('.day:not(.other-month)');
+
+    if (tabStop) {
+      tabStop.tabIndex = 0;
+    }
+  }
+
+  focusDay(index) {
+    if (this.dayElements[index]) {
+      this.dayElements[index].focus();
+    }
   }
 
 
@@ -125,18 +164,38 @@ class CalendarView {
            date.getFullYear() === this.currentDate.getFullYear();
   }
 
-  addDayClickHandler(dayDiv, day, dayKey) {
-    dayDiv.addEventListener('click', () => {
+  addDayClickHandler(dayDiv, day, dayKey, index) {
+    const select = () => {
       // A greyed neighbouring-month day belongs to another month, so move there
       // first; otherwise render() would immediately clear the new selection
       this.currentDate = new Date(day.getFullYear(), day.getMonth(), 1);
       this.setSelectedDate(dayKey);
       this.render();
+    };
+
+    const ARROW_OFFSETS = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
+
+    dayDiv.addEventListener('click', select);
+
+    dayDiv.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        select();
+      } else if (event.key in ARROW_OFFSETS) {
+        // Space and the arrows would otherwise scroll the page
+        event.preventDefault();
+        this.focusDay(index + ARROW_OFFSETS[event.key]);
+      }
     });
   }
 
   render() {
+    // Checked before the grid is torn down, so activating a day by keyboard
+    // does not drop focus to the body when the elements are replaced
+    const hadFocus = this.calendarElement.contains(document.activeElement);
+
     this.clearElement(this.calendarElement);
+    this.dayElements = [];
 
     const days = this.getMonthDays(this.currentDate.getFullYear(), this.currentDate.getMonth());
     this.monthYearElement.textContent = this.currentDate.toLocaleString('default', { 
@@ -148,10 +207,20 @@ class CalendarView {
       this.setSelectedDate(null);
     }
 
-    days.forEach(day => {
-      const dayElement = this.createDayElement(day);
+    days.forEach((day, index) => {
+      const dayElement = this.createDayElement(day, index);
+      this.dayElements.push(dayElement);
       this.calendarElement.appendChild(dayElement);
     });
+
+    this.setRovingTabStop();
+
+    if (hadFocus) {
+      const focusTarget = this.calendarElement.querySelector('.day[tabindex="0"]');
+      if (focusTarget) {
+        focusTarget.focus();
+      }
+    }
   }
 
   goToMonth(offset) {
