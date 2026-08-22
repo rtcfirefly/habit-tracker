@@ -24,7 +24,8 @@ class DataManager {
   }
 
   getHabits() {
-    return this.habits;
+    // A copy: rendering must not be able to reorder or mutate the stored list
+    return this.habits.slice();
   }
 
   getCompletions() {

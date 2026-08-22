@@ -149,7 +149,7 @@ class HabitsView {
 
     // Sort habits by type for consistent grouping
     const typeOrder = ['good', 'bad', 'neutral', 'counter'];
-    const sortedHabits = habits.sort((a, b) => {
+    const sortedHabits = habits.slice().sort((a, b) => {
       const aIndex = typeOrder.indexOf(a.type);
       const bIndex = typeOrder.indexOf(b.type);
       return aIndex - bIndex;
