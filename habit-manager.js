@@ -158,24 +158,44 @@ class HabitManager {
     input.className = 'habit-name-edit';
     input.value = habit.name;
     
+    let finished = false;
+
+    const restoreDisplay = () => {
+      // Swapping this one element back is enough. Rebuilding the whole modal
+      // here would tear down whatever control the user is part-way through
+      // clicking, swallowing the click that caused the blur.
+      finished = true;
+      input.parentNode.replaceChild(display, input);
+    };
+
     const finishEdit = () => {
-      const newName = input.value.trim();
-      if (newName && newName !== habit.name) {
-        if (this.dataManager.updateHabit(index, newName, habit.type, habit.goal)) {
-          this.notifyHabitsChanged();
-        } else {
-          alert(`A habit named "${newName}" already exists.`);
-        }
+      if (finished) {
+        return;
       }
+
+      const newName = input.value.trim();
+      if (!newName || newName === habit.name) {
+        restoreDisplay();
+        return;
+      }
+
+      finished = true;
+
+      if (this.dataManager.updateHabit(index, newName, habit.type, habit.goal)) {
+        this.notifyHabitsChanged();
+      } else {
+        alert(`A habit named "${newName}" already exists.`);
+      }
+
       this.renderForm();
     };
-    
+
     input.onblur = finishEdit;
-    input.onkeydown = (e) => {
-      if (e.key === 'Enter') {
+    input.onkeydown = (event) => {
+      if (event.key === 'Enter') {
         finishEdit();
-      } else if (e.key === 'Escape') {
-        this.renderForm();
+      } else if (event.key === 'Escape') {
+        restoreDisplay();
       }
     };
     
