@@ -1,6 +1,6 @@
 // Bump CACHE_NAME whenever the cached files change: the fetch handler is
 // cache-first, so a stale cache is otherwise never replaced.
-const CACHE_NAME = 'habit-tracker-v3';
+const CACHE_NAME = 'habit-tracker-v4';
 
 const ASSETS = [
   './',
