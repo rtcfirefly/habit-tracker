@@ -57,7 +57,7 @@ class CalendarView {
     }
 
     this.addHabitDots(dayDiv, dayKey);
-    this.addDayClickHandler(dayDiv, dayKey);
+    this.addDayClickHandler(dayDiv, day, dayKey);
 
     return dayDiv;
   }
@@ -125,8 +125,11 @@ class CalendarView {
            date.getFullYear() === this.currentDate.getFullYear();
   }
 
-  addDayClickHandler(dayDiv, dayKey) {
+  addDayClickHandler(dayDiv, day, dayKey) {
     dayDiv.addEventListener('click', () => {
+      // A greyed neighbouring-month day belongs to another month, so move there
+      // first; otherwise render() would immediately clear the new selection
+      this.currentDate = new Date(day.getFullYear(), day.getMonth(), 1);
       this.setSelectedDate(dayKey);
       this.render();
     });
