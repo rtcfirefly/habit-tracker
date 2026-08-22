@@ -1,36 +1,27 @@
 // Shared emoji utility functions
+
+// Extended_Pictographic covers every pictographic emoji, including recent
+// additions like 🫩, without the false positives of \p{Emoji} - which also
+// matches bare digits, '#' and '*'. Those three only count as emoji inside a
+// keycap sequence, and flags are pairs of regional indicators, so both are
+// matched separately.
+const EMOJI_SEQUENCE_REGEX = new RegExp([
+  '\\p{Regional_Indicator}{2}',
+  '[0-9#*]\\uFE0F?\\u20E3',
+  '\\p{Extended_Pictographic}(?:\\uFE0F|\\p{Emoji_Modifier})?' +
+    '(?:\\u200D\\p{Extended_Pictographic}(?:\\uFE0F|\\p{Emoji_Modifier})?)*'
+].join('|'), 'u');
+
 class EmojiUtils {
   static extractEmoji(text) {
-    // Comprehensive emoji matching that explicitly includes all ranges
-    // Including newer emojis like 🫩 (U+1FAE9)
-    
-    // First, try the simple emoji property match with explicit ranges for newer emojis
-    const simpleEmojiRegex = /[\u{1F300}-\u{1F5FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
-    
-    // Check if text starts with a simple emoji
-    const simpleMatch = text.match(simpleEmojiRegex);
-    if (simpleMatch) {
-      // Now check if this is part of a larger sequence
-      const complexEmojiRegex = new RegExp(
-        '^[\\u{1F300}-\\u{1F5FF}\\u{1F600}-\\u{1F64F}\\u{1F680}-\\u{1F6FF}\\u{1F700}-\\u{1F77F}\\u{1F780}-\\u{1F7FF}\\u{1F800}-\\u{1F8FF}\\u{1F900}-\\u{1F9FF}\\u{1FA00}-\\u{1FA6F}\\u{1FA70}-\\u{1FAFF}\\u{2600}-\\u{26FF}\\u{2700}-\\u{27BF}]' +
-        '(?:[\\u{1F3FB}-\\u{1F3FF}])?' + // Skin tone modifier
-        '(?:\\u200D[\\u{1F300}-\\u{1F5FF}\\u{1F600}-\\u{1F64F}\\u{1F680}-\\u{1F6FF}\\u{1F700}-\\u{1F77F}\\u{1F780}-\\u{1F7FF}\\u{1F800}-\\u{1F8FF}\\u{1F900}-\\u{1F9FF}\\u{1FA00}-\\u{1FA6F}\\u{1FA70}-\\u{1FAFF}\\u{2600}-\\u{26FF}\\u{2700}-\\u{27BF}\\u{2640}\\u{2642}\\u{2695}\\u{2696}\\u{2708}](?:[\\u{1F3FB}-\\u{1F3FF}])?)*' + // ZWJ sequences
-        '(?:\\uFE0F)?', // Variation selector
-        'u'
-      );
-      
-      const complexMatch = text.match(complexEmojiRegex);
-      if (complexMatch) {
-        return complexMatch[0];
-      }
-      
-      // If no complex match, return the simple emoji
-      return simpleMatch[0];
+    if (typeof text !== 'string') {
+      return null;
     }
-    
-    return null;
+
+    const match = text.match(EMOJI_SEQUENCE_REGEX);
+    return match ? match[0] : null;
   }
-  
+
   static removeEmoji(text) {
     const emoji = this.extractEmoji(text);
     return emoji ? text.replace(emoji, '').trim() : text;
