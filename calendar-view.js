@@ -63,79 +63,50 @@ class CalendarView {
   }
 
 
+  createHabitIndicator(habitName, type, title, isDeleted) {
+    const emoji = EmojiUtils.extractEmoji(habitName);
+    const indicator = document.createElement('div');
+
+    indicator.className = emoji ? `habit-emoji ${type}` : `habit-dot ${type}`;
+    if (emoji) {
+      indicator.textContent = emoji;
+    }
+    indicator.title = title;
+    if (isDeleted) {
+      indicator.classList.add('deleted');
+    }
+
+    return indicator;
+  }
+
   addHabitDots(dayDiv, dayKey) {
-    const completedHabits = this.dataManager.getCompletedHabitsForDate(dayKey);
+    // Always present, even when empty, so every day box reserves the same icon area
+    const dots = document.createElement('div');
+    dots.className = 'day-dots';
+    dayDiv.appendChild(dots);
+
     const habits = this.dataManager.getHabits();
-    
-    // Add regular completed habits (both active and deleted)
-    completedHabits.forEach(habitName => {
+
+    // Completed habits, including ones whose habit has since been deleted
+    this.dataManager.getCompletedHabitsForDate(dayKey).forEach(habitName => {
       const habit = habits.find(h => h.name === habitName);
-        const dot = document.createElement('div');
-      const emoji = EmojiUtils.extractEmoji(habitName);
-        
-      if (habit) {
-        // Active habit - use its current type
-        if (emoji) {
-          dot.className = `habit-emoji ${habit.type}`;
-          dot.textContent = emoji;
-          dot.title = habit.name;
-        } else {
-          dot.className = `habit-dot ${habit.type}`;
-        }
-      } else {
-        // Deleted habit - show as neutral with dimmed appearance
-        if (emoji) {
-          dot.className = `habit-emoji neutral`;
-          dot.textContent = emoji;
-          dot.title = `${habitName} (deleted)`;
-          dot.style.opacity = '0.6';
-        } else {
-          dot.className = `habit-dot neutral`;
-          dot.title = `${habitName} (deleted)`;
-          dot.style.opacity = '0.6';
-        }
-      }
-        
-        dayDiv.appendChild(dot);
+      dots.appendChild(habit
+        ? this.createHabitIndicator(habitName, habit.type, habit.name, false)
+        : this.createHabitIndicator(habitName, 'neutral', `${habitName} (deleted)`, true));
     });
-    
-    // Add completed counter habits (active ones)
+
+    // Counter habits that reached their goal
     habits.forEach(habit => {
       if (habit.type === 'counter' && this.dataManager.isCounterHabitCompleted(dayKey, habit.name)) {
-        const dot = document.createElement('div');
-        const emoji = EmojiUtils.extractEmoji(habit.name);
-        
-        if (emoji) {
-          dot.className = `habit-emoji counter`;
-          dot.textContent = emoji;
-          dot.title = habit.name;
-        } else {
-          dot.className = `habit-dot counter`;
-        }
-        
-        dayDiv.appendChild(dot);
+        dots.appendChild(this.createHabitIndicator(habit.name, 'counter', habit.name, false));
       }
     });
 
-    // Add orphaned counter habits (deleted but had progress)
-    const orphanedCounters = this.dataManager.getOrphanedCounterHabitsForDate(dayKey);
-    orphanedCounters.forEach(habitName => {
-      const dot = document.createElement('div');
-      const emoji = EmojiUtils.extractEmoji(habitName);
-      const counterValue = this.dataManager.getCounterValue(dayKey, habitName);
-
-      if (emoji) {
-        dot.className = `habit-emoji counter`;
-        dot.textContent = emoji;
-        dot.title = `${habitName}: ${counterValue} (deleted)`;
-        dot.style.opacity = '0.6';
-      } else {
-        dot.className = `habit-dot counter`;
-        dot.title = `${habitName}: ${counterValue} (deleted)`;
-        dot.style.opacity = '0.6';
-      }
-
-      dayDiv.appendChild(dot);
+    // Counter habits that were deleted but still have progress recorded
+    this.dataManager.getOrphanedCounterHabitsForDate(dayKey).forEach(habitName => {
+      const value = this.dataManager.getCounterValue(dayKey, habitName);
+      dots.appendChild(
+        this.createHabitIndicator(habitName, 'counter', `${habitName}: ${value} (deleted)`, true));
     });
   }
 
