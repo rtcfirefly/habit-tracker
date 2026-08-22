@@ -1,6 +1,7 @@
-// Bump CACHE_NAME whenever the cached files change: the fetch handler is
-// cache-first, so a stale cache is otherwise never replaced.
-const CACHE_NAME = 'habit-tracker-v5';
+// Bump CACHE_NAME when the list of cached files changes, so old versions get
+// cleared out on activate. It no longer gates whether a change reaches anyone:
+// the fetch handler below is network-first.
+const CACHE_NAME = 'habit-tracker-v6';
 
 const ASSETS = [
   './',
@@ -43,8 +44,19 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // Network first, cache as the fallback. Cache-first meant an edit only ever
+  // reached anyone when CACHE_NAME was bumped - easy to forget, and it made a
+  // plain reload show the previous version. This way a reload always shows the
+  // current files, and offline still works from the last successful fetch.
   event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
+    fetch(event.request)
+      .then(response => {
+        if (response && response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        }
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });

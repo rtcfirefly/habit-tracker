@@ -57,13 +57,33 @@ function closeManageModal() {
   habitManager.close();
 }
 
-// Register the service worker so the app keeps working offline
+// Register the service worker so the app keeps working offline.
+//
+// Not while developing, though: a worker on localhost serves the previous copy
+// of every file, so a reload after an edit shows the old app. Any worker a
+// previous visit left behind is cleared out too, since skipping registration
+// does not remove one that is already installed. Append ?sw=1 to test the
+// worker itself locally.
+const DEV_HOSTS = ['localhost', '127.0.0.1', '[::1]', ''];
+const workerWanted = !DEV_HOSTS.includes(location.hostname)
+  || new URLSearchParams(location.search).get('sw') === '1';
+
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(error => {
-      console.error('Service worker registration failed:', error);
+  if (workerWanted) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(error => {
+        console.error('Service worker registration failed:', error);
+      });
     });
-  });
+  } else {
+    navigator.serviceWorker.getRegistrations()
+      .then(registrations => registrations.forEach(r => r.unregister()))
+      .catch(() => {});
+
+    if (window.caches) {
+      caches.keys().then(keys => keys.forEach(key => caches.delete(key))).catch(() => {});
+    }
+  }
 }
 
 // Initialize the application
