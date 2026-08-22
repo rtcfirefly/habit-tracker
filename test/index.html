@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Habit Tracker tests</title>
+  <!-- The real stylesheet, so the layout assertions measure the real thing -->
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    h1 { font-size: 1.4rem; }
+
+    #summary {
+      position: sticky;
+      top: 0;
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    #summary.pass { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    #summary.fail { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    #summary button { padding: 0.35rem 0.8rem; font-size: 0.85rem; }
+
+    .notice { padding: 0.6rem 0.8rem; border-radius: 6px; font-size: 0.9rem; }
+    .notice.good { background: #e8f5e9; color: #1b5e20; }
+    .notice.warn { background: #fff3cd; color: #664d03; white-space: pre-wrap; }
+
+    h2.section { font-size: 1rem; margin: 1.4rem 0 0.4rem; }
+
+    ul.results { list-style: none; padding: 0; margin: 0; font-size: 0.9rem; }
+    ul.results li { padding: 0.15rem 0; display: flex; gap: 0.5rem; align-items: baseline; }
+    ul.results li.pass { color: #2e7d32; }
+    ul.results li.fail { color: #c62828; font-weight: bold; }
+    .mark { width: 1rem; flex: none; }
+    .detail { opacity: 0.85; font-weight: normal; }
+
+    #fixtures-toggle { margin-top: 1.5rem; font-size: 0.85rem; padding: 0.35rem 0.8rem; }
+    #fixtures { margin-top: 1rem; }
+    #fixtures[hidden] { display: none; }
+  </style>
+</head>
+<body>
+  <h1>Habit Tracker tests</h1>
+
+  <div id="summary">Running…</div>
+  <div id="notice"></div>
+  <div id="results"></div>
+
+  <button id="fixtures-toggle">Show rendered fixtures</button>
+  <!-- Laid out at page width during the run so boxes can be measured -->
+  <div id="fixtures"></div>
+
+  <!--
+    The app's classes only. script.js is deliberately absent: it is the
+    bootstrap and queries #calendar, #month-year and friends, which do not
+    exist here. theme-manager.js and import-export-manager.js are left out for
+    the same reason - their constructors take elements from the real page.
+  -->
+  <script src="../emoji-utils.js"></script>
+  <script src="../data-manager.js"></script>
+  <script src="../calendar-view.js"></script>
+  <script src="../habits-view.js"></script>
+  <script src="../habit-manager.js"></script>
+
+  <script src="tests.js"></script>
+  <script src="browser-runner.js"></script>
+</body>
+</html>
