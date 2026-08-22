@@ -140,14 +140,23 @@ class CalendarView {
     });
   }
 
-  goToPreviousMonth() {
-    this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+  goToMonth(offset) {
+    // Rebuilt from year/month rather than mutating the day, which would
+    // overflow whenever the current day-of-month is missing from the target
+    this.currentDate = new Date(
+      this.currentDate.getFullYear(),
+      this.currentDate.getMonth() + offset,
+      1
+    );
     this.render();
   }
 
+  goToPreviousMonth() {
+    this.goToMonth(-1);
+  }
+
   goToNextMonth() {
-    this.currentDate.setMonth(this.currentDate.getMonth() + 1);
-    this.render();
+    this.goToMonth(1);
   }
 
   getSelectedDate() {
