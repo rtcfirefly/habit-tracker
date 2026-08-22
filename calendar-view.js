@@ -110,12 +110,24 @@ class CalendarView {
     });
   }
 
+  setSelectedDate(dateKey) {
+    this.selectedDate = dateKey;
+    // Always announced, including the null case, so HabitsView can never be
+    // left logging against a day the calendar no longer shows
+    if (this.onDateSelected) {
+      this.onDateSelected(dateKey);
+    }
+  }
+
+  isInCurrentMonth(dateKey) {
+    const date = new Date(dateKey);
+    return date.getMonth() === this.currentDate.getMonth() &&
+           date.getFullYear() === this.currentDate.getFullYear();
+  }
+
   addDayClickHandler(dayDiv, dayKey) {
     dayDiv.addEventListener('click', () => {
-      this.selectedDate = dayKey;
-      if (this.onDateSelected) {
-        this.onDateSelected(dayKey);
-      }
+      this.setSelectedDate(dayKey);
       this.render();
     });
   }
@@ -129,9 +141,8 @@ class CalendarView {
       year: 'numeric' 
     });
 
-    if (new Date(this.selectedDate).getMonth() !== this.currentDate.getMonth() ||
-        new Date(this.selectedDate).getFullYear() !== this.currentDate.getFullYear()) {
-      this.selectedDate = null;
+    if (this.selectedDate && !this.isInCurrentMonth(this.selectedDate)) {
+      this.setSelectedDate(null);
     }
 
     days.forEach(day => {

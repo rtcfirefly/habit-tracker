@@ -220,6 +220,28 @@ input, select, button {
   justify-content: center;
 }
 
+/* Shown instead of a selected day, e.g. straight after changing month */
+.habits-hint {
+  width: 100%;
+  text-align: center;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.habit-button:disabled,
+.counter-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.habit-button:disabled:hover {
+  transform: none;
+}
+
+.habit-counter.no-date {
+  opacity: 0.45;
+}
+
 /* === HABIT BUTTONS - BASE STYLES === */
 .habit-button {
   padding: 0.5rem 0.8rem;

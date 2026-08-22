@@ -25,6 +25,7 @@ class HabitsView {
     
     const button = document.createElement('button');
     button.className = `habit-button ${habit.type}`;
+    button.disabled = !this.selectedDate;
     
     const emoji = EmojiUtils.extractEmoji(habit.name);
     if (emoji) {
@@ -67,6 +68,9 @@ class HabitsView {
   createCounterHabit(habit) {
     const wrapper = document.createElement('div');
     wrapper.className = `habit-counter ${habit.type}`;
+    if (!this.selectedDate) {
+      wrapper.classList.add('no-date');
+    }
     
     const currentValue = this.selectedDate ? this.dataManager.getCounterValue(this.selectedDate, habit.name) : 0;
     const isCompleted = this.selectedDate ? this.dataManager.isCounterHabitCompleted(this.selectedDate, habit.name) : false;
@@ -102,6 +106,7 @@ class HabitsView {
     const minusButton = document.createElement('button');
     minusButton.textContent = '-';
     minusButton.className = 'counter-btn minus';
+    minusButton.disabled = !this.selectedDate;
     minusButton.onclick = () => {
       if (!this.selectedDate) return;
       this.dataManager.decrementCounter(this.selectedDate, habit.name);
@@ -116,6 +121,7 @@ class HabitsView {
     const plusButton = document.createElement('button');
     plusButton.textContent = '+';
     plusButton.className = 'counter-btn plus';
+    plusButton.disabled = !this.selectedDate;
     plusButton.onclick = () => {
       if (!this.selectedDate) return;
       this.dataManager.incrementCounter(this.selectedDate, habit.name);
@@ -145,6 +151,13 @@ class HabitsView {
       placeholder.textContent = 'No habits yet. Click "⚙️" to add some!';
       this.habitsListElement.appendChild(placeholder);
       return;
+    }
+
+    if (!this.selectedDate) {
+      const hint = document.createElement('div');
+      hint.className = 'habits-hint';
+      hint.textContent = 'Pick a day on the calendar to log habits.';
+      this.habitsListElement.appendChild(hint);
     }
 
     // Sort habits by type for consistent grouping
