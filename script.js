@@ -57,6 +57,15 @@ function closeManageModal() {
   habitManager.close();
 }
 
+// Register the service worker so the app keeps working offline
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(error => {
+      console.error('Service worker registration failed:', error);
+    });
+  });
+}
+
 // Initialize the application
 habitsView.setSelectedDate(calendarView.getSelectedDate());
 calendarView.render();
