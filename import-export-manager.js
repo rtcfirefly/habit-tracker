@@ -43,6 +43,10 @@ class ImportExportManager {
 
     const reader = new FileReader();
     reader.onload = (e) => {
+      if (!this.confirmReplace()) {
+        return;
+      }
+
       const result = this.dataManager.importData(e.target.result);
       
       if (result.success) {
@@ -61,6 +65,20 @@ class ImportExportManager {
 
     reader.readAsText(file);
     event.target.value = '';
+  }
+
+  confirmReplace() {
+    const habitCount = this.dataManager.getHabits().length;
+    const dayCount = Object.keys(this.dataManager.getCompletions()).length;
+
+    if (habitCount === 0 && dayCount === 0) {
+      return true;
+    }
+
+    return confirm(
+      `Importing replaces your ${habitCount} habit(s) and ${dayCount} day(s) of ` +
+      `history. This cannot be undone - export first if you want a backup.\n\nContinue?`
+    );
   }
 
   showMessage(message, type) {
