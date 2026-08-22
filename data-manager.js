@@ -57,9 +57,10 @@ class DataManager {
         delete this.habits[index].goal;
       }
       
-      // If the name changed, update all completion records
+      // If the name changed, re-key every record that is stored by habit name
       if (oldName !== newName) {
         this.updateCompletionRecords(oldName, newName);
+        this.updateCounterRecords(oldName, newName);
       }
       
       this.saveData();
@@ -75,6 +76,19 @@ class DataManager {
       if (index !== -1) {
         // Replace old name with new name
         completedHabits[index] = newName;
+      }
+    }
+  }
+
+  updateCounterRecords(oldName, newName) {
+    // Counters are keyed by habit name too, so a rename has to move them or
+    // the history is stranded and the habit restarts at zero
+    for (const dateKey in this.counters) {
+      const dateCounters = this.counters[dateKey];
+
+      if (Object.prototype.hasOwnProperty.call(dateCounters, oldName)) {
+        dateCounters[newName] = dateCounters[oldName];
+        delete dateCounters[oldName];
       }
     }
   }
