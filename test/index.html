@@ -30,6 +30,7 @@
     .notice.warn { background: #fff3cd; color: #664d03; white-space: pre-wrap; }
 
     h2.section { font-size: 1rem; margin: 1.4rem 0 0.4rem; }
+    .hint { font-size: 0.85rem; opacity: 0.75; margin: 0.2rem 0 0; }
 
     ul.results { list-style: none; padding: 0; margin: 0; font-size: 0.9rem; }
     ul.results li { padding: 0.15rem 0; display: flex; gap: 0.5rem; align-items: baseline; }
@@ -41,6 +42,29 @@
     #fixtures-toggle { margin-top: 1.5rem; font-size: 0.85rem; padding: 0.35rem 0.8rem; }
     #fixtures { margin-top: 1rem; }
     #fixtures[hidden] { display: none; }
+
+    #frames {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-top: 1rem;
+    }
+    figure.frame { margin: 0; }
+    figure.frame figcaption {
+      font-size: 0.8rem;
+      font-weight: bold;
+      opacity: 0.8;
+      margin-bottom: 0.25rem;
+    }
+    figure.frame iframe {
+      height: 620px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      background: #fff;
+      display: block;
+    }
+    .notice button { margin-left: 0.75rem; padding: 0.3rem 0.7rem; font-size: 0.8rem; }
   </style>
 </head>
 <body>
@@ -49,6 +73,14 @@
   <div id="summary">Running…</div>
   <div id="notice"></div>
   <div id="results"></div>
+
+  <h2 class="section">Viewport previews</h2>
+  <p class="hint">
+    Each frame is a real viewport at a fixed width, so the media queries inside it
+    respond to the frame rather than to this window. The measurements above are taken
+    from these.
+  </p>
+  <div id="frames"></div>
 
   <button id="fixtures-toggle">Show rendered fixtures</button>
   <!-- Laid out at page width during the run so boxes can be measured -->

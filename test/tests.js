@@ -269,40 +269,64 @@ function runHabitTrackerTests(env) {
   // Only a real browser gives boxes dimensions, so this is the one thing the
   // Node harness can never check: that the reserved area really is 2x2 icons.
   if (layout) {
-    section(`reserved area measured at ${window.innerWidth}px viewport`);
-
-    const dm = fresh();
-    dm.addHabit('💧 Water', 'good');
-
     const calEl = fixture('div');
     calEl.className = 'calendar';
-    const cal = new CalendarView(calEl, fixture('h2'), dm);
-    cal.currentDate = new Date(2026, 7, 15);
-    cal.render();
-
-    const style = getComputedStyle(calEl);
-    const icon = parseFloat(style.getPropertyValue('--habit-icon-size'));
-    const gap = parseFloat(style.getPropertyValue('--habit-icon-gap'));
-    const need = 2 * icon + gap;
-
-    ok(`stylesheet loaded, icon size resolves (${icon}px)`, icon > 0,
-       'is styles.css reachable from this page?');
-
-    const boxes = list(calEl.querySelectorAll('.day-dots')).map(d => d.getBoundingClientRect());
-    const narrowest = Math.min(...boxes.map(b => b.width));
-    const shortest = Math.min(...boxes.map(b => b.height));
-
-    ok(`every day reserves >= ${need}px of icon width (narrowest ${narrowest.toFixed(1)}px)`,
-       narrowest >= need - 0.5);
-    ok(`every day reserves >= ${need}px of icon height (shortest ${shortest.toFixed(1)}px)`,
-       shortest >= need - 0.5);
-    ok('empty days reserve the same area as full ones',
-       Math.abs(Math.max(...boxes.map(b => b.height)) - shortest) < 0.5);
-
-    const doc = document.documentElement;
-    ok(`page does not scroll sideways (content ${doc.scrollWidth}px vs viewport ${doc.clientWidth}px)`,
-       doc.scrollWidth <= doc.clientWidth + 1);
+    assertReservedArea(env, measureReservedArea(window, { DataManager, CalendarView }, calEl),
+                       `reserved area on this page at ${window.innerWidth}px`);
   }
+}
+
+// Renders a calendar inside `win` and measures the area every day reserves for
+// habit icons. `app` carries the classes from that window's realm: a class
+// declared in a classic script is not a property of window, so an iframe has to
+// hand them over explicitly. `calEl` must already be attached and laid out.
+function measureReservedArea(win, app, calEl) {
+  const dataManager = new app.DataManager();
+  dataManager.addHabit('💧 Water', 'good');
+
+  const monthDay = new Date(2026, 7, 12).toDateString();
+  dataManager.toggleHabitCompletion(monthDay, '💧 Water');
+
+  const calendar = new app.CalendarView(calEl, win.document.createElement('h2'), dataManager);
+  calendar.currentDate = new Date(2026, 7, 15);
+  calendar.render();
+
+  const style = win.getComputedStyle(calEl);
+  const icon = parseFloat(style.getPropertyValue('--habit-icon-size'));
+  const gap = parseFloat(style.getPropertyValue('--habit-icon-gap'));
+
+  const boxes = Array.from(calEl.querySelectorAll('.day-dots')).map(d => d.getBoundingClientRect());
+  const root = win.document.documentElement;
+
+  return {
+    viewport: win.innerWidth,
+    icon,
+    gap,
+    need: 2 * icon + gap,
+    narrowest: Math.min(...boxes.map(b => b.width)),
+    shortest: Math.min(...boxes.map(b => b.height)),
+    tallest: Math.max(...boxes.map(b => b.height)),
+    perRow: Math.floor((Math.min(...boxes.map(b => b.width)) + gap) / (icon + gap)),
+    scrollWidth: root.scrollWidth,
+    clientWidth: root.clientWidth
+  };
+}
+
+function assertReservedArea(env, m, label) {
+  env.section(`${label} — ${m.icon}px icons, needs ${m.need}px`);
+
+  env.ok(`stylesheet reached the page, icon size resolves (${m.icon}px)`, m.icon > 0,
+         'is styles.css loading here?');
+  env.ok(`every day reserves >= ${m.need}px of icon width (narrowest ${m.narrowest.toFixed(1)}px)`,
+         m.narrowest >= m.need - 0.5);
+  env.ok(`every day reserves >= ${m.need}px of icon height (shortest ${m.shortest.toFixed(1)}px)`,
+         m.shortest >= m.need - 0.5);
+  env.ok('empty days reserve the same area as full ones',
+         Math.abs(m.tallest - m.shortest) < 0.5,
+         `tallest ${m.tallest.toFixed(1)}px vs shortest ${m.shortest.toFixed(1)}px`);
+  env.ok(`at least 2 icons fit per row (${m.perRow} fit)`, m.perRow >= 2);
+  env.ok(`no sideways scroll (content ${m.scrollWidth}px vs viewport ${m.clientWidth}px)`,
+         m.scrollWidth <= m.clientWidth + 1);
 }
 
 if (typeof module !== 'undefined' && module.exports) {
