@@ -1,13 +1,15 @@
 // Bump CACHE_NAME whenever the cached files change: the fetch handler is
 // cache-first, so a stale cache is otherwise never replaced.
-const CACHE_NAME = 'habit-tracker-v2';
+const CACHE_NAME = 'habit-tracker-v3';
 
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './manifest.json',
-  './icon.png',
+  './icon-192.png',
+  './icon-512.png',
+  './icon-maskable-512.png',
   './emoji-utils.js',
   './data-manager.js',
   './calendar-view.js',
