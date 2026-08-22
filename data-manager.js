@@ -32,17 +32,28 @@ class DataManager {
     return this.completions;
   }
 
+  hasHabitNamed(name, exceptIndex = -1) {
+    return this.habits.some((habit, index) => index !== exceptIndex && habit.name === name);
+  }
+
   addHabit(name, type, goal = null) {
+    // Completions and counters are keyed by name, so two habits sharing one
+    // would toggle and count as a single habit
+    if (this.hasHabitNamed(name)) {
+      return false;
+    }
+
     const habit = { name, type };
     if (type === 'counter' && goal !== null) {
       habit.goal = goal;
     }
     this.habits.push(habit);
     this.saveData();
+    return true;
   }
 
   updateHabit(index, name, type, goal = null) {
-    if (this.habits[index]) {
+    if (this.habits[index] && !this.hasHabitNamed(name, index)) {
       const oldName = this.habits[index].name;
       const newName = name;
       
@@ -64,7 +75,10 @@ class DataManager {
       }
       
       this.saveData();
+      return true;
     }
+
+    return false;
   }
 
   updateCompletionRecords(oldName, newName) {

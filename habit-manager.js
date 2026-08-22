@@ -64,13 +64,17 @@ class HabitManager {
       const type = currentType || this.activeTab;
       const goal = type === 'counter' ? parseInt(goalInput.value) || 1 : null;
       
-      if (name) {
-        this.dataManager.addHabit(name, type, goal);
-        this.renderForm();
-        this.notifyHabitsChanged();
-        nameInput.value = '';
-        goalInput.value = '';
+      if (!name) {
+        return;
       }
+
+      if (!this.dataManager.addHabit(name, type, goal)) {
+        alert(`A habit named "${name}" already exists.`);
+        return;
+      }
+
+      this.renderForm();
+      this.notifyHabitsChanged();
     };
     
     form.appendChild(nameInput);
@@ -157,8 +161,11 @@ class HabitManager {
     const finishEdit = () => {
       const newName = input.value.trim();
       if (newName && newName !== habit.name) {
-        this.dataManager.updateHabit(index, newName, habit.type, habit.goal);
-        this.notifyHabitsChanged();
+        if (this.dataManager.updateHabit(index, newName, habit.type, habit.goal)) {
+          this.notifyHabitsChanged();
+        } else {
+          alert(`A habit named "${newName}" already exists.`);
+        }
       }
       this.renderForm();
     };
