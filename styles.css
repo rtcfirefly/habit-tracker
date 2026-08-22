@@ -107,7 +107,10 @@ input, select, button {
   min-width: calc(var(--day-icons-min) + 2 * var(--day-padding-x) + 2 * var(--day-border));
 }
 
-.day:hover {
+/* .day.today and .dark-mode .day both outrank a bare .day:hover, so the
+   hover state has to match their specificity to survive */
+.day:hover,
+.day.today:hover {
   background-color: #eef6ff;
   transform: scale(1.05);
 }
@@ -690,6 +693,11 @@ input, select, button {
 
 .dark-mode .day.today {
   background-color: #335577;
+}
+
+.dark-mode .day:hover,
+.dark-mode .day.today:hover {
+  background-color: #4a4a4a;
 }
 
 .dark-mode .day.selected {
