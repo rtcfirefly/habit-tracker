@@ -175,10 +175,9 @@ class DataManager {
   }
 
   getCounterValue(dateKey, habitName) {
-    if (!this.counters[dateKey]) {
-      this.counters[dateKey] = {};
-    }
-    return this.counters[dateKey][habitName] || 0;
+    // Read-only: this sits on the render path, so it must not create buckets
+    const dateCounters = this.counters[dateKey];
+    return (dateCounters && dateCounters[habitName]) || 0;
   }
 
   setCounterValue(dateKey, habitName, value) {
