@@ -229,20 +229,56 @@ class DataManager {
         throw new Error('Invalid data format: habits must be an array');
       }
 
-      if (typeof importedData.completions !== 'object') {
+      if (typeof importedData.completions !== 'object' || Array.isArray(importedData.completions)) {
         throw new Error('Invalid data format: completions must be an object');
       }
 
+      const counters = importedData.counters || {};
+      if (typeof counters !== 'object' || Array.isArray(counters)) {
+        throw new Error('Invalid data format: counters must be an object');
+      }
+
       const validHabitTypes = ['good', 'bad', 'neutral', 'counter'];
+      const seenNames = new Set();
       for (const habit of importedData.habits) {
         if (!habit.name || !habit.type || !validHabitTypes.includes(habit.type)) {
           throw new Error('Invalid habit data: each habit must have name and type (good/bad/neutral/counter)');
+        }
+        if (seenNames.has(habit.name)) {
+          throw new Error(`Invalid habit data: duplicate habit name "${habit.name}"`);
+        }
+        seenNames.add(habit.name);
+
+        // A counter with no usable goal can never be completed, so repair it
+        // rather than rejecting a backup written before goals were required
+        if (habit.type === 'counter') {
+          const goal = Math.floor(Number(habit.goal));
+          habit.goal = Number.isFinite(goal) && goal >= 1 ? goal : 1;
+        }
+      }
+
+      for (const dateKey in importedData.completions) {
+        const completed = importedData.completions[dateKey];
+        if (!Array.isArray(completed) || completed.some(name => typeof name !== 'string')) {
+          throw new Error(`Invalid completion data for ${dateKey}: expected an array of habit names`);
+        }
+      }
+
+      for (const dateKey in counters) {
+        const dateCounters = counters[dateKey];
+        if (typeof dateCounters !== 'object' || dateCounters === null || Array.isArray(dateCounters)) {
+          throw new Error(`Invalid counter data for ${dateKey}: expected an object of habit counts`);
+        }
+        for (const habitName in dateCounters) {
+          if (!Number.isFinite(dateCounters[habitName])) {
+            throw new Error(`Invalid counter value for "${habitName}" on ${dateKey}`);
+          }
         }
       }
 
       this.habits = importedData.habits;
       this.completions = importedData.completions;
-      this.counters = importedData.counters || {};
+      this.counters = counters;
       this.saveData();
       
       return {
