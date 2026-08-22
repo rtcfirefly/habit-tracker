@@ -273,6 +273,28 @@ function runHabitTrackerTests(env) {
     calEl.className = 'calendar';
     assertReservedArea(env, measureReservedArea(window, { DataManager, CalendarView }, calEl),
                        `reserved area on this page at ${window.innerWidth}px`);
+
+    section('the manage dialog reserves one height for every tab');
+    {
+      const dm = fresh();
+      ['💧 Water', '🏃 Run', '🧘 Stretch'].forEach(n => dm.addHabit(n, 'good'));
+      dm.addHabit('🚬 Smoke', 'bad');
+      dm.addHabit('📖 Read', 'counter', 30);
+
+      const form = fixture('div');
+      const manager = new HabitManager(fixture('div'), form, dm);
+
+      const reserved = ['good', 'bad', 'neutral', 'counter'].map(type => {
+        manager.switchTab(type);
+        return form.querySelector('.tab-content-wrapper').style.minHeight;
+      });
+
+      ok('a height is actually reserved', parseFloat(reserved[0]) > 0, reserved[0] || '(unset)');
+      ok('every tab reserves the same height', new Set(reserved).size === 1, reserved.join(' / '));
+      ok('it matches the fullest tab, not the emptiest',
+         parseFloat(reserved[2]) === Math.max(...reserved.map(parseFloat)),
+         reserved.join(' / '));
+    }
   }
 }
 

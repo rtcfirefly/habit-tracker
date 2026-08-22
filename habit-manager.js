@@ -339,8 +339,49 @@ class HabitManager {
     });
     
     this.formElement.appendChild(contentWrapper);
+
+    this.reserveTallestTabHeight(contentWrapper);
   }
-  
+
+  // Every tab reserves the height of the fullest one. Without this the dialog
+  // resizes as you move between types - three good habits then none neutral -
+  // and the tab strip jumps out from under the pointer mid-click.
+  reserveTallestTabHeight(contentWrapper) {
+    // Cleared first, or the previous reservation stretches the active tab and
+    // the measurement ratchets upwards on every render
+    contentWrapper.style.minHeight = '';
+
+    let tallest = 0;
+
+    for (const content of [...contentWrapper.children]) {
+      if (content.classList.contains('active')) {
+        tallest = Math.max(tallest, content.scrollHeight || 0);
+        continue;
+      }
+
+      // Measured with the active styling, since that is what carries the
+      // padding, and lifted out of the flex flow so it neither disturbs the
+      // visible tab nor gets its height constrained by it
+      content.classList.add('active');
+      content.style.position = 'absolute';
+      content.style.visibility = 'hidden';
+      content.style.left = '0';
+      content.style.right = '0';
+      content.style.height = 'auto';
+
+      tallest = Math.max(tallest, content.scrollHeight || 0);
+
+      content.classList.remove('active');
+      content.style.position = '';
+      content.style.visibility = '';
+      content.style.left = '';
+      content.style.right = '';
+      content.style.height = '';
+    }
+
+    contentWrapper.style.minHeight = tallest ? `${tallest}px` : '';
+  }
+
   groupHabitsByType(habits) {
     return habits.reduce((groups, habit, index) => {
       const type = habit.type;
@@ -395,10 +436,10 @@ class HabitManager {
       content.classList.add('active');
     }
     
-    // Add "Add Habit" section for the active tab
-    if (type === this.activeTab) {
-      content.appendChild(this.createAddHabitSection(type));
-    }
+    // Rendered for every tab rather than only the active one, so that the
+    // height each tab reserves is measured with it included. Only the active
+    // tab is ever displayed, so the others cost nothing but a few nodes.
+    content.appendChild(this.createAddHabitSection(type));
     
     // Add habits for this type
     if (habitsWithIndices.length > 0) {

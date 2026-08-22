@@ -81,6 +81,7 @@ SHOTS = [
     ('modal-good-390',     390,  844, 'seed=1&open=manage&tab=good'),
     ('modal-good-320',     320,  760, 'seed=1&open=manage&tab=good'),
     ('modal-counter-390',  390,  844, 'seed=1&open=manage&tab=counter'),
+    ('modal-neutral-390',  390,  844, 'seed=1&open=manage&tab=neutral'),
     ('modal-empty-390',    390,  844, 'open=manage&tab=neutral'),
     ('modal-good-900',     900,  900, 'seed=1&open=manage&tab=good'),
     ('modal-good-390-dark', 390, 844, 'seed=1&open=manage&tab=good&theme=dark'),
@@ -141,10 +142,25 @@ def capture(name, width, height, query, scale=2):
     return True
 
 
+def dump_dom(query):
+    """Print the rendered DOM for one state, for checking what actually got
+    applied rather than inferring it from pixels."""
+    result = subprocess.run([
+        'chromium', '--headless', '--no-sandbox', '--disable-gpu',
+        '--disable-dev-shm-usage', '--virtual-time-budget=4000', '--dump-dom',
+        f'http://127.0.0.1:{PORT}/index.html?{query}',
+    ], capture_output=True, text=True, timeout=120)
+    print(result.stdout)
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     build_site()
     serve()
+
+    if sys.argv[1:2] == ['--dom']:
+        dump_dom(sys.argv[2] if len(sys.argv) > 2 else 'seed=1&open=manage&tab=good')
+        return 0
 
     wanted = sys.argv[1:]
     shots = [s for s in SHOTS if not wanted or s[0] in wanted]
