@@ -1253,8 +1253,6 @@ input, select, button {
 @media (max-width: 600px) {
   .calendar {
     gap: 0.2rem;
-    --habit-icon-size: 16px;
-    --day-padding-x: 0.1rem;
   }
 
   .day {
@@ -1273,13 +1271,24 @@ input, select, button {
   }
 }
 
-/* Narrow phones: shrink the icons again so 2x2 still fits seven boxes across */
-@media (max-width: 380px) {
+/* Reclaim the width from the space around the day boxes before taking it off
+   the icons inside them. Full-size icons still fit seven across down to about
+   364px this way, which covers every common phone in portrait. */
+@media (max-width: 460px) {
   body {
     margin: 0.5rem;
   }
 
   .calendar {
-    --habit-icon-size: 14px;
+    gap: 0.15rem;
+    --day-padding-x: 0.05rem;
+  }
+}
+
+/* Below this, two 20px icons plus a border no longer fit in a seventh of the
+   screen however tight the spacing, so the icons finally give way */
+@media (max-width: 370px) {
+  .calendar {
+    --habit-icon-size: 16px;
   }
 }

@@ -6,7 +6,9 @@
 set -e
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
-REPO="$(cd "$HERE/../.." && pwd)"
+# REPO_DIR points the run at another checkout, for comparing against an older
+# revision without disturbing this one
+REPO="${REPO_DIR:-$(cd "$HERE/../.." && pwd)}"
 OUT="${OUT_DIR:-$HERE/out}"
 IMAGE="${IMAGE:-habit-tracker-shots}"
 

@@ -68,6 +68,22 @@ DRIVE = """<script>
     var tabs = document.querySelectorAll('.habit-tab');
     if (tabs[order.indexOf(tab)]) tabs[order.indexOf(tab)].click();
   }
+  // Reports the rendered size of a selector back through the DOM, so before and
+  // after can be compared with real numbers instead of eyeballed
+  var measure = params.get('measure');
+  if (measure) {
+    var found = document.querySelectorAll(measure);
+    var el = found[0];
+    document.body.setAttribute('data-measured', JSON.stringify({
+      selector: measure,
+      viewport: window.innerWidth,
+      iconVar: getComputedStyle(document.querySelector('.calendar')).getPropertyValue('--habit-icon-size').trim(),
+      count: found.length,
+      width: el ? +el.getBoundingClientRect().width.toFixed(1) : null,
+      fontSize: el ? getComputedStyle(el).fontSize : null
+    }));
+  }
+
   var edit = params.get('edit');
   if (edit !== null && edit !== '') {
     var names = document.querySelectorAll('.habit-name-display');
@@ -78,6 +94,7 @@ DRIVE = """<script>
 
 SHOTS = [
     ('app-390',            390,  844, 'seed=1'),
+    ('app-320',            320,  760, 'seed=1'),
     ('modal-good-390',     390,  844, 'seed=1&open=manage&tab=good'),
     ('modal-good-320',     320,  760, 'seed=1&open=manage&tab=good'),
     ('modal-counter-390',  390,  844, 'seed=1&open=manage&tab=counter'),
@@ -142,12 +159,20 @@ def capture(name, width, height, query, scale=2):
     return True
 
 
-def dump_dom(query):
+def dump_dom(query, width=1024, height=900):
     """Print the rendered DOM for one state, for checking what actually got
     applied rather than inferring it from pixels."""
+    # Headless Chromium clamps the window to 500px wide, so a DOM dump below
+    # that silently reports 500px layout. Screenshots are unaffected - they
+    # resize the viewport for capture - and the iframes in test/index.html are
+    # the way to inspect narrower widths.
+    if width < 500:
+        print(f'shoot.py: --dom clamps to a 500px window; {width}px will report 500px. '
+              f'Use a screenshot or test/index.html instead.', file=sys.stderr)
     result = subprocess.run([
         'chromium', '--headless', '--no-sandbox', '--disable-gpu',
-        '--disable-dev-shm-usage', '--virtual-time-budget=4000', '--dump-dom',
+        '--disable-dev-shm-usage', f'--window-size={width},{height}',
+        '--virtual-time-budget=4000', '--dump-dom',
         f'http://127.0.0.1:{PORT}/index.html?{query}',
     ], capture_output=True, text=True, timeout=120)
     print(result.stdout)
@@ -159,7 +184,8 @@ def main():
     serve()
 
     if sys.argv[1:2] == ['--dom']:
-        dump_dom(sys.argv[2] if len(sys.argv) > 2 else 'seed=1&open=manage&tab=good')
+        dump_dom(sys.argv[2] if len(sys.argv) > 2 else 'seed=1&open=manage&tab=good',
+                 int(sys.argv[3]) if len(sys.argv) > 3 else 1024)
         return 0
 
     wanted = sys.argv[1:]

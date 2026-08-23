@@ -11,7 +11,7 @@
   const framesEl = document.getElementById('frames');
 
   // Each width is checked against the media query tier it should land in
-  const WIDTHS = [320, 360, 380, 381, 600, 601, 768, 1024];
+  const WIDTHS = [320, 360, 370, 371, 460, 461, 768, 1024];
 
   const STORAGE_KEYS = ['habits', 'completions', 'counters', 'theme'];
   const APP_ROOT = new URL('..', location.href).href;
@@ -227,7 +227,7 @@ window.__app = {
       // Keyed off the viewport the frame actually got, not the width asked for,
       // so a frame that came up narrower is judged against the right tier
       const v = measured.viewport;
-      const expected = v <= 380 ? 14 : v <= 600 ? 16 : 20;
+      const expected = v <= 370 ? 16 : 20;
       env.ok(`the ${expected}px icon tier is in force at ${v}px`, measured.icon === expected,
              `got ${measured.icon}px`);
     }
