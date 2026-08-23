@@ -13,6 +13,35 @@
   // Each width is checked against the media query tier it should land in
   const WIDTHS = [320, 360, 370, 371, 460, 461, 768, 1024];
 
+  // A worker registered by an earlier visit to the app serves cached copies of
+  // styles.css and the scripts, and its scope covers this page. That does not
+  // merely risk stale results - it silently invalidates every measurement, and
+  // the failure looks like a CSS bug rather than a cache. The app unregisters
+  // it on localhost, but that lives in script.js, which this page deliberately
+  // does not load. So clear it here and reload once before measuring anything.
+  const CLEARED = 'habit-tracker-tests-cleared-worker';
+
+  if (navigator.serviceWorker && navigator.serviceWorker.controller
+      && !sessionStorage.getItem(CLEARED)) {
+    sessionStorage.setItem(CLEARED, '1');
+    summaryEl.textContent = 'Clearing a stale service worker, then reloading…';
+
+    (async () => {
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map(r => r.unregister()));
+        if (window.caches) {
+          await Promise.all((await caches.keys()).map(key => caches.delete(key)));
+        }
+      } catch (err) {
+        /* reload anyway and let the warning below explain */
+      }
+      location.reload();
+    })();
+
+    return;
+  }
+
   const STORAGE_KEYS = ['habits', 'completions', 'counters', 'theme'];
   const APP_ROOT = new URL('..', location.href).href;
 
@@ -66,21 +95,20 @@
   // The app's own service worker caches styles.css and the scripts, and its
   // scope covers this page - so after editing them these results can quietly
   // describe the previous version.
+  // Only reachable if the clearing pass above ran and the worker survived it
   if (navigator.serviceWorker && navigator.serviceWorker.controller) {
     const clear = document.createElement('button');
-    clear.textContent = 'Unregister and reload';
-    clear.onclick = async () => {
-      const registrations = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(registrations.map(r => r.unregister()));
-      if (window.caches) await Promise.all((await caches.keys()).map(k => caches.delete(k)));
-      location.reload();
-    };
+    clear.textContent = 'Try again';
+    clear.onclick = () => { sessionStorage.removeItem(CLEARED); location.reload(); };
     notice(
-      'A service worker is serving this page, so styles.css and the app scripts may come from '
-      + 'its cache. If you have just edited them, these results may describe stale files.',
+      'A service worker is STILL serving this page after an attempt to clear it, so styles.css '
+      + 'and the scripts are probably coming from its cache. Treat every measurement below as '
+      + 'describing those cached files, not the ones on disk.',
       'warn',
       clear
     );
+  } else {
+    sessionStorage.removeItem(CLEARED);
   }
 
   let passed = 0;
