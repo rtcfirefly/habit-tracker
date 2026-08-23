@@ -109,7 +109,7 @@ SHOTS = [
 def build_site():
     if os.path.isdir(SITE):
         shutil.rmtree(SITE)
-    shutil.copytree(REPO, SITE, ignore=shutil.ignore_patterns('.git', 'tools', 'test'))
+    shutil.copytree(REPO, SITE, ignore=shutil.ignore_patterns('.git', 'tools'))
 
     import json
     seed = SEED.replace('%HABITS%', 'JSON.stringify(' + json.dumps(HABITS, ensure_ascii=False) + ')')
@@ -130,9 +130,9 @@ def serve():
     return server
 
 
-def capture(name, width, height, query, scale=2):
+def capture(name, width, height, query, path='index.html', budget=4000, scale=2):
     out = os.path.join(OUT, name + '.png')
-    url = f'http://127.0.0.1:{PORT}/index.html?{query}'
+    url = f'http://127.0.0.1:{PORT}/{path}?{query}'
 
     result = subprocess.run([
         'chromium',
@@ -146,7 +146,7 @@ def capture(name, width, height, query, scale=2):
         '--hide-scrollbars',
         f'--force-device-scale-factor={scale}',
         f'--window-size={width},{height}',
-        '--virtual-time-budget=4000',
+        f'--virtual-time-budget={budget}',
         f'--screenshot={out}',
         url,
     ], capture_output=True, text=True, timeout=120)
@@ -159,7 +159,7 @@ def capture(name, width, height, query, scale=2):
     return True
 
 
-def dump_dom(query, width=1024, height=900):
+def dump_dom(query, width=1024, height=900, path='index.html'):
     """Print the rendered DOM for one state, for checking what actually got
     applied rather than inferring it from pixels."""
     # Headless Chromium clamps the window to 500px wide, so a DOM dump below
@@ -172,10 +172,13 @@ def dump_dom(query, width=1024, height=900):
     result = subprocess.run([
         'chromium', '--headless', '--no-sandbox', '--disable-gpu',
         '--disable-dev-shm-usage', f'--window-size={width},{height}',
-        '--virtual-time-budget=4000', '--dump-dom',
-        f'http://127.0.0.1:{PORT}/index.html?{query}',
+        '--virtual-time-budget=20000', '--dump-dom', '--enable-logging=stderr', '--v=0',
+        f'http://127.0.0.1:{PORT}/{path}?{query}',
     ], capture_output=True, text=True, timeout=120)
     print(result.stdout)
+    if result.stderr.strip():
+        print('--- stderr ---', file=sys.stderr)
+        print(result.stderr, file=sys.stderr)
 
 
 def main():
@@ -185,7 +188,8 @@ def main():
 
     if sys.argv[1:2] == ['--dom']:
         dump_dom(sys.argv[2] if len(sys.argv) > 2 else 'seed=1&open=manage&tab=good',
-                 int(sys.argv[3]) if len(sys.argv) > 3 else 1024)
+                 int(sys.argv[3]) if len(sys.argv) > 3 else 1024,
+                 path=sys.argv[4] if len(sys.argv) > 4 else 'index.html')
         return 0
 
     wanted = sys.argv[1:]

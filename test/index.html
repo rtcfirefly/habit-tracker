@@ -33,11 +33,28 @@
     .hint { font-size: 0.85rem; opacity: 0.75; margin: 0.2rem 0 0; }
 
     ul.results { list-style: none; padding: 0; margin: 0; font-size: 0.9rem; }
-    ul.results li { padding: 0.15rem 0; display: flex; gap: 0.5rem; align-items: baseline; }
+    /* Deliberately not a flex row: a flex gap is visual only, so a copied
+       failure came out as "FAILthe assertion..." with nothing between them */
+    ul.results li { padding: 0.15rem 0; }
     ul.results li.pass { color: #2e7d32; }
     ul.results li.fail { color: #c62828; font-weight: bold; }
-    .mark { width: 1rem; flex: none; }
+
+    /* A pseudo-element, so the tick is not picked up when the page is copied
+       and cannot end up on the line below in a pasted excerpt */
+    ul.results li.pass::before { content: '\2713\00a0'; }
+
+    .mark {
+      display: inline-block;
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      background: #c62828;
+      color: #fff;
+      border-radius: 3px;
+      padding: 0.05rem 0.3rem;
+    }
     .detail { opacity: 0.85; font-weight: normal; }
+
+    .summary-actions { display: flex; gap: 0.5rem; flex: none; }
 
     #fixtures-toggle { margin-top: 1.5rem; font-size: 0.85rem; padding: 0.35rem 0.8rem; }
     #fixtures { margin-top: 1rem; }

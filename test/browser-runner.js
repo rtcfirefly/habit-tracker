@@ -114,11 +114,15 @@
   let passed = 0;
   let failed = 0;
   let currentList = null;
+  let currentSection = '';
+  const failures = [];
 
   const env = {
     layout: true,
 
     section(title) {
+      currentSection = title;
+
       const heading = document.createElement('h2');
       heading.className = 'section';
       heading.textContent = title;
@@ -131,20 +135,30 @@
 
     ok(name, condition, detail = '') {
       condition ? passed++ : failed++;
+      if (!condition) {
+        failures.push({ section: currentSection, name, detail });
+      }
 
       const item = document.createElement('li');
       item.className = condition ? 'pass' : 'fail';
 
-      const mark = document.createElement('span');
-      mark.className = 'mark';
-      mark.textContent = condition ? '✓' : '✕';
-      item.appendChild(mark);
-      item.appendChild(document.createTextNode(name));
+      // A pass is marked with a CSS pseudo-element, which does not come along
+      // when the page is copied; a failure carries the literal word, so a
+      // pasted excerpt can never be misread as belonging to its neighbour
+      if (!condition) {
+        const mark = document.createElement('span');
+        mark.className = 'mark';
+        mark.textContent = 'FAIL';
+        item.appendChild(mark);
+      }
+
+      // The leading space is real text, so it survives being copied
+      item.appendChild(document.createTextNode(condition ? name : ' ' + name));
 
       if (!condition && detail) {
         const why = document.createElement('span');
         why.className = 'detail';
-        why.textContent = ' → ' + detail;
+        why.textContent = ' → got ' + detail;
         item.appendChild(why);
       }
 
@@ -264,6 +278,13 @@ window.__app = {
   try {
     runHabitTrackerTests(env);
     await runViewportMatrix();
+
+    // ?fail=1 injects a failure so the failure rendering and the copy button
+    // can be exercised without waiting for something to actually break
+    if (new URLSearchParams(location.search).get('fail') === '1') {
+      env.section('deliberate failure (?fail=1)');
+      env.ok('this assertion fails on purpose', false, 'nothing is wrong');
+    }
   } catch (err) {
     failed++;
     notice('The run threw before finishing: ' + (err && err.stack ? err.stack : err), 'warn');
@@ -275,10 +296,84 @@ window.__app = {
   summaryEl.textContent = `${passed} passed, ${failed} failed — this window ${window.innerWidth}px`;
   document.title = `${failed ? '✕' : '✓'} ${passed}/${passed + failed} — Habit Tracker tests`;
 
+  function report() {
+    const controlled = navigator.serviceWorker && navigator.serviceWorker.controller;
+    const lines = [
+      `Habit Tracker tests: ${failed} failed, ${passed} passed`,
+      `window ${window.innerWidth}x${window.innerHeight} @${window.devicePixelRatio}x`,
+      `service worker: ${controlled ? 'CONTROLLING — these results describe cached files' : 'none'}`,
+      navigator.userAgent,
+      ''
+    ];
+
+    if (!failures.length) {
+      lines.push('No failures.');
+      return lines.join('\n');
+    }
+
+    let heading = null;
+    for (const failure of failures) {
+      if (failure.section !== heading) {
+        heading = failure.section;
+        lines.push(`[${heading}]`);
+      }
+      lines.push(`  FAIL: ${failure.name}`);
+      if (failure.detail) {
+        lines.push(`        got: ${failure.detail}`);
+      }
+    }
+
+    return lines.join('\n');
+  }
+
+  async function copyToClipboard(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (err) {
+      // Falls back for browsers or contexts where the async clipboard is refused
+      const field = document.createElement('textarea');
+      field.value = text;
+      field.style.position = 'fixed';
+      field.style.opacity = '0';
+      document.body.appendChild(field);
+      field.select();
+
+      let copied = false;
+      try {
+        copied = document.execCommand('copy');
+      } catch (fallbackError) {
+        copied = false;
+      }
+
+      document.body.removeChild(field);
+      return copied;
+    }
+  }
+
+  const buttons = document.createElement('span');
+  buttons.className = 'summary-actions';
+
+  const copy = document.createElement('button');
+  copy.textContent = failed ? `Copy ${failed} failure${failed === 1 ? '' : 's'}` : 'Copy summary';
+  copy.onclick = async () => {
+    const done = await copyToClipboard(report());
+    copy.textContent = done ? 'Copied' : 'Press Ctrl+C';
+    if (!done) {
+      console.log(report());
+    }
+    setTimeout(() => {
+      copy.textContent = failed ? `Copy ${failed} failure${failed === 1 ? '' : 's'}` : 'Copy summary';
+    }, 2000);
+  };
+  buttons.appendChild(copy);
+
   const rerun = document.createElement('button');
   rerun.textContent = 'Re-run';
   rerun.onclick = () => location.reload();
-  summaryEl.appendChild(rerun);
+  buttons.appendChild(rerun);
+
+  summaryEl.appendChild(buttons);
 
   fixturesEl.hidden = true;
   const toggle = document.getElementById('fixtures-toggle');
