@@ -379,7 +379,24 @@ class HabitManager {
       content.style.height = '';
     }
 
-    contentWrapper.style.minHeight = tallest ? `${tallest}px` : '';
+    // Never reserve more than the dialog can actually give. min-height does not
+    // yield to flex shrinking, so a reservation taller than the available space
+    // pushes the wrapper past the modal, which clips it - and the tab content
+    // then never gets a constrained height to scroll inside.
+    contentWrapper.style.minHeight = tallest ? `${Math.min(tallest, this.availableHeight(contentWrapper))}px` : '';
+  }
+
+  availableHeight(contentWrapper) {
+    const content = this.modalElement.querySelector('.modal-content');
+    if (!content) {
+      return Infinity;
+    }
+
+    // Everything in the dialog that is not the tab area: header, tabs, footer
+    const chrome = content.clientHeight - contentWrapper.clientHeight;
+    const margin = 32; // .modal padding, matching max-height: calc(100dvh - 2rem)
+
+    return Math.max(0, (window.innerHeight || 0) - margin - chrome);
   }
 
   groupHabitsByType(habits) {

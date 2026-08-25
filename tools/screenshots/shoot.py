@@ -39,8 +39,15 @@ SEED = """<script>
 (function () {
   var params = new URLSearchParams(location.search);
   if (!params.get('seed')) return;
+  var many = +params.get('many') || 0;
   localStorage.clear();
-  localStorage.setItem('habits', %HABITS%);
+  var habits = %HABITS%;
+  if (many) {
+    var extra = JSON.parse(habits);
+    for (var i = 1; i <= many; i++) extra.push({ name: '\u2b50 Extra habit ' + i, type: 'good' });
+    habits = JSON.stringify(extra);
+  }
+  localStorage.setItem('habits', habits);
   localStorage.setItem('completions', JSON.stringify((function () {
     var out = {}, today = new Date();
     for (var i = 0; i < 20; i++) {
@@ -79,9 +86,24 @@ DRIVE = """<script>
       viewport: window.innerWidth,
       iconVar: getComputedStyle(document.querySelector('.calendar')).getPropertyValue('--habit-icon-size').trim(),
       count: found.length,
+      top: el ? +el.getBoundingClientRect().top.toFixed(1) : null,
+      clientH: el ? el.clientHeight : null,
+      scrollH: el ? el.scrollHeight : null,
+      scrollable: el ? el.scrollHeight > el.clientHeight + 1 : null,
       width: el ? +el.getBoundingClientRect().width.toFixed(1) : null,
       fontSize: el ? getComputedStyle(el).fontSize : null
     }));
+  }
+
+  // Selects a specific day, so a shot can show the selected day and today as
+  // two different cells
+  var select = params.get('select');
+  if (select) {
+    var days = [].slice.call(document.querySelectorAll('.day:not(.other-month)'));
+    var target = days.filter(function (d) {
+      return d.firstChild && d.firstChild.textContent === select;
+    })[0];
+    if (target) target.click();
   }
 
   var edit = params.get('edit');
@@ -95,6 +117,11 @@ DRIVE = """<script>
 SHOTS = [
     ('app-390',            390,  844, 'seed=1'),
     ('app-320',            320,  760, 'seed=1'),
+    ('app-1400',          1400, 1000, 'seed=1'),
+    ('app-1400-sel',      1400, 1000, 'seed=1&select=12'),
+    ('app-390-sel',        390,  900, 'seed=1&select=12'),
+    ('app-390-dark',       390,  900, 'seed=1&theme=dark'),
+    ('app-390-dark-sel',   390,  900, 'seed=1&theme=dark&select=12'),
     ('modal-good-390',     390,  844, 'seed=1&open=manage&tab=good'),
     ('modal-good-320',     320,  760, 'seed=1&open=manage&tab=good'),
     ('modal-counter-390',  390,  844, 'seed=1&open=manage&tab=counter'),
@@ -130,7 +157,7 @@ def serve():
     return server
 
 
-def capture(name, width, height, query, path='index.html', budget=4000, scale=2):
+def capture(name, width, height, query, path='index.html', scale=2, budget=4000):
     out = os.path.join(OUT, name + '.png')
     url = f'http://127.0.0.1:{PORT}/{path}?{query}'
 
@@ -185,6 +212,24 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     build_site()
     serve()
+
+    # One-off shot without editing SHOTS:
+    #   run.sh --shot NAME WIDTH HEIGHT QUERY [PATH]
+    if sys.argv[1:2] == ['--shot']:
+        name, width, height, query = sys.argv[2], int(sys.argv[3]), int(sys.argv[4]), sys.argv[5]
+        path = sys.argv[6] if len(sys.argv) > 6 else 'index.html'
+        scale = int(sys.argv[7]) if len(sys.argv) > 7 else 2
+        return 0 if capture(name, width, height, query, path, scale=scale) else 1
+
+    # Many shots from one container start:
+    #   run.sh --shots WIDTH HEIGHT PATH SCALE NAME=QUERY [NAME=QUERY ...]
+    if sys.argv[1:2] == ['--shots']:
+        width, height, path, scale = int(sys.argv[2]), int(sys.argv[3]), sys.argv[4], int(sys.argv[5])
+        ok = True
+        for pair in sys.argv[6:]:
+            name, _, query = pair.partition('=')
+            ok = capture(name, width, height, query, path, scale=scale) and ok
+        return 0 if ok else 1
 
     if sys.argv[1:2] == ['--dom']:
         dump_dom(sys.argv[2] if len(sys.argv) > 2 else 'seed=1&open=manage&tab=good',

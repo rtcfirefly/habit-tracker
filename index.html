@@ -30,13 +30,9 @@
   <div class="calendar" id="calendar"></div>
   <div class="habits-list" id="habits-list"></div>
   <div class="modal" id="manage-modal">
-    <div class="modal-content" role="dialog" aria-modal="true" aria-label="Manage habits">
-      <!--
-        No visible heading: the tabs below already read Good / Bad / Neutral /
-        Counter, so a "Manage Habits" title only restates them. The dialog keeps
-        its accessible name through aria-label instead.
-      -->
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="manage-modal-title">
       <div class="modal-header">
+        <h2 id="manage-modal-title">Habit Tracker</h2>
         <button onclick="closeManageModal()" title="Close" aria-label="Close">✕</button>
       </div>
       <div class="modal-body">
@@ -47,31 +43,26 @@
           calendar. This section sits outside #manage-form, which renderForm()
           clears on every change.
         -->
-        <div class="data-section">
-          <button id="export-button" class="data-row" title="Export Data">
-            <span class="data-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
-            Export data
-            <span class="data-hint">Download a backup</span>
-          </button>
-          <button id="import-button" class="data-row" title="Import Data">
-            <span class="data-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span>
-            Import data
-            <span class="data-hint">Replaces everything</span>
-          </button>
-          <!--
-            Both states are in the markup and swapped by CSS on .dark-mode, so
-            ThemeManager only has to toggle that one class.
-          -->
-          <button id="theme-toggle-button" class="data-row" title="Toggle Theme">
-            <span class="data-icon">
+        <!--
+          One row, not three: these are occasional actions and a labelled row
+          each spent more of the dialog on them than they are worth. The titles
+          carry the wording the labels used to.
+        -->
+        <div class="modal-footer">
+          <div class="footer-actions">
+            <button id="export-button" class="footer-action" title="Export data — downloads a backup" aria-label="Export data">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </button>
+            <button id="import-button" class="footer-action" title="Import data — replaces everything" aria-label="Import data">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </button>
+            <button id="theme-toggle-button" class="footer-action" title="Switch between light and dark" aria-label="Switch appearance">
               <svg class="when-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
               <svg class="when-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/></svg>
-            </span>
-            Appearance
-            <span class="data-hint"><span class="when-light">Light</span><span class="when-dark">Dark</span></span>
-          </button>
+            </button>
+          </div>
+          <span class="modal-version">v7</span>
         </div>
-        <div class="modal-version">v7</div>
       </div>
     </div>
   </div>

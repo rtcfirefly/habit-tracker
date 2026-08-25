@@ -36,7 +36,7 @@ if [ "${#html_versions[@]}" -ne 1 ] || [ "${#sw_versions[@]}" -ne 1 ]; then
 fi
 
 # The version shown in the modal footer is the same number, so it cannot drift
-shown=$(grep -oE '<div class="modal-version">v[0-9]+</div>' index.html | grep -oE '[0-9]+')
+shown=$(grep -oE 'class="modal-version">v[0-9]+<' index.html | grep -oE '[0-9]+')
 if [ -z "$shown" ]; then
   echo "no version shown in the modal footer"
   fail=1

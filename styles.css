@@ -55,8 +55,7 @@ input, select, button {
 
 /* Every icon in the chrome is drawn at the same weight */
 .header-action svg,
-.calendar-header button svg,
-.data-icon svg {
+.calendar-header button svg {
   width: 19px;
   height: 19px;
   fill: none;
@@ -436,16 +435,18 @@ input, select, button {
 
 .modal-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
-  padding: 0.6rem 0.7rem;
+  padding: 0.55rem 0.7rem 0.55rem 1.1rem;
   flex-shrink: 0;
   border-bottom: 1px solid #e0e0e0;
 }
 
 .modal-header h2 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
   color: #333;
 }
 
@@ -815,60 +816,59 @@ input, select, button {
   color: white;
 }
 
-/* === DATA SECTION (foot of the manage modal) === */
-.data-section {
+/* === MODAL FOOTER === */
+.modal-footer {
   flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   border-top: 1px solid #e0e0e0;
-  padding: 0.55rem 1rem 0.35rem;
+  padding: 0.4rem 0.75rem 0.4rem 0.55rem;
+}
+
+.footer-actions {
+  display: flex;
+  gap: 0.1rem;
+}
+
+.footer-action {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  color: #6b7280;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.footer-action:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #333;
+}
+
+.footer-action svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .modal-version {
-  flex: none;
-  padding: 0 1rem 0.6rem;
-  text-align: right;
+  margin-left: auto;
   font-size: 0.65rem;
   letter-spacing: 0.03em;
   color: #b0b4ba;
 }
 
-.dark-mode .modal-version {
-  color: #6e7377;
-}
-
-.data-row {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  width: 100%;
-  padding: 0.55rem 0.5rem;
-  border: none;
-  background: transparent;
-  border-radius: 10px;
-  font: inherit;
-  font-size: 0.9rem;
-  color: inherit;
-  text-align: left;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.data-row:hover {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.data-icon {
-  flex: none;
-  display: inline-flex;
-  color: #6b7280;
-}
-
-.data-hint {
-  margin-left: auto;
-  font-size: 0.75rem;
-  color: #9aa0a6;
-}
-
-/* The appearance row carries both states; the class on body picks one */
+/* The appearance button carries both icons; the class on body picks one */
 .when-dark {
   display: none;
 }
@@ -879,23 +879,6 @@ input, select, button {
 
 .dark-mode .when-dark {
   display: inline-flex;
-}
-
-.data-hint .when-dark,
-.data-hint .when-light {
-  display: none;
-}
-
-.data-hint .when-light {
-  display: inline;
-}
-
-.dark-mode .data-hint .when-light {
-  display: none;
-}
-
-.dark-mode .data-hint .when-dark {
-  display: inline;
 }
 
 /* === ANIMATIONS === */
@@ -1401,20 +1384,21 @@ input, select, button {
   color: #8a8f98;
 }
 
-.dark-mode .data-section {
+.dark-mode .modal-footer {
   border-top-color: #555;
 }
 
-.dark-mode .data-row {
+.dark-mode .footer-action {
+  color: #9aa0a6;
+}
+
+.dark-mode .footer-action:hover {
+  background: rgba(255, 255, 255, 0.09);
   color: #eee;
 }
 
-.dark-mode .data-row:hover {
-  background: rgba(255, 255, 255, 0.07);
-}
-
-.dark-mode .data-icon {
-  color: #9aa0a6;
+.dark-mode .modal-version {
+  color: #6e7377;
 }
 
 /* === RESPONSIVE DESIGN === */
