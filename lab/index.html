@@ -301,7 +301,10 @@
   // A tried probe rewrites its own line, so a pasted report never shows both
   // "detected only" and a result for the same thing
   function replaceLine(name, text) {
-    const at = lines.findIndex(line => line.includes('  ' + name) && !line.includes('TRIED'));
+    // Match on the name alone. Excluding lines that already say TRIED meant a
+    // second press found nothing to replace and appended a duplicate to the end
+    // of the report, outside its section.
+    const at = lines.findIndex(line => line.includes('  ' + name));
     if (at === -1) { lines.push(text); } else { lines[at] = text; }
   }
 
