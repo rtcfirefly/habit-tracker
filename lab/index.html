@@ -5,44 +5,125 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Habit Tracker — API lab</title>
 <style>
-  :root { color-scheme: light dark; }
+  /* One set of tokens per theme rather than opacity: dimming with opacity
+     compounds on a dark background and was what made this hard to read. */
+  :root {
+    color-scheme: light dark;
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --text: #17191c;
+    --muted: #565b63;
+    --faint: #6b7178;
+    --line: #e3e5e8;
+    --btn-bg: #ffffff;
+    --btn-border: #d2d5d9;
+    --btn-hover: #f1f2f4;
+    --yes-bg: #d7f0dc;
+    --yes-fg: #10592a;
+    --no-bg: #f8dada;
+    --no-fg: #8a1f1f;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171a;
+      --surface: #1e2126;
+      --text: #e9ecef;
+      --muted: #b2b8c0;
+      --faint: #9aa1aa;
+      --line: #2e333a;
+      --btn-bg: #262a30;
+      --btn-border: #3b414a;
+      --btn-hover: #303640;
+      --yes-bg: #17371f;
+      --yes-fg: #8ad9a0;
+      --no-bg: #3f1e1e;
+      --no-fg: #f0a6a6;
+    }
+  }
+
   body {
-    margin: 0; padding: 1rem 1rem 3rem;
-    font-family: system-ui, sans-serif; font-size: 15px; line-height: 1.45;
-    background: #fafafa; color: #1a1a1a;
+    margin: 0;
+    padding: 1rem 1rem 3rem;
+    font-family: system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.45;
+    background: var(--bg);
+    color: var(--text);
   }
-  @media (prefers-color-scheme: dark) {
-    body { background: #161616; color: #e8e8e8; }
-    .card { background: #222; border-color: #333; }
-    .name small { color: #8a8f98; }
-    button { background: #2c2c2c; color: #e8e8e8; border-color: #444; }
-    pre { background: #1c1c1c; border-color: #333; }
+
+  h1 { font-size: 1.15rem; margin: 0 0 .25rem; }
+
+  p.intro { margin: 0 0 1.1rem; font-size: .85rem; color: var(--muted); }
+  p.intro strong { color: var(--text); }
+
+  h2 {
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-weight: 700;
+    color: var(--faint);
+    margin: 1.5rem 0 .45rem;
   }
-  h1 { font-size: 1.15rem; margin: 0 0 .2rem; }
-  p.intro { margin: 0 0 1rem; font-size: .85rem; opacity: .75; }
-  h2 { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em;
-       opacity: .55; margin: 1.4rem 0 .4rem; }
-  .card { background: #fff; border: 1px solid #e4e4e4; border-radius: 12px; overflow: hidden; }
-  .row { display: flex; align-items: center; gap: .6rem; padding: .6rem .8rem; }
-  .row + .row { border-top: 1px solid rgba(128,128,128,.18); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .row { display: flex; align-items: center; gap: .6rem; padding: .65rem .8rem; }
+  .row + .row { border-top: 1px solid var(--line); }
+
   .name { flex: 1; min-width: 0; }
-  .name small { display: block; font-size: .72rem; color: #6b7280; }
-  .flag { flex: none; font-size: .72rem; font-weight: 700; letter-spacing: .03em;
-          padding: .15rem .45rem; border-radius: 5px; }
-  .yes { background: #d8f2dd; color: #14602a; }
-  .no  { background: #f2dcdc; color: #8a1f1f; }
-  @media (prefers-color-scheme: dark) {
-    .yes { background: #16351f; color: #8fd6a3; }
-    .no  { background: #3a1c1c; color: #e39a9a; }
+  .name small { display: block; font-size: .74rem; color: var(--muted); margin-top: .1rem; }
+
+  .flag {
+    flex: none;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    padding: .18rem .45rem;
+    border-radius: 5px;
   }
-  button { font: inherit; font-size: .8rem; padding: .3rem .6rem; border-radius: 8px;
-           border: 1px solid #d4d4d4; background: #fff; cursor: pointer; flex: none; }
-  button:hover { filter: brightness(.96); }
-  .result { font-size: .75rem; padding: 0 .8rem .6rem; opacity: .8; white-space: pre-wrap;
-            word-break: break-word; }
-  pre { font-size: .7rem; background: #fff; border: 1px solid #e4e4e4; border-radius: 10px;
-        padding: .7rem; overflow-x: auto; margin: .6rem 0 0; }
-  .actions { display: flex; gap: .5rem; margin-top: 1rem; }
+  .yes { background: var(--yes-bg); color: var(--yes-fg); }
+  .no  { background: var(--no-bg);  color: var(--no-fg); }
+
+  button {
+    font: inherit;
+    font-size: .8rem;
+    padding: .32rem .65rem;
+    border-radius: 8px;
+    border: 1px solid var(--btn-border);
+    background: var(--btn-bg);
+    color: var(--text);
+    cursor: pointer;
+    flex: none;
+  }
+  button:hover { background: var(--btn-hover); }
+
+  .result {
+    font-size: .76rem;
+    padding: 0 .8rem .65rem;
+    color: var(--muted);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .result:empty { display: none; }
+
+  pre {
+    font-size: .7rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: .7rem;
+    overflow-x: auto;
+    margin: .7rem 0 0;
+    color: var(--muted);
+  }
+
+  .actions { display: flex; gap: .5rem; margin-top: 1.1rem; }
 </style>
 </head>
 <body>
