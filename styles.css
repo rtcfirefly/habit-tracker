@@ -474,25 +474,36 @@ input, select, button {
   overflow: hidden;
 }
 
+/* Was the ✕ character in a grey chip. A text glyph is not reliably centred in
+   its em box, which read as a slightly-off X, and it was the last control not
+   drawn as a stroked icon. An SVG is centred by construction. */
 .modal-header button {
-  background: #f0f0f0;
-  color: #666;
-  border: 1px solid #ddd;
-  padding: 0.5rem;
-  border-radius: 50%;
-  font-size: 1.2rem;
-  cursor: pointer;
   width: 36px;
   height: 36px;
-  display: flex;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  color: #6b7280;
+  cursor: pointer;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
 
 .modal-header button:hover {
-  background: #e0e0e0;
-  transform: scale(1.1);
+  background: rgba(0, 0, 0, 0.06);
+  color: #333;
+}
+
+.modal-header button svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
 }
 
 /* === MANAGE HABITS TABS === */
@@ -1367,13 +1378,12 @@ input, select, button {
 }
 
 .dark-mode .modal-header button {
-  background: #4a4a4a;
-  color: #ccc;
-  border-color: #666;
+  color: #9aa0a6;
 }
 
 .dark-mode .modal-header button:hover {
-  background: #5a5a5a;
+  background: rgba(255, 255, 255, 0.09);
+  color: #eee;
 }
 
 .dark-mode .header-action,

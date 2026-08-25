@@ -7,24 +7,24 @@
 // request for the next, which is what makes a stale stylesheet against a
 // fresh index.html impossible - the failure that made this necessary.
 // tools/check-sw-cache.sh enforces that they agree.
-const CACHE_NAME = 'habit-tracker-v8';
+const CACHE_NAME = 'habit-tracker-v9';
 
 const ASSETS = [
   './',
   './index.html',
-  './styles.css?v=8',
+  './styles.css?v=9',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
   './icon-maskable-512.png',
-  './emoji-utils.js?v=8',
-  './data-manager.js?v=8',
-  './calendar-view.js?v=8',
-  './habits-view.js?v=8',
-  './habit-manager.js?v=8',
-  './theme-manager.js?v=8',
-  './import-export-manager.js?v=8',
-  './script.js?v=8'
+  './emoji-utils.js?v=9',
+  './data-manager.js?v=9',
+  './calendar-view.js?v=9',
+  './habits-view.js?v=9',
+  './habit-manager.js?v=9',
+  './theme-manager.js?v=9',
+  './import-export-manager.js?v=9',
+  './script.js?v=9'
 ];
 
 self.addEventListener('install', event => {
