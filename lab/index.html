@@ -184,7 +184,7 @@
           return 'the share sheet accepted a file';
         } },
       { name: 'Remembered file handle',
-        why: 'Whether a picked file can be rewritten later without asking again — reload after Try',
+        why: 'Rewritable later without asking again? Chrome persists this for installed apps, so a plain tab may say prompt where the installed app says granted — reload after Try',
         has: () => typeof window.showSaveFilePicker === 'function' &&
                    typeof indexedDB !== 'undefined',
         status: async () => {
@@ -194,7 +194,11 @@
           if (state === 'granted') {
             return 'a handle from a previous visit still has permission — silent rewrites work';
           }
-          return `a handle survived but permission is "${state}" — a tap would be needed each session`;
+          const installed = window.matchMedia &&
+                            window.matchMedia('(display-mode: standalone)').matches;
+          return `a handle survived but permission is "${state}"` +
+            (installed ? ' — a tap would be needed each session, even installed'
+                       : ' — but this is a browser tab; Chrome persists these for installed apps, so try again from the installed app');
         },
         try: async () => {
           const handle = await window.showSaveFilePicker({

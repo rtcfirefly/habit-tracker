@@ -5,10 +5,14 @@
 // makes it real off-device backup - the thing export has always required a
 // deliberate tap for.
 //
-// It is not silent, and pretending otherwise would be the worst version of this
-// feature. Chrome hands the handle back after a reload with permission set to
-// "prompt", so each session needs one tap to resume. A backup that has quietly
-// stopped is worse than none, so the state is always shown.
+// Whether it needs a tap each session depends on how the app is opened. Chrome
+// persists these permissions automatically for installed apps, so in the
+// installed PWA a granted handle stays granted; in an ordinary browser tab it
+// comes back as "prompt" and needs one tap to resume. Measured in a tab first,
+// which is how this was initially mistaken for always needing a tap.
+//
+// Either way a backup that has quietly stopped is worse than none, so the state
+// is always shown rather than assumed.
 
 const HANDLE_DB = 'habit-tracker-file-backup';
 const HANDLE_KEY = 'handle';
@@ -32,7 +36,12 @@ class FileBackup {
   }
 
   // Pure, so the wording can be tested without a browser
-  static describe(state, lastWritten, now = Date.now()) {
+  static get standalone() {
+    return typeof window !== 'undefined' && window.matchMedia &&
+           window.matchMedia('(display-mode: standalone)').matches;
+  }
+
+  static describe(state, lastWritten, now = Date.now(), standalone = FileBackup.standalone) {
     if (state === 'unsupported') {
       return { label: 'Not available in this browser', action: null };
     }
@@ -40,7 +49,13 @@ class FileBackup {
       return { label: 'Not backing up to a file', action: 'Choose file' };
     }
     if (state === 'needs-tap') {
-      return { label: 'Paused — this browser asks again each session', action: 'Resume' };
+      // Installed apps keep the permission; a plain tab does not, and saying so
+      // turns a recurring annoyance into something the person can act on
+      return {
+        label: standalone ? 'Paused — tap to resume'
+                          : 'Paused — install the app to keep this on',
+        action: 'Resume'
+      };
     }
     if (state === 'error') {
       return { label: 'Last write failed', action: 'Choose file' };
