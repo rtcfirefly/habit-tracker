@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Habit Tracker — API lab</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    margin: 0; padding: 1rem 1rem 3rem;
+    font-family: system-ui, sans-serif; font-size: 15px; line-height: 1.45;
+    background: #fafafa; color: #1a1a1a;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background: #161616; color: #e8e8e8; }
+    .card { background: #222; border-color: #333; }
+    .name small { color: #8a8f98; }
+    button { background: #2c2c2c; color: #e8e8e8; border-color: #444; }
+    pre { background: #1c1c1c; border-color: #333; }
+  }
+  h1 { font-size: 1.15rem; margin: 0 0 .2rem; }
+  p.intro { margin: 0 0 1rem; font-size: .85rem; opacity: .75; }
+  h2 { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em;
+       opacity: .55; margin: 1.4rem 0 .4rem; }
+  .card { background: #fff; border: 1px solid #e4e4e4; border-radius: 12px; overflow: hidden; }
+  .row { display: flex; align-items: center; gap: .6rem; padding: .6rem .8rem; }
+  .row + .row { border-top: 1px solid rgba(128,128,128,.18); }
+  .name { flex: 1; min-width: 0; }
+  .name small { display: block; font-size: .72rem; color: #6b7280; }
+  .flag { flex: none; font-size: .72rem; font-weight: 700; letter-spacing: .03em;
+          padding: .15rem .45rem; border-radius: 5px; }
+  .yes { background: #d8f2dd; color: #14602a; }
+  .no  { background: #f2dcdc; color: #8a1f1f; }
+  @media (prefers-color-scheme: dark) {
+    .yes { background: #16351f; color: #8fd6a3; }
+    .no  { background: #3a1c1c; color: #e39a9a; }
+  }
+  button { font: inherit; font-size: .8rem; padding: .3rem .6rem; border-radius: 8px;
+           border: 1px solid #d4d4d4; background: #fff; cursor: pointer; flex: none; }
+  button:hover { filter: brightness(.96); }
+  .result { font-size: .75rem; padding: 0 .8rem .6rem; opacity: .8; white-space: pre-wrap;
+            word-break: break-word; }
+  pre { font-size: .7rem; background: #fff; border: 1px solid #e4e4e4; border-radius: 10px;
+        padding: .7rem; overflow-x: auto; margin: .6rem 0 0; }
+  .actions { display: flex; gap: .5rem; margin-top: 1rem; }
+</style>
+</head>
+<body>
+  <h1>API lab</h1>
+  <p class="intro">
+    What this browser actually supports, for deciding how habit data could leave the
+    device. Detection alone is not enough — an API can exist and still refuse, so the
+    ones that need a tap have a button that really tries it.
+  </p>
+
+  <div id="report"></div>
+
+  <div class="actions">
+    <button id="copy">Copy report</button>
+    <button id="rerun">Re-run</button>
+  </div>
+  <pre id="agent"></pre>
+
+<script>
+(function () {
+  const report = document.getElementById('report');
+
+  // Each probe: what it is, why it matters here, how to detect it, and where a
+  // real attempt tells you more than detection, how to try it.
+  const GROUPS = [
+    ['Off-device backup', [
+      { name: 'showSaveFilePicker',
+        why: 'Write straight into a file you pick once — a synced folder makes it a real backup',
+        has: () => typeof window.showSaveFilePicker === 'function',
+        try: async () => {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: 'habit-tracker-lab.json',
+            types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write('{"lab":true}');
+          await writable.close();
+          return 'wrote a file, and the handle can be stored for silent rewrites';
+        } },
+      { name: 'showOpenFilePicker',
+        why: 'Re-open the same file later without asking again',
+        has: () => typeof window.showOpenFilePicker === 'function' },
+      { name: 'showDirectoryPicker',
+        why: 'Pick a folder once and manage several files in it',
+        has: () => typeof window.showDirectoryPicker === 'function' },
+      { name: 'navigator.share (files)',
+        why: 'One tap to Drive, Files, or send to yourself — no account for the app to hold',
+        has: () => !!(navigator.canShare && navigator.canShare({
+          files: [new File(['{}'], 'a.json', { type: 'application/json' })] })),
+        try: async () => {
+          await navigator.share({
+            files: [new File(['{"lab":true}'], 'habit-tracker-lab.json',
+                             { type: 'application/json' })],
+            title: 'Habit Tracker backup'
+          });
+          return 'the share sheet accepted a file';
+        } }
+    ]],
+    ['Keeping what is here', [
+      { name: 'storage.persist()',
+        why: 'Stops the browser evicting the data on its own. Never stops a person clearing it',
+        has: () => !!(navigator.storage && navigator.storage.persist),
+        try: async () => {
+          const already = await navigator.storage.persisted();
+          const granted = already || await navigator.storage.persist();
+          return already ? 'already persistent'
+                         : (granted ? 'granted just now' : 'refused — storage stays best effort');
+        } },
+      { name: 'storage.estimate()',
+        why: 'How much room there is before eviction becomes likely',
+        has: () => !!(navigator.storage && navigator.storage.estimate),
+        try: async () => {
+          const { usage, quota } = await navigator.storage.estimate();
+          const mb = n => (n / 1048576).toFixed(1) + 'MB';
+          return `${mb(usage)} used of ${mb(quota)} (${(usage / quota * 100).toFixed(2)}%)`;
+        } },
+      { name: 'IndexedDB', why: 'Larger and better structured than localStorage',
+        has: () => typeof indexedDB !== 'undefined' },
+      { name: 'Origin private file system',
+        why: 'Private files, fast, but still site storage — cleared with everything else',
+        has: () => !!(navigator.storage && navigator.storage.getDirectory) }
+    ]],
+    ['Doing it without being asked', [
+      { name: 'Service worker', why: 'Already used for offline',
+        has: () => 'serviceWorker' in navigator },
+      { name: 'Background sync',
+        why: 'Retry an upload once connectivity returns',
+        has: () => !!(window.SyncManager) },
+      { name: 'Periodic background sync',
+        why: 'The only route to a backup that happens without opening the app',
+        has: () => !!(window.ServiceWorkerRegistration &&
+                      'periodicSync' in window.ServiceWorkerRegistration.prototype) },
+      { name: 'Notifications',
+        why: 'Nudge to export, if automation is not available',
+        has: () => 'Notification' in window }
+    ]],
+    ['If data leaves the device', [
+      { name: 'crypto.subtle',
+        why: 'Encrypt a backup before it goes anywhere the app does not control',
+        has: () => !!(window.crypto && window.crypto.subtle),
+        try: async () => {
+          const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 },
+                                                      true, ['encrypt', 'decrypt']);
+          const iv = crypto.getRandomValues(new Uint8Array(12));
+          const data = new TextEncoder().encode('{"lab":true}');
+          const sealed = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
+          const back = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, sealed);
+          return new TextDecoder().decode(back) === '{"lab":true}'
+            ? 'AES-GCM round-trip works' : 'round-trip did not match';
+        } },
+      { name: 'Clipboard write',
+        why: 'Paste a backup somewhere yourself, no file involved',
+        has: () => !!(navigator.clipboard && navigator.clipboard.writeText) }
+    ]]
+  ];
+
+  const lines = [];
+
+  function render() {
+    report.textContent = '';
+    lines.length = 0;
+    lines.push('Habit Tracker API lab', location.href, navigator.userAgent, '');
+
+    for (const [heading, probes] of GROUPS) {
+      const h = document.createElement('h2');
+      h.textContent = heading;
+      report.appendChild(h);
+      lines.push('[' + heading + ']');
+
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      for (const probe of probes) {
+        let supported = false;
+        try { supported = !!probe.has(); } catch (e) { supported = false; }
+
+        const row = document.createElement('div');
+        row.className = 'row';
+
+        const name = document.createElement('div');
+        name.className = 'name';
+        name.textContent = probe.name;
+        const why = document.createElement('small');
+        why.textContent = probe.why;
+        name.appendChild(why);
+
+        const flag = document.createElement('span');
+        flag.className = 'flag ' + (supported ? 'yes' : 'no');
+        flag.textContent = supported ? 'YES' : 'NO';
+
+        row.appendChild(name);
+        row.appendChild(flag);
+
+        const out = document.createElement('div');
+        out.className = 'result';
+
+        if (probe.try && supported) {
+          const button = document.createElement('button');
+          button.textContent = 'Try';
+          button.onclick = async () => {
+            out.textContent = 'trying…';
+            try {
+              const message = await probe.try();
+              out.textContent = '✓ ' + message;
+              lines.push('  ' + probe.name + ' TRIED: ' + message);
+            } catch (error) {
+              // A refusal is a result: it is what the API does on this device
+              out.textContent = '✕ ' + (error && error.name ? error.name + ': ' : '') +
+                                (error && error.message ? error.message : String(error));
+              lines.push('  ' + probe.name + ' TRIED: failed — ' + out.textContent.slice(2));
+            }
+          };
+          row.appendChild(button);
+        }
+
+        card.appendChild(row);
+        card.appendChild(out);
+        lines.push('  ' + (supported ? 'yes' : 'no ') + '  ' + probe.name);
+      }
+
+      report.appendChild(card);
+      lines.push('');
+    }
+
+    document.getElementById('agent').textContent = navigator.userAgent;
+  }
+
+  document.getElementById('rerun').onclick = render;
+  document.getElementById('copy').onclick = async () => {
+    const text = lines.join('\n');
+    try {
+      await navigator.clipboard.writeText(text);
+      document.getElementById('copy').textContent = 'Copied';
+    } catch (error) {
+      console.log(text);
+      document.getElementById('copy').textContent = 'See console';
+    }
+    setTimeout(() => { document.getElementById('copy').textContent = 'Copy report'; }, 2000);
+  };
+
+  render();
+})();
+</script>
+</body>
+</html>
