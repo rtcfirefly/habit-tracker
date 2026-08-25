@@ -8,7 +8,10 @@ this pulls in no dependency and stays reproducible. Run from the repo root:
     python3 tools/make-icons.py
 
 Writes icon-192.png, icon-512.png and icon-maskable-512.png. icon.png stays as
-the master artwork and is not shipped to the browser.
+the master artwork and is not shipped to the browser: nothing references it, not
+the manifest, not index.html, not the service worker. It is 1.1MB and only this
+script reads it, so it looks like dead weight and is not - deleting it would
+leave the icons unreproducible.
 """
 
 import struct

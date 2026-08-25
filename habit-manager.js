@@ -316,7 +316,9 @@ class HabitManager {
     const habits = this.dataManager.getHabits();
     const groupedHabits = this.groupHabitsByType(habits);
     
-    const typeOrder = ['good', 'bad', 'neutral', 'counter'];
+    // Same order as the habit buttons under the calendar: good and bad at
+    // opposite ends with neutral between, counters last
+    const typeOrder = ['good', 'neutral', 'bad', 'counter'];
     const typeLabels = {
       good: 'Good Habits',
       bad: 'Bad Habits', 
