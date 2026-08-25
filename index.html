@@ -8,7 +8,7 @@
        ThemeManager, since the theme is a manual choice rather than a media
        query and the manifest can only carry one fixed colour. -->
   <meta name="theme-color" content="#f5f5f5">
-  <link rel="stylesheet" href="styles.css?v=1.1.0">
+  <link rel="stylesheet" href="styles.css?v=1.1.1">
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
@@ -62,6 +62,17 @@
             <span>Restore a backup</span>
           </div>
           <p class="restore-storage" id="restore-storage"></p>
+          <!--
+            Easy to assume a backup survives clearing the browser. It does not:
+            these sit in the same site storage as the habits, so the two go
+            together. Say so where someone is looking at the list and deciding
+            how safe they are.
+          -->
+          <p class="restore-caveat">
+            These live in this site's storage. Clearing site data deletes them
+            along with your habits — <button type="button" class="restore-export-link"
+            id="restore-export">export a file</button> for a copy that survives that.
+          </p>
           <div class="restore-list" id="restore-list"></div>
         </div>
         <div class="modal-footer">
@@ -80,19 +91,19 @@
               <svg class="when-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/></svg>
             </button>
           </div>
-          <span class="modal-version">v1.1.0</span>
+          <span class="modal-version">v1.1.1</span>
         </div>
       </div>
     </div>
   </div>
-<script src="emoji-utils.js?v=1.1.0"></script>
-<script src="data-manager.js?v=1.1.0"></script>
-<script src="backup-manager.js?v=1.1.0"></script>
-<script src="calendar-view.js?v=1.1.0"></script>
-<script src="habits-view.js?v=1.1.0"></script>
-<script src="habit-manager.js?v=1.1.0"></script>
-<script src="theme-manager.js?v=1.1.0"></script>
-<script src="import-export-manager.js?v=1.1.0"></script>
-<script src="script.js?v=1.1.0"></script>
+<script src="emoji-utils.js?v=1.1.1"></script>
+<script src="data-manager.js?v=1.1.1"></script>
+<script src="backup-manager.js?v=1.1.1"></script>
+<script src="calendar-view.js?v=1.1.1"></script>
+<script src="habits-view.js?v=1.1.1"></script>
+<script src="habit-manager.js?v=1.1.1"></script>
+<script src="theme-manager.js?v=1.1.1"></script>
+<script src="import-export-manager.js?v=1.1.1"></script>
+<script src="script.js?v=1.1.1"></script>
 </body>
 </html>

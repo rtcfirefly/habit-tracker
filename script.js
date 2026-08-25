@@ -107,6 +107,12 @@ function showRestorePanel(show) {
   }
 }
 
+// The caveat points at export as the copy that survives a clear, so let it act
+document.getElementById('restore-export').onclick = () => {
+  habitManager.close();
+  importExportManager.exportData();
+};
+
 document.getElementById('restore-button').onclick = () => showRestorePanel(true);
 document.getElementById('restore-back').onclick = () => showRestorePanel(false);
 
