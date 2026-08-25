@@ -469,6 +469,12 @@ input, select, button {
   min-height: 0;
 }
 
+/* An author display rule beats the hidden attribute's UA display:none, so
+   hiding this to show the restore panel needs saying explicitly */
+#manage-form[hidden] {
+  display: none;
+}
+
 #manage-form {
   flex: 1;
   display: flex;
@@ -835,6 +841,123 @@ input, select, button {
 .delete-btn:focus-visible {
   background: #F44336;
   color: white;
+}
+
+/* === RESTORE PANEL === */
+.restore-panel {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.9rem 1rem 1rem;
+}
+
+.restore-panel[hidden] {
+  display: none;
+}
+
+.restore-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 650;
+  margin-bottom: 0.5rem;
+}
+
+.restore-back {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  color: #6b7280;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.restore-back:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.restore-back svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.restore-storage {
+  margin: 0 0 0.8rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #8a8f98;
+}
+
+.restore-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.1rem;
+  border-top: 1px solid #eee;
+}
+
+.restore-when {
+  font-size: 0.9rem;
+}
+
+.restore-detail {
+  font-size: 0.72rem;
+  color: #9aa0a6;
+}
+
+.restore-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.restore-button {
+  flex: none;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid #ddd;
+  background: transparent;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.8rem;
+  color: inherit;
+  cursor: pointer;
+}
+
+.restore-button:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.restore-empty {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #8a8f98;
+}
+
+.dark-mode .restore-back {
+  color: #9aa0a6;
+}
+
+.dark-mode .restore-back:hover,
+.dark-mode .restore-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .restore-row {
+  border-top-color: #444;
+}
+
+.dark-mode .restore-button {
+  border-color: #555;
+  color: #eee;
 }
 
 /* === MODAL FOOTER === */

@@ -277,6 +277,7 @@ window.__app = {
 
   try {
     runHabitTrackerTests(env);
+    await runBackupTests(env);   // against the browser's real IndexedDB
     await runViewportMatrix();
 
     // ?fail=1 injects a failure so the failure rendering and the copy button

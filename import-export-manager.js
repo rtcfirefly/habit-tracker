@@ -2,6 +2,7 @@ class ImportExportManager {
   constructor(dataManager) {
     this.dataManager = dataManager;
     this.onDataChanged = null;
+    this.beforeReplace = null;
     this.setupEventHandlers();
   }
 
@@ -42,9 +43,14 @@ class ImportExportManager {
     }
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       if (!this.confirmReplace()) {
         return;
+      }
+
+      // Snapshot what is about to be overwritten, so a wrong file is recoverable
+      if (this.beforeReplace) {
+        await this.beforeReplace();
       }
 
       const result = this.dataManager.importData(e.target.result);

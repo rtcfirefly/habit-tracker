@@ -5,10 +5,11 @@
 // no layout, no CSS - so the layout section is skipped.
 
 require('./dom-stub.js');
+require('./idb-stub.js');
 
 const fs = require('fs');
 const path = require('path');
-const { runHabitTrackerTests } = require('./tests.js');
+const { runHabitTrackerTests, runBackupTests } = require('./tests.js');
 
 const ROOT = path.join(__dirname, '..');
 
@@ -19,7 +20,8 @@ const SOURCES = {
   'data-manager.js': 'DataManager',
   'calendar-view.js': 'CalendarView',
   'habits-view.js': 'HabitsView',
-  'habit-manager.js': 'HabitManager'
+  'habit-manager.js': 'HabitManager',
+  'backup-manager.js': 'BackupManager'
 };
 
 for (const [file, className] of Object.entries(SOURCES)) {
@@ -29,7 +31,7 @@ for (const [file, className] of Object.entries(SOURCES)) {
 let passed = 0;
 let failed = 0;
 
-runHabitTrackerTests({
+const env = {
   layout: false,
   ok(name, condition, detail = '') {
     if (condition) {
@@ -45,7 +47,11 @@ runHabitTrackerTests({
   list(nodes) { return nodes; },
   fixture(tag) { return document.createElement(tag); },
   resetStorage() { localStorage.clear(); }
-});
+};
 
-console.log(`\n${'='.repeat(52)}\n${passed} passed, ${failed} failed\n${'='.repeat(52)}`);
-process.exit(failed ? 1 : 0);
+runHabitTrackerTests(env);
+
+runBackupTests(env).then(() => {
+  console.log(`\n${'='.repeat(52)}\n${passed} passed, ${failed} failed\n${'='.repeat(52)}`);
+  process.exit(failed ? 1 : 0);
+});

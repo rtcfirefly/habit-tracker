@@ -351,6 +351,57 @@ function assertReservedArea(env, m, label) {
          m.scrollWidth <= m.clientWidth + 1);
 }
 
+// Async, and separate from the sync suite above, because it drives real
+// IndexedDB in the browser and a stub in Node.
+async function runBackupTests(env) {
+  const { ok, section, resetStorage } = env;
+
+  section('local backups');
+
+  resetStorage();
+  const dataManager = new DataManager();
+  dataManager.addHabit('💧 Water', 'good');
+  dataManager.toggleHabitCompletion('Mon Aug 10 2026', '💧 Water');
+
+  const backups = new BackupManager(dataManager);
+
+  const first = await backups.snapshot('first');
+  ok('a snapshot is taken', !!first, String(first));
+  ok('it records what was in it', first && first.habits === 1 && first.days === 1,
+     first ? `${first.habits} habits, ${first.days} days` : 'none');
+
+  const duplicate = await backups.snapshot('same again');
+  ok('an unchanged snapshot is skipped', duplicate === null,
+     'a copy would push an older, more useful one out of retention');
+
+  dataManager.addHabit('🏃 Run', 'good');
+  const second = await backups.snapshot('after adding');
+  ok('a changed snapshot is kept', !!second && second.habits === 2);
+
+  const listed = await backups.list();
+  ok('both are listed, newest first', listed.length === 2 && listed[0].at >= listed[1].at,
+     `${listed.length} listed`);
+
+  // The point of the whole feature: get back to a state you have left
+  dataManager.deleteHabit(0);
+  dataManager.deleteHabit(0);
+  ok('everything can be lost', dataManager.getHabits().length === 0);
+
+  const restored = await backups.restore(listed[listed.length - 1].id);
+  ok('restoring reports success', restored.success === true, restored.message);
+  ok('the habit is back', dataManager.getHabits().length === 1,
+     `${dataManager.getHabits().length} habits`);
+  ok('and its history with it', dataManager.isHabitCompleted('Mon Aug 10 2026', '💧 Water') === true);
+
+  const afterRestore = await backups.list();
+  ok('restoring snapshots first, so it can be undone',
+     afterRestore.some(s => s.reason === 'before restore'),
+     afterRestore.map(s => s.reason).join(', '));
+
+  ok('a missing backup fails cleanly',
+     (await backups.restore(999999)).success === false);
+}
+
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { runHabitTrackerTests };
+  module.exports = { runHabitTrackerTests, runBackupTests };
 }

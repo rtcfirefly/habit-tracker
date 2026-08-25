@@ -146,6 +146,59 @@ DRIVE = """<script>
       : 'none');
   }
 
+  // Exercises the backup path for real: snapshot, mutate, snapshot, restore
+  if (params.get('backup')) {
+    (async function () {
+      var log = [];
+      var note = function (t) { log.push(t); document.body.setAttribute('data-backup', log.join(' | ')); };
+      note('started');
+      try {
+        var a = await backupManager.snapshot('test one');
+        note('snapshot1=' + (a ? a.habits + 'h/' + a.days + 'd' : 'null'));
+
+        var dup = await backupManager.snapshot('duplicate');
+        note('duplicate=' + (dup === null ? 'skipped' : 'stored'));
+
+        dataManager.addHabit('\u2b50 Added later', 'good');
+        var b = await backupManager.snapshot('test two');
+        note('snapshot2=' + (b ? b.habits + 'h' : 'null'));
+
+        var listed = await backupManager.list();
+        note('listed=' + listed.length);
+
+        var oldest = listed[listed.length - 1];
+        var res = await backupManager.restore(oldest.id);
+        note('restore=' + (res.success ? 'ok' : 'failed'));
+        note('habitsAfter=' + dataManager.getHabits().length);
+        note('afterRestoreCount=' + (await backupManager.list()).length);
+      } catch (e) {
+        note('THREW: ' + e.message);
+      }
+      note('done');
+    })();
+  }
+
+  if (params.get('panel') === 'restore') {
+    document.getElementById('restore-button').click();
+  }
+
+  if (params.get('caps')) {
+    var caps = {
+      fileSystemAccess: typeof window.showSaveFilePicker === 'function',
+      openFilePicker: typeof window.showOpenFilePicker === 'function',
+      dirPicker: typeof window.showDirectoryPicker === 'function',
+      shareFiles: !!(navigator.canShare && navigator.canShare({
+        files: [new File(['x'], 'a.json', { type: 'application/json' })] })),
+      share: typeof navigator.share === 'function',
+      persistentStorage: !!(navigator.storage && navigator.storage.persist),
+      indexedDB: typeof indexedDB !== 'undefined',
+      periodicSync: !!(window.ServiceWorkerRegistration &&
+        'periodicSync' in window.ServiceWorkerRegistration.prototype),
+      crypto: !!(window.crypto && window.crypto.subtle)
+    };
+    document.body.setAttribute('data-caps', JSON.stringify(caps));
+  }
+
   var edit = params.get('edit');
   if (edit !== null && edit !== '') {
     var names = document.querySelectorAll('.habit-name-display');
