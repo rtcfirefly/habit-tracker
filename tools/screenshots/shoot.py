@@ -106,6 +106,25 @@ DRIVE = """<script>
     if (target) target.click();
   }
 
+  // What holds focus decides whether a phone raises its keyboard
+  if (params.get('focus')) {
+    var a = document.activeElement;
+    document.body.setAttribute('data-focus', a
+      ? a.tagName.toLowerCase() + (a.className ? '.' + String(a.className).split(' ')[0] : '')
+      : 'none');
+  }
+
+  if (params.get('add')) {
+    var field = document.querySelector('.habit-tab-content.active .habit-name-input');
+    field.value = params.get('add');
+    field.dispatchEvent(new Event('input'));
+    document.querySelector('.habit-tab-content.active .add-habit-button').click();
+    var b = document.activeElement;
+    document.body.setAttribute('data-focus-after-add', b
+      ? b.tagName.toLowerCase() + (b.className ? '.' + String(b.className).split(' ')[0] : '')
+      : 'none');
+  }
+
   var edit = params.get('edit');
   if (edit !== null && edit !== '') {
     var names = document.querySelectorAll('.habit-name-display');

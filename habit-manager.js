@@ -524,7 +524,15 @@ class HabitManager {
     this.previouslyFocused = document.activeElement;
     this.modalElement.style.display = 'flex';
     this.renderForm();
-    this.focusAddField();
+
+    // Focus the dialog, not the name field. Focusing a text input raises the
+    // on-screen keyboard the moment the dialog opens, which covers most of the
+    // habit list it was opened to look at. Adding a habit still returns focus
+    // to the field, because by then the keyboard is wanted.
+    const dialog = this.modalElement.querySelector('.modal-content');
+    if (dialog) {
+      dialog.focus();
+    }
   }
 
   close() {

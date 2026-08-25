@@ -437,17 +437,22 @@ input, select, button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.55rem 0.7rem 0.55rem 1.1rem;
+  padding: 0.9rem 0.7rem 0.9rem 1.25rem;
   flex-shrink: 0;
   border-bottom: 1px solid #e0e0e0;
 }
 
 .modal-header h2 {
   margin: 0;
-  font-size: 1.05rem;
-  font-weight: 650;
+  font-size: 1.5rem;
   letter-spacing: -0.01em;
   color: #333;
+}
+
+/* Focused programmatically on open so the dialog is announced and the focus
+   trap has somewhere to start; a ring around the whole dialog would be noise */
+.modal-content:focus {
+  outline: none;
 }
 
 .modal-body {
