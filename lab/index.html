@@ -51,6 +51,8 @@
     What this browser actually supports, for deciding how habit data could leave the
     device. Detection alone is not enough — an API can exist and still refuse, so the
     ones that need a tap have a button that really tries it.
+    <strong>Press Try before trusting a YES</strong> — the copied report marks
+    which results are unverified.
   </p>
 
   <div id="report"></div>
@@ -161,6 +163,13 @@
 
   const lines = [];
 
+  // A tried probe rewrites its own line, so a pasted report never shows both
+  // "detected only" and a result for the same thing
+  function replaceLine(name, text) {
+    const at = lines.findIndex(line => line.includes('  ' + name) && !line.includes('TRIED'));
+    if (at === -1) { lines.push(text); } else { lines[at] = text; }
+  }
+
   function render() {
     report.textContent = '';
     lines.length = 0;
@@ -207,12 +216,13 @@
             try {
               const message = await probe.try();
               out.textContent = '✓ ' + message;
-              lines.push('  ' + probe.name + ' TRIED: ' + message);
+              replaceLine(probe.name, '  yes  ' + probe.name + '   TRIED: ' + message);
             } catch (error) {
               // A refusal is a result: it is what the API does on this device
               out.textContent = '✕ ' + (error && error.name ? error.name + ': ' : '') +
                                 (error && error.message ? error.message : String(error));
-              lines.push('  ' + probe.name + ' TRIED: failed — ' + out.textContent.slice(2));
+              replaceLine(probe.name, '  yes  ' + probe.name +
+                '   TRIED AND FAILED: ' + out.textContent.slice(2));
             }
           };
           row.appendChild(button);
@@ -220,7 +230,8 @@
 
         card.appendChild(row);
         card.appendChild(out);
-        lines.push('  ' + (supported ? 'yes' : 'no ') + '  ' + probe.name);
+        lines.push('  ' + (supported ? 'yes' : 'no ') + '  ' + probe.name +
+          (probe.try && supported ? '   (detected only — press Try)' : ''));
       }
 
       report.appendChild(card);
