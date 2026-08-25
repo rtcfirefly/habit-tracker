@@ -64,6 +64,52 @@ function closeManageModal() {
   habitManager.close();
 }
 
+// --- write-through backup to a chosen file --------------------------------
+// Only where the File System Access API exists. The row shows its state at all
+// times because this pauses itself each session, and a backup that has silently
+// stopped is worse than none.
+const fileBackup = new FileBackup(dataManager);
+const backupRow = document.getElementById('file-backup');
+const backupLabel = document.getElementById('file-backup-label');
+const backupAction = document.getElementById('file-backup-action');
+
+function renderBackupRow(state, lastWritten) {
+  const { label, action } = FileBackup.describe(state, lastWritten);
+  backupRow.hidden = state === 'unsupported';
+  backupRow.classList.toggle('paused', state === 'needs-tap' || state === 'error');
+  backupLabel.textContent = label;
+  backupAction.hidden = !action;
+  backupAction.textContent = action || '';
+}
+
+fileBackup.onStateChange = renderBackupRow;
+
+backupAction.onclick = async () => {
+  const previous = backupAction.textContent;
+  backupAction.textContent = '…';
+  try {
+    await (fileBackup.state === 'needs-tap' ? fileBackup.resume() : fileBackup.choose());
+  } catch (error) {
+    // Dismissing the picker is a choice, not a failure worth shouting about
+    if (error && error.name !== 'AbortError') {
+      importExportManager.showMessage(`Could not set up file backup: ${error.message}`, 'error');
+    }
+    backupAction.textContent = previous;
+  }
+  renderBackupRow(fileBackup.state, fileBackup.lastWritten);
+};
+
+dataManager.onChanged = () => fileBackup.schedule();
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    fileBackup.flush();
+  }
+});
+
+renderBackupRow(fileBackup.state, fileBackup.lastWritten);
+fileBackup.load();
+
 // localStorage is the only copy of this history, so ask the browser not to
 // evict it under storage pressure. No UI, and unrelated to export: it protects
 // against the browser deciding, not against a person clearing site data.

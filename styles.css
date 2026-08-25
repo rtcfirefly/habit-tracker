@@ -837,6 +837,88 @@ input, select, button {
   color: white;
 }
 
+/* === FILE BACKUP ROW === */
+.file-backup {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 1rem;
+  border-top: 1px solid #e0e0e0;
+  font-size: 0.82rem;
+}
+
+.file-backup[hidden] {
+  display: none;
+}
+
+.file-backup-icon {
+  flex: none;
+  display: inline-flex;
+  color: #6b7280;
+}
+
+.file-backup-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.file-backup-label {
+  flex: 1;
+  min-width: 0;
+  color: #5c6169;
+}
+
+.file-backup.paused .file-backup-label {
+  color: #a15c00;
+}
+
+.file-backup-action {
+  flex: none;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid #ddd;
+  background: transparent;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.78rem;
+  color: inherit;
+  cursor: pointer;
+}
+
+.file-backup-action:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .file-backup {
+  border-top-color: #555;
+}
+
+.dark-mode .file-backup-icon {
+  color: #9aa0a6;
+}
+
+.dark-mode .file-backup-label {
+  color: #b2b8c0;
+}
+
+.dark-mode .file-backup.paused .file-backup-label {
+  color: #e0a24a;
+}
+
+.dark-mode .file-backup-action {
+  border-color: #555;
+  color: #eee;
+}
+
+.dark-mode .file-backup-action:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
 /* === MODAL FOOTER === */
 .modal-footer {
   flex: none;
