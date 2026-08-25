@@ -1,24 +1,30 @@
 // Bump CACHE_NAME when the list of cached files changes, so old versions get
 // cleared out on activate. It no longer gates whether a change reaches anyone:
 // the fetch handler below is network-first.
-const CACHE_NAME = 'habit-tracker-v6';
+//
+// The ?v= on the stylesheet and scripts must match the number here, and must
+// match index.html. A cache entry keyed on one version can never satisfy a
+// request for the next, which is what makes a stale stylesheet against a
+// fresh index.html impossible - the failure that made this necessary.
+// tools/check-sw-cache.sh enforces that they agree.
+const CACHE_NAME = 'habit-tracker-v7';
 
 const ASSETS = [
   './',
   './index.html',
-  './styles.css',
+  './styles.css?v=7',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
   './icon-maskable-512.png',
-  './emoji-utils.js',
-  './data-manager.js',
-  './calendar-view.js',
-  './habits-view.js',
-  './habit-manager.js',
-  './theme-manager.js',
-  './import-export-manager.js',
-  './script.js'
+  './emoji-utils.js?v=7',
+  './data-manager.js?v=7',
+  './calendar-view.js?v=7',
+  './habits-view.js?v=7',
+  './habit-manager.js?v=7',
+  './theme-manager.js?v=7',
+  './import-export-manager.js?v=7',
+  './script.js?v=7'
 ];
 
 self.addEventListener('install', event => {
