@@ -102,6 +102,13 @@
           });
           return 'the share sheet accepted a file';
         } }
+      { name: 'navigator.share (text only)',
+        why: 'Isolates whether sharing works at all, or only refuses files',
+        has: () => typeof navigator.share === 'function',
+        try: async () => {
+          await navigator.share({ title: 'Habit Tracker', text: 'lab test' });
+          return 'text shared — so a file refusal is about files, not sharing';
+        } }
     ]],
     ['Keeping what is here', [
       { name: 'storage.persist()',
