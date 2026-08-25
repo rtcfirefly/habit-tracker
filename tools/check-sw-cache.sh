@@ -45,6 +45,30 @@ elif [ "$shown" != "$cache_version" ]; then
   fail=1
 fi
 
+# --- a changed asset means the version must move ---------------------------
+# Retired this when the fetch handler went network-first, on the grounds that a
+# stale cache could no longer hide a change. That was wrong once assets became
+# ?v= keyed: the query string IS the cache key, so shipping new bytes under the
+# old key lets any cache that does not revalidate keep serving the old file.
+# Three assets drifted that way before this came back.
+version_commit=$(git log -1 --format=%H -G'^const CACHE_NAME' -- sw.js 2>/dev/null || true)
+committed_version=$(git show HEAD:sw.js 2>/dev/null | grep -oE "habit-tracker-v[0-9]+" | head -1 | grep -oE '[0-9]+' || true)
+
+if [ -n "$version_commit" ] && [ "$committed_version" = "$cache_version" ]; then
+  stale=()
+  while read -r changed; do
+    [ -z "$changed" ] && continue
+    grep -q "\./$changed?v=" sw.js && stale+=("$changed")
+  done < <({ git diff --name-only "$version_commit" HEAD; git diff --name-only; } | sort -u)
+
+  if [ ${#stale[@]} -gt 0 ]; then
+    echo "these versioned assets changed since CACHE_NAME was set to v$cache_version:"
+    printf '  %s\n' "${stale[@]}"
+    echo "a cache keyed on ?v=$cache_version can still serve the old bytes. Bump CACHE_NAME and the ?v= on every asset."
+    fail=1
+  fi
+fi
+
 # --- every precached path exists ------------------------------------------
 mapfile -t assets < <(sed -n '/^const ASSETS = \[/,/^\];/p' sw.js \
   | grep -oE "'[^']+'" | tr -d "'" | sed 's|^\./||')
