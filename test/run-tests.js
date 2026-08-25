@@ -5,11 +5,10 @@
 // no layout, no CSS - so the layout section is skipped.
 
 require('./dom-stub.js');
-require('./idb-stub.js');
 
 const fs = require('fs');
 const path = require('path');
-const { runHabitTrackerTests, runBackupTests } = require('./tests.js');
+const { runHabitTrackerTests } = require('./tests.js');
 
 const ROOT = path.join(__dirname, '..');
 
@@ -20,8 +19,7 @@ const SOURCES = {
   'data-manager.js': 'DataManager',
   'calendar-view.js': 'CalendarView',
   'habits-view.js': 'HabitsView',
-  'habit-manager.js': 'HabitManager',
-  'backup-manager.js': 'BackupManager'
+  'habit-manager.js': 'HabitManager'
 };
 
 for (const [file, className] of Object.entries(SOURCES)) {
@@ -51,7 +49,5 @@ const env = {
 
 runHabitTrackerTests(env);
 
-runBackupTests(env).then(() => {
-  console.log(`\n${'='.repeat(52)}\n${passed} passed, ${failed} failed\n${'='.repeat(52)}`);
-  process.exit(failed ? 1 : 0);
-});
+console.log(`\n${'='.repeat(52)}\n${passed} passed, ${failed} failed\n${'='.repeat(52)}`);
+process.exit(failed ? 1 : 0);

@@ -3,7 +3,6 @@ class DataManager {
     this.habits = this.loadHabits();
     this.completions = this.loadCompletions();
     this.counters = this.loadCounters();
-    this.onChanged = null;
   }
 
   loadHabits() {
@@ -22,10 +21,6 @@ class DataManager {
     localStorage.setItem('habits', JSON.stringify(this.habits));
     localStorage.setItem('completions', JSON.stringify(this.completions));
     localStorage.setItem('counters', JSON.stringify(this.counters));
-
-    if (this.onChanged) {
-      this.onChanged();
-    }
   }
 
   getHabits() {

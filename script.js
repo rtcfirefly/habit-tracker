@@ -18,7 +18,6 @@ const themeManager = new ThemeManager(
   document.getElementById('theme-toggle-button')
 );
 const importExportManager = new ImportExportManager(dataManager);
-const backupManager = new BackupManager(dataManager);
 
 // Set up event handlers between components
 calendarView.onDateSelected = (dateKey) => {
@@ -65,59 +64,14 @@ function closeManageModal() {
   habitManager.close();
 }
 
-// --- local backups ---------------------------------------------------------
-// localStorage is the only copy of this history and a browser may evict it, so
-// ask for persistent storage and keep rolling snapshots that survive a bad
-// import or a deleted habit. Off-device backup is still export.
-backupManager.requestPersistence();
-
-dataManager.onChanged = () => backupManager.scheduleSnapshot();
-importExportManager.beforeReplace = () => backupManager.snapshot('before import');
-
-// The snapshot is debounced, so a tab being hidden or closed is the last chance
-// to capture what just happened
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') {
-    backupManager.flush();
-  }
-});
-
-const restorePanel = document.getElementById('restore-panel');
-const manageForm = document.getElementById('manage-form');
-
-function showRestorePanel(show) {
-  restorePanel.hidden = !show;
-  manageForm.hidden = show;
-
-  if (show) {
-    backupManager.renderInto(
-      document.getElementById('restore-list'),
-      document.getElementById('restore-storage'),
-      result => {
-        showRestorePanel(false);
-        habitManager.renderForm();
-        habitsView.render();
-        calendarView.render();
-        importExportManager.showMessage(result.message, result.success ? 'success' : 'error');
-        if (result.success) {
-          habitManager.close();
-        }
-      }
-    );
-  }
+// localStorage is the only copy of this history, so ask the browser not to
+// evict it under storage pressure. No UI, and unrelated to export: it protects
+// against the browser deciding, not against a person clearing site data.
+if (navigator.storage && navigator.storage.persist) {
+  navigator.storage.persisted()
+    .then(already => (already ? true : navigator.storage.persist()))
+    .catch(() => {});
 }
-
-// The caveat points at export as the copy that survives a clear, so let it act
-document.getElementById('restore-export').onclick = () => {
-  habitManager.close();
-  importExportManager.exportData();
-};
-
-document.getElementById('restore-button').onclick = () => showRestorePanel(true);
-document.getElementById('restore-back').onclick = () => showRestorePanel(false);
-
-// Opening settings always lands on the habit list, never on a panel left open
-habitManager.onOpened = () => showRestorePanel(false);
 
 // Register the service worker so the app keeps working offline.
 //

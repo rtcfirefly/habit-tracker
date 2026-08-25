@@ -18,7 +18,6 @@ class HabitManager {
     this.activeTab = 'good';
     
     this.previouslyFocused = null;
-    this.onOpened = null;
 
     this.setupModalCloseHandler();
   }
@@ -524,9 +523,6 @@ class HabitManager {
   open() {
     this.previouslyFocused = document.activeElement;
     this.modalElement.style.display = 'flex';
-    if (this.onOpened) {
-      this.onOpened();
-    }
     this.renderForm();
 
     // Focus the dialog, not the name field. Focusing a text input raises the
