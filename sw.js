@@ -1,30 +1,41 @@
-// Bump CACHE_NAME when the list of cached files changes, so old versions get
-// cleared out on activate. It no longer gates whether a change reaches anyone:
-// the fetch handler below is network-first.
+// Semantic version, shared by CACHE_NAME, the ?v= on every asset below, and the
+// number shown in the settings dialog. tools/check-sw-cache.sh keeps the three
+// in agreement and refuses a version that does not move forward.
+//
+//   patch  fixes and cosmetic changes
+//   minor  new user-visible capability
+//   major  anything that breaks stored data or the export format
+//
+// Not to be confused with the "version" field inside an export file, which
+// describes that file's shape and moves independently.
+//
+// Any shipped change to a versioned asset needs a bump: the ?v= is the cache
+// key, so new bytes under an old key are exactly what a stale cache keeps
+// serving.
 //
 // The ?v= on the stylesheet and scripts must match the number here, and must
 // match index.html. A cache entry keyed on one version can never satisfy a
 // request for the next, which is what makes a stale stylesheet against a
 // fresh index.html impossible - the failure that made this necessary.
 // tools/check-sw-cache.sh enforces that they agree.
-const CACHE_NAME = 'habit-tracker-v10';
+const CACHE_NAME = 'habit-tracker-v1.0.0';
 
 const ASSETS = [
   './',
   './index.html',
-  './styles.css?v=10',
+  './styles.css?v=1.0.0',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
   './icon-maskable-512.png',
-  './emoji-utils.js?v=10',
-  './data-manager.js?v=10',
-  './calendar-view.js?v=10',
-  './habits-view.js?v=10',
-  './habit-manager.js?v=10',
-  './theme-manager.js?v=10',
-  './import-export-manager.js?v=10',
-  './script.js?v=10'
+  './emoji-utils.js?v=1.0.0',
+  './data-manager.js?v=1.0.0',
+  './calendar-view.js?v=1.0.0',
+  './habits-view.js?v=1.0.0',
+  './habit-manager.js?v=1.0.0',
+  './theme-manager.js?v=1.0.0',
+  './import-export-manager.js?v=1.0.0',
+  './script.js?v=1.0.0'
 ];
 
 self.addEventListener('install', event => {

@@ -18,11 +18,11 @@ cd "$(dirname "$0")/.."
 fail=0
 
 # --- versions agree -------------------------------------------------------
-cache_version=$(grep -oE "habit-tracker-v[0-9]+" sw.js | head -1 | grep -oE '[0-9]+')
+cache_version=$(grep -oE "habit-tracker-v[0-9]+\.[0-9]+\.[0-9]+" sw.js | head -1 | sed 's/.*-v//')
 # Comments are stripped first: prose about versions is not an asset url, and
 # scanning it made this check fail on its own explanation
-mapfile -t html_versions < <(grep -oE '\?v=[0-9]+' index.html | grep -oE '[0-9]+' | sort -u)
-mapfile -t sw_versions   < <(sed 's|//.*||' sw.js | grep -oE '\?v=[0-9]+' | grep -oE '[0-9]+' | sort -u)
+mapfile -t html_versions < <(grep -oE '\?v=[0-9]+\.[0-9]+\.[0-9]+' index.html | sed 's/?v=//' | sort -u)
+mapfile -t sw_versions   < <(sed 's|//.*||' sw.js | grep -oE '\?v=[0-9]+\.[0-9]+\.[0-9]+' | sed 's/?v=//' | sort -u)
 
 for v in "${html_versions[@]}" "${sw_versions[@]}"; do
   if [ "$v" != "$cache_version" ]; then
@@ -36,13 +36,23 @@ if [ "${#html_versions[@]}" -ne 1 ] || [ "${#sw_versions[@]}" -ne 1 ]; then
 fi
 
 # The version shown in the modal footer is the same number, so it cannot drift
-shown=$(grep -oE 'class="modal-version">v[0-9]+<' index.html | grep -oE '[0-9]+')
+shown=$(grep -oE 'class="modal-version">v[0-9]+\.[0-9]+\.[0-9]+<' index.html | sed 's/.*>v//;s/<//')
 if [ -z "$shown" ]; then
   echo "no version shown in the modal footer"
   fail=1
 elif [ "$shown" != "$cache_version" ]; then
   echo "the modal shows v$shown but CACHE_NAME is v$cache_version"
   fail=1
+fi
+
+# --- the version must never go backwards -----------------------------------
+prev=$(git show HEAD:sw.js 2>/dev/null | grep -oE "habit-tracker-v[0-9]+\.[0-9]+\.[0-9]+" | head -1 | sed 's/.*-v//' || true)
+if [ -n "$prev" ] && [ "$prev" != "$cache_version" ]; then
+  newest=$(printf '%s\n%s\n' "$prev" "$cache_version" | sort -V | tail -1)
+  if [ "$newest" != "$cache_version" ]; then
+    echo "version went backwards: HEAD is v$prev, working tree is v$cache_version"
+    fail=1
+  fi
 fi
 
 # --- a changed asset means the version must move ---------------------------
@@ -52,7 +62,7 @@ fi
 # old key lets any cache that does not revalidate keep serving the old file.
 # Three assets drifted that way before this came back.
 version_commit=$(git log -1 --format=%H -G'^const CACHE_NAME' -- sw.js 2>/dev/null || true)
-committed_version=$(git show HEAD:sw.js 2>/dev/null | grep -oE "habit-tracker-v[0-9]+" | head -1 | grep -oE '[0-9]+' || true)
+committed_version=$(git show HEAD:sw.js 2>/dev/null | grep -oE "habit-tracker-v[0-9]+\.[0-9]+\.[0-9]+" | head -1 | sed 's/.*-v//' || true)
 
 if [ -n "$version_commit" ] && [ "$committed_version" = "$cache_version" ]; then
   stale=()
