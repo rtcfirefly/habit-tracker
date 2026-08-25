@@ -35,6 +35,16 @@ if [ "${#html_versions[@]}" -ne 1 ] || [ "${#sw_versions[@]}" -ne 1 ]; then
   fail=1
 fi
 
+# The version shown in the modal footer is the same number, so it cannot drift
+shown=$(grep -oE '<div class="modal-version">v[0-9]+</div>' index.html | grep -oE '[0-9]+')
+if [ -z "$shown" ]; then
+  echo "no version shown in the modal footer"
+  fail=1
+elif [ "$shown" != "$cache_version" ]; then
+  echo "the modal shows v$shown but CACHE_NAME is v$cache_version"
+  fail=1
+fi
+
 # --- every precached path exists ------------------------------------------
 mapfile -t assets < <(sed -n '/^const ASSETS = \[/,/^\];/p' sw.js \
   | grep -oE "'[^']+'" | tr -d "'" | sed 's|^\./||')

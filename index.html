@@ -30,9 +30,13 @@
   <div class="calendar" id="calendar"></div>
   <div class="habits-list" id="habits-list"></div>
   <div class="modal" id="manage-modal">
-    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="manage-modal-title">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-label="Manage habits">
+      <!--
+        No visible heading: the tabs below already read Good / Bad / Neutral /
+        Counter, so a "Manage Habits" title only restates them. The dialog keeps
+        its accessible name through aria-label instead.
+      -->
       <div class="modal-header">
-        <h2 id="manage-modal-title">Manage Habits</h2>
         <button onclick="closeManageModal()" title="Close" aria-label="Close">✕</button>
       </div>
       <div class="modal-body">
@@ -44,7 +48,6 @@
           clears on every change.
         -->
         <div class="data-section">
-          <h3 class="data-heading">Data</h3>
           <button id="export-button" class="data-row" title="Export Data">
             <span class="data-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
             Export data
@@ -68,6 +71,7 @@
             <span class="data-hint"><span class="when-light">Light</span><span class="when-dark">Dark</span></span>
           </button>
         </div>
+        <div class="modal-version">v7</div>
       </div>
     </div>
   </div>

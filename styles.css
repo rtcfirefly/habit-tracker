@@ -436,9 +436,9 @@ input, select, button {
 
 .modal-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  padding: 0.6rem 0.7rem;
   flex-shrink: 0;
   border-bottom: 1px solid #e0e0e0;
 }
@@ -819,16 +819,20 @@ input, select, button {
 .data-section {
   flex: none;
   border-top: 1px solid #e0e0e0;
-  padding: 0.7rem 1rem 1rem;
+  padding: 0.55rem 1rem 0.35rem;
 }
 
-.data-heading {
-  margin: 0 0.3rem 0.35rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: #8a8f98;
+.modal-version {
+  flex: none;
+  padding: 0 1rem 0.6rem;
+  text-align: right;
+  font-size: 0.65rem;
+  letter-spacing: 0.03em;
+  color: #b0b4ba;
+}
+
+.dark-mode .modal-version {
+  color: #6e7377;
 }
 
 .data-row {
