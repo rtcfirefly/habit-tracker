@@ -16,13 +16,14 @@ class ThemeManager {
   }
 
   applyTheme(theme) {
-    if (theme === 'dark') {
-      document.body.classList.add('dark-mode');
-      this.toggleButtonElement.innerText = '☀️';
-    } else {
-      document.body.classList.remove('dark-mode');
-      this.toggleButtonElement.innerText = '🌙';
-    }
+    const isDark = theme === 'dark';
+
+    // The toggle shows both a moon/sun and a Light/Dark label; both pairs are in
+    // the markup and CSS picks one off this class, so nothing here rewrites the
+    // button's contents.
+    document.body.classList.toggle('dark-mode', isDark);
+    this.toggleButtonElement.setAttribute('aria-pressed', String(isDark));
+
     this.currentTheme = theme;
     this.saveTheme(theme);
   }

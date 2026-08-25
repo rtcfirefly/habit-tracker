@@ -17,13 +17,53 @@ input, select, button {
   border: 1px solid #ccc;
 }
 
-/* === FORM LAYOUT === */
-.form {
+/* === APP HEADING === */
+.app-header {
+  /* The heading stays centred; the one action is positioned against this box so
+     it does not push the title off centre */
+  position: relative;
   margin-bottom: 1rem;
-  display: flex;
-  gap: 0.5rem;
+}
+
+.app-header h1 {
+  margin: 0;
+}
+
+.header-action {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  color: #6b7280;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
+  transition: background 0.2s, color 0.2s;
+}
+
+.header-action:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #333;
+}
+
+/* Every icon in the chrome is drawn at the same weight */
+.header-action svg,
+.calendar-header button svg,
+.data-icon svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* === IMPORT/EXPORT MESSAGES === */
@@ -63,20 +103,56 @@ input, select, button {
 /* === CALENDAR STYLES === */
 .calendar-header {
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.9rem;
+}
+
+.calendar-header h2 {
+  flex: 1;
+  margin: 0;
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.calendar-header button {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  color: #6b7280;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.calendar-header button:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #333;
+}
+
+.calendar-header button svg {
+  width: 17px;
+  height: 17px;
 }
 
 .weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
-  font-weight: bold;
   margin-bottom: 0.5rem;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #8a8f98;
 }
 
 .calendar {
@@ -739,6 +815,85 @@ input, select, button {
   color: white;
 }
 
+/* === DATA SECTION (foot of the manage modal) === */
+.data-section {
+  flex: none;
+  border-top: 1px solid #e0e0e0;
+  padding: 0.7rem 1rem 1rem;
+}
+
+.data-heading {
+  margin: 0 0.3rem 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #8a8f98;
+}
+
+.data-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.55rem 0.5rem;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 0.9rem;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.data-row:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.data-icon {
+  flex: none;
+  display: inline-flex;
+  color: #6b7280;
+}
+
+.data-hint {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: #9aa0a6;
+}
+
+/* The appearance row carries both states; the class on body picks one */
+.when-dark {
+  display: none;
+}
+
+.dark-mode .when-light {
+  display: none;
+}
+
+.dark-mode .when-dark {
+  display: inline-flex;
+}
+
+.data-hint .when-dark,
+.data-hint .when-light {
+  display: none;
+}
+
+.data-hint .when-light {
+  display: inline;
+}
+
+.dark-mode .data-hint .when-light {
+  display: none;
+}
+
+.dark-mode .data-hint .when-dark {
+  display: inline;
+}
+
 /* === ANIMATIONS === */
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -1227,26 +1382,35 @@ input, select, button {
   background: #5a5a5a;
 }
 
-.dark-mode .weekdays div {
-  color: #ccc;
+.dark-mode .header-action,
+.dark-mode .calendar-header button {
+  color: #9aa0a6;
 }
 
-.dark-mode .calendar-header button,
-.dark-mode #manage-habits-button,
-.dark-mode #export-button,
-.dark-mode #import-button,
-.dark-mode #theme-toggle-button {
-  background: #2c2c2c;
-  color: #eee;
-  border-color: #666;
-}
-
-.dark-mode #theme-toggle-button:hover,
-.dark-mode #manage-habits-button:hover,
-.dark-mode #export-button:hover,
-.dark-mode #import-button:hover,
+.dark-mode .header-action:hover,
 .dark-mode .calendar-header button:hover {
-  background: #444;
+  background: rgba(255, 255, 255, 0.09);
+  color: #eee;
+}
+
+.dark-mode .weekdays div {
+  color: #8a8f98;
+}
+
+.dark-mode .data-section {
+  border-top-color: #555;
+}
+
+.dark-mode .data-row {
+  color: #eee;
+}
+
+.dark-mode .data-row:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.dark-mode .data-icon {
+  color: #9aa0a6;
 }
 
 /* === RESPONSIVE DESIGN === */

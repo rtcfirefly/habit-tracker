@@ -8,18 +8,21 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <h1>Habit Tracker 📅</h1>
-  <div class="form">
-    <button id="manage-habits-button" title="Manage Habits">⚙️</button>
-    <button id="export-button" title="Export Data">📤</button>
-    <button id="import-button" title="Import Data">📥</button>
-    <button id="theme-toggle-button" title="Toggle Theme">🌙</button>
+  <div class="app-header">
+    <h1>Habit Tracker 📅</h1>
+    <button id="manage-habits-button" class="header-action" title="Manage habits" aria-label="Manage habits">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
   </div>
   <input type="file" id="import-file-input" accept=".json" style="display: none;">
   <div class="calendar-header">
-    <button id="prev-month" title="Previous Month">◀️</button>
+    <button id="prev-month" title="Previous month" aria-label="Previous month">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
     <h2 id="month-year"></h2>
-    <button id="next-month" title="Next Month">▶️</button>
+    <button id="next-month" title="Next month" aria-label="Next month">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
   </div>
   <div class="weekdays">
     <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
@@ -34,6 +37,37 @@
       </div>
       <div class="modal-body">
         <div id="manage-form"></div>
+        <!--
+          Export, import and appearance live here rather than in the header: they
+          are occasional, and a permanent row of them cost 65px above the
+          calendar. This section sits outside #manage-form, which renderForm()
+          clears on every change.
+        -->
+        <div class="data-section">
+          <h3 class="data-heading">Data</h3>
+          <button id="export-button" class="data-row" title="Export Data">
+            <span class="data-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+            Export data
+            <span class="data-hint">Download a backup</span>
+          </button>
+          <button id="import-button" class="data-row" title="Import Data">
+            <span class="data-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span>
+            Import data
+            <span class="data-hint">Replaces everything</span>
+          </button>
+          <!--
+            Both states are in the markup and swapped by CSS on .dark-mode, so
+            ThemeManager only has to toggle that one class.
+          -->
+          <button id="theme-toggle-button" class="data-row" title="Toggle Theme">
+            <span class="data-icon">
+              <svg class="when-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+              <svg class="when-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/></svg>
+            </span>
+            Appearance
+            <span class="data-hint"><span class="when-light">Light</span><span class="when-dark">Dark</span></span>
+          </button>
+        </div>
       </div>
     </div>
   </div>

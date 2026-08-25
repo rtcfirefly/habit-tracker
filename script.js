@@ -44,6 +44,13 @@ document.getElementById('manage-habits-button').onclick = () => {
   habitManager.open();
 };
 
+// Export and import live inside the manage modal now; close it so the success
+// or failure message is not hidden behind it. Appearance deliberately does not
+// close, so the theme can be judged against the calendar underneath.
+['export-button', 'import-button'].forEach(id => {
+  document.getElementById(id).addEventListener('click', () => habitManager.close());
+});
+
 document.getElementById('prev-month').onclick = () => {
   calendarView.goToPreviousMonth();
 };

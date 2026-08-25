@@ -91,8 +91,10 @@ class ImportExportManager {
     messageDiv.className = `import-export-message ${type}`;
     messageDiv.textContent = message;
     
-    const form = document.querySelector('.form');
-    form.insertAdjacentElement('afterend', messageDiv);
+    // Anchored to the page heading: export and import now live inside the
+    // manage modal, and the modal closes before this runs so the message shows
+    const anchor = document.querySelector('.app-header');
+    anchor.insertAdjacentElement('afterend', messageDiv);
 
     setTimeout(() => {
       if (messageDiv.parentNode) {
