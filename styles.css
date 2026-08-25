@@ -437,9 +437,12 @@ input, select, button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* Equal insets: the close button is a filled chip, so its circle edge is what
-     reads as the element's edge and should line up with the title's */
-  padding: 0.9rem 1.25rem;
+  /* Deliberately less padding on the right than the left. The title's ink
+     starts at the padding edge, but the close icon's strokes sit about 11px
+     inside its 36px tap target, so equal padding leaves the X looking that much
+     further in. Measured: title ink 21.5px from the left edge, X ink 21.3px
+     from the right. */
+  padding: 0.9rem 0.55rem 0.9rem 1.25rem;
   flex-shrink: 0;
   border-bottom: 1px solid #e0e0e0;
 }
