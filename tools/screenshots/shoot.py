@@ -35,6 +35,19 @@ HABITS = [
 ]
 
 # Injected into <head>, so the store is populated before the app's scripts run
+# Injected into <head>. Animations and transitions make capture a race: the
+# modal fades and scales in, so a screenshot or a getBoundingClientRect can land
+# mid-flight. Both have happened - two ghosted screenshots and a set of rects
+# scaled to 0.8. Nothing here is measuring animation, so switch them off.
+STILL = """<style>
+*, *::before, *::after {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+}
+</style>"""
+
 SEED = """<script>
 (function () {
   var params = new URLSearchParams(location.search);
@@ -91,7 +104,15 @@ DRIVE = """<script>
       scrollH: el ? el.scrollHeight : null,
       scrollable: el ? el.scrollHeight > el.clientHeight + 1 : null,
       width: el ? +el.getBoundingClientRect().width.toFixed(1) : null,
-      fontSize: el ? getComputedStyle(el).fontSize : null
+      fontSize: el ? getComputedStyle(el).fontSize : null,
+      box: el ? (function (c) {
+        return c.boxSizing + ' w:' + c.width + ' h:' + c.height +
+               ' pad:' + c.padding + ' border:' + c.borderTopWidth;
+      })(getComputedStyle(el)) : null,
+      rect: el ? [+el.getBoundingClientRect().left.toFixed(1),
+                  +el.getBoundingClientRect().right.toFixed(1),
+                  +el.getBoundingClientRect().top.toFixed(1),
+                  +el.getBoundingClientRect().bottom.toFixed(1)] : null
     }));
   }
 
@@ -163,7 +184,7 @@ def build_site():
 
     path = os.path.join(SITE, 'index.html')
     html = open(path, encoding='utf-8').read()
-    html = html.replace('</head>', seed + '\n</head>', 1)
+    html = html.replace('</head>', STILL + '\n' + seed + '\n</head>', 1)
     html = html.replace('</body>', DRIVE + '\n</body>', 1)
     open(path, 'w', encoding='utf-8').write(html)
 
