@@ -13,6 +13,54 @@ function runHabitTrackerTests(env) {
   const { ok, section, fire, list, fixture, resetStorage, layout } = env;
   const fresh = () => { resetStorage(); return new DataManager(); };
 
+  const DAY = 86400000;
+  const NOW = 1700000000000;
+
+  section('the backup reminder fires only when it should');
+  {
+    resetStorage();
+    ok('never backed up stays quiet',
+       FileBackup.shouldRemind(null, null, NOW) === false);
+    ok('backed up today stays quiet',
+       FileBackup.shouldRemind(NOW, null, NOW) === false);
+    ok('six days stays quiet',
+       FileBackup.shouldRemind(NOW - 6 * DAY, null, NOW) === false);
+    ok('seven days reminds',
+       FileBackup.shouldRemind(NOW - 7 * DAY, null, NOW) === true);
+    ok('twenty days reminds',
+       FileBackup.shouldRemind(NOW - 20 * DAY, null, NOW) === true);
+    ok('an active snooze silences it',
+       FileBackup.shouldRemind(NOW - 20 * DAY, NOW + DAY, NOW) === false);
+    ok('an expired snooze does not',
+       FileBackup.shouldRemind(NOW - 20 * DAY, NOW - DAY, NOW) === true);
+    ok('the text pluralises', FileBackup.reminderText(NOW - DAY, NOW).includes('1 day ago'));
+    ok('and does not over-pluralise',
+       FileBackup.reminderText(NOW - 9 * DAY, NOW).includes('9 days ago'));
+  }
+
+  section('the backup reminder can be turned off');
+  {
+    resetStorage();
+    ok('on by default, with nothing stored', FileBackup.remindersEnabled === true);
+
+    FileBackup.setRemindersEnabled(false);
+    ok('turning it off sticks', FileBackup.remindersEnabled === false);
+
+    FileBackup.snooze(NOW);
+    FileBackup.setRemindersEnabled(true);
+    ok('turning it back on sticks', FileBackup.remindersEnabled === true);
+    ok('and clears any snooze, so it is not silently quiet',
+       FileBackup.snoozedUntil === null);
+  }
+
+  section('an export counts as a backup');
+  {
+    resetStorage();
+    ok('nothing recorded means no last backup', FileBackup.lastBackup() === null);
+    FileBackup.recordExport(NOW);
+    ok('a manual export records one', FileBackup.lastBackup() === NOW);
+  }
+
   section('duplicate habit names are refused');
   {
     const dm = fresh();

@@ -17,6 +17,7 @@ const ROOT = path.join(__dirname, '..');
 const SOURCES = {
   'emoji-utils.js': 'EmojiUtils',
   'data-manager.js': 'DataManager',
+  'file-backup.js': 'FileBackup',
   'calendar-view.js': 'CalendarView',
   'habits-view.js': 'HabitsView',
   'habit-manager.js': 'HabitManager'

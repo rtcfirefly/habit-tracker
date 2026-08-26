@@ -72,9 +72,12 @@ const nudge = document.getElementById('backup-nudge');
 const nudgeText = document.getElementById('backup-nudge-text');
 const nudgeAction = document.getElementById('backup-nudge-action');
 
+const remindToggle = document.getElementById('backup-remind-toggle');
+
 function renderNudge() {
   const last = FileBackup.lastBackup();
-  const show = FileBackup.shouldRemind(last, FileBackup.snoozedUntil);
+  const show = FileBackup.remindersEnabled
+    && FileBackup.shouldRemind(last, FileBackup.snoozedUntil);
   nudge.hidden = !show;
   if (show) {
     nudgeText.textContent = FileBackup.reminderText(last);
@@ -98,8 +101,17 @@ nudgeAction.onclick = async () => {
   renderNudge();
 };
 
+// Dismiss snoozes rather than disables, because the data is what is being
+// protected here. Turning it off for good is the checkbox in settings, which
+// is a deliberate act rather than a reflex tap on an X.
 document.getElementById('backup-nudge-dismiss').onclick = () => {
   FileBackup.snooze();
+  renderNudge();
+};
+
+remindToggle.checked = FileBackup.remindersEnabled;
+remindToggle.onchange = () => {
+  FileBackup.setRemindersEnabled(remindToggle.checked);
   renderNudge();
 };
 

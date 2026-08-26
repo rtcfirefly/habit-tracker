@@ -78,6 +78,7 @@ SEED = """<script>
   if (stale) {
     localStorage.setItem('lastExported', String(Date.now() - stale * 86400000));
   }
+  if (params.get('remindoff')) localStorage.setItem('backupRemindersOff', '1');
 })();
 </script>"""
 
@@ -195,6 +196,9 @@ SHOTS = [
     ('modal-rename-390',   390,  844, 'seed=1&open=manage&tab=good&edit=0'),
     ('nudge-390',          390,  844, 'seed=1&stale=9'),
     ('nudge-390-dark',     390,  844, 'seed=1&stale=9&theme=dark'),
+    ('nudge-390-off',      390,  844, 'seed=1&stale=9&remindoff=1'),
+    ('remind-toggle-390',  390,  844, 'seed=1&stale=9&open=manage&tab=good'),
+    ('remind-toggle-390-dark', 390, 844, 'seed=1&stale=9&open=manage&tab=good&theme=dark'),
 ]
 
 

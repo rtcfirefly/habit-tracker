@@ -19,6 +19,7 @@ const HANDLE_KEY = 'handle';
 const LAST_WRITTEN_KEY = 'fileBackupLastWritten';
 const LAST_EXPORTED_KEY = 'lastExported';
 const SNOOZE_KEY = 'backupReminderSnoozedUntil';
+const REMINDERS_OFF_KEY = 'backupRemindersOff';
 const REMIND_AFTER_DAYS = 7;
 const SNOOZE_DAYS = 3;
 const WRITE_DELAY = 5000;
@@ -117,6 +118,23 @@ class FileBackup {
 
   static get snoozedUntil() {
     return Number(localStorage.getItem(SNOOZE_KEY)) || null;
+  }
+
+  // Off is the stored state, so the default stays on for anyone who has never
+  // touched the setting - including everyone upgrading, who has no key at all
+  static get remindersEnabled() {
+    return localStorage.getItem(REMINDERS_OFF_KEY) !== '1';
+  }
+
+  static setRemindersEnabled(enabled) {
+    if (enabled) {
+      // Clearing the snooze too, so turning reminders back on does not land in
+      // a three day silence the person cannot see or explain
+      localStorage.removeItem(REMINDERS_OFF_KEY);
+      localStorage.removeItem(SNOOZE_KEY);
+    } else {
+      localStorage.setItem(REMINDERS_OFF_KEY, '1');
+    }
   }
 
   // --- handle storage ----------------------------------------------------
