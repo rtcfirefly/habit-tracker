@@ -64,6 +64,45 @@ function closeManageModal() {
   habitManager.close();
 }
 
+// --- the weekly backup reminder -------------------------------------------
+// A paused backup cannot resume itself, so the most that can be automated is
+// asking. This appears in the main view rather than in settings, because not
+// opening settings is the entire problem it exists to solve.
+const nudge = document.getElementById('backup-nudge');
+const nudgeText = document.getElementById('backup-nudge-text');
+const nudgeAction = document.getElementById('backup-nudge-action');
+
+function renderNudge() {
+  const last = FileBackup.lastBackup();
+  const show = FileBackup.shouldRemind(last, FileBackup.snoozedUntil);
+  nudge.hidden = !show;
+  if (show) {
+    nudgeText.textContent = FileBackup.reminderText(last);
+  }
+}
+
+nudgeAction.onclick = async () => {
+  // Resume the file backup where there is one to resume, otherwise fall back to
+  // export, which is the only route Firefox has
+  if (fileBackup.state === 'needs-tap' || fileBackup.state === 'on') {
+    try {
+      await fileBackup.resume();
+    } catch (error) {
+      if (error && error.name !== 'AbortError') {
+        importExportManager.showMessage(`Backup failed: ${error.message}`, 'error');
+      }
+    }
+  } else {
+    importExportManager.exportData();
+  }
+  renderNudge();
+};
+
+document.getElementById('backup-nudge-dismiss').onclick = () => {
+  FileBackup.snooze();
+  renderNudge();
+};
+
 // --- write-through backup to a chosen file --------------------------------
 // Only where the File System Access API exists. The row shows its state at all
 // times because this pauses itself each session, and a backup that has silently
@@ -82,7 +121,10 @@ function renderBackupRow(state, lastWritten) {
   backupAction.textContent = action || '';
 }
 
-fileBackup.onStateChange = renderBackupRow;
+fileBackup.onStateChange = (state, lastWritten) => {
+  renderBackupRow(state, lastWritten);
+  renderNudge();
+};
 
 backupAction.onclick = async () => {
   const previous = backupAction.textContent;
@@ -108,6 +150,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 renderBackupRow(fileBackup.state, fileBackup.lastWritten);
+renderNudge();
 fileBackup.load();
 
 // localStorage is the only copy of this history, so ask the browser not to

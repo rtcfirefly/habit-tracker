@@ -99,6 +99,96 @@ input, select, button {
   border: 1px solid #842029;
 }
 
+/* === BACKUP REMINDER === */
+.backup-nudge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+  padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+  border-radius: 10px;
+  background: #fff5e0;
+  border: 1px solid #f0dcb0;
+  font-size: 0.82rem;
+  color: #6b4e12;
+}
+
+.backup-nudge[hidden] {
+  display: none;
+}
+
+.backup-nudge-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.backup-nudge-action {
+  flex: none;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid #d9be86;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.78rem;
+  color: inherit;
+  cursor: pointer;
+}
+
+.backup-nudge-action:hover {
+  background: #fff;
+}
+
+.backup-nudge-dismiss {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  color: #a08344;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backup-nudge-dismiss:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.backup-nudge-dismiss svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.dark-mode .backup-nudge {
+  background: #33280f;
+  border-color: #57451f;
+  color: #e8cf9a;
+}
+
+.dark-mode .backup-nudge-action {
+  border-color: #6b5628;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.dark-mode .backup-nudge-action:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.dark-mode .backup-nudge-dismiss {
+  color: #c0a468;
+}
+
+.dark-mode .backup-nudge-dismiss:hover {
+  background: rgba(255, 255, 255, 0.09);
+}
+
 /* === CALENDAR STYLES === */
 .calendar-header {
   display: flex;

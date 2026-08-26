@@ -17,6 +17,10 @@
 const HANDLE_DB = 'habit-tracker-file-backup';
 const HANDLE_KEY = 'handle';
 const LAST_WRITTEN_KEY = 'fileBackupLastWritten';
+const LAST_EXPORTED_KEY = 'lastExported';
+const SNOOZE_KEY = 'backupReminderSnoozedUntil';
+const REMIND_AFTER_DAYS = 7;
+const SNOOZE_DAYS = 3;
 const WRITE_DELAY = 5000;
 
 class FileBackup {
@@ -72,6 +76,47 @@ class FileBackup {
       : `${Math.floor(minutes / 1440)} day${Math.floor(minutes / 1440) === 1 ? '' : 's'} ago`;
 
     return { label: `On — written ${when}`, action: 'Change' };
+  }
+
+  // --- the weekly reminder ------------------------------------------------
+  // Nothing can re-arm a paused backup on its own: requestPermission needs a
+  // user gesture, and periodic background sync could not supply one even where
+  // it exists. So the most that can be automated is asking, in the place the
+  // person already is, and only when it has actually been a while.
+  static lastBackup() {
+    const written = Number(localStorage.getItem(LAST_WRITTEN_KEY)) || 0;
+    const exported = Number(localStorage.getItem(LAST_EXPORTED_KEY)) || 0;
+    return Math.max(written, exported) || null;
+  }
+
+  static recordExport(at = Date.now()) {
+    localStorage.setItem(LAST_EXPORTED_KEY, String(at));
+  }
+
+  static snooze(now = Date.now()) {
+    localStorage.setItem(SNOOZE_KEY, String(now + SNOOZE_DAYS * 86400000));
+  }
+
+  // Pure: the whole decision, so it can be tested without a browser
+  static shouldRemind(lastBackup, snoozedUntil, now = Date.now(), afterDays = REMIND_AFTER_DAYS) {
+    if (snoozedUntil && now < snoozedUntil) {
+      return false;
+    }
+    // Never backed up is worth saying too, but not on the very first run - the
+    // first change is what creates something worth keeping
+    if (!lastBackup) {
+      return false;
+    }
+    return now - lastBackup >= afterDays * 86400000;
+  }
+
+  static reminderText(lastBackup, now = Date.now()) {
+    const days = Math.floor((now - lastBackup) / 86400000);
+    return `Last backed up ${days} day${days === 1 ? '' : 's'} ago`;
+  }
+
+  static get snoozedUntil() {
+    return Number(localStorage.getItem(SNOOZE_KEY)) || null;
   }
 
   // --- handle storage ----------------------------------------------------
@@ -161,6 +206,7 @@ class FileBackup {
       await writable.write(this.dataManager.exportData());
       await writable.close();
       localStorage.setItem(LAST_WRITTEN_KEY, String(Date.now()));
+      localStorage.removeItem(SNOOZE_KEY);
       this.lastError = null;
     } catch (error) {
       // The file may have been moved, deleted, or permission withdrawn

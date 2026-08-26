@@ -26,6 +26,9 @@ class ImportExportManager {
   exportData() {
     try {
       this.dataManager.downloadExport();
+      // Counts as a backup for the reminder, which does not care which route
+      // the data left by
+      FileBackup.recordExport();
       this.showMessage('Data exported successfully!', 'success');
     } catch (error) {
       this.showMessage(`Export failed: ${error.message}`, 'error');
