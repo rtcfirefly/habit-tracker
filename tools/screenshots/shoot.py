@@ -72,6 +72,12 @@ SEED = """<script>
   })()));
   localStorage.setItem('counters', JSON.stringify({}));
   localStorage.setItem('theme', params.get('theme') === 'dark' ? 'dark' : 'light');
+  // Backdates the last backup, which is the only way to see the reminder
+  // banner without waiting a week
+  var stale = +params.get('stale') || 0;
+  if (stale) {
+    localStorage.setItem('lastExported', String(Date.now() - stale * 86400000));
+  }
 })();
 </script>"""
 
@@ -187,6 +193,8 @@ SHOTS = [
     ('modal-good-900',     900,  900, 'seed=1&open=manage&tab=good'),
     ('modal-good-390-dark', 390, 844, 'seed=1&open=manage&tab=good&theme=dark'),
     ('modal-rename-390',   390,  844, 'seed=1&open=manage&tab=good&edit=0'),
+    ('nudge-390',          390,  844, 'seed=1&stale=9'),
+    ('nudge-390-dark',     390,  844, 'seed=1&stale=9&theme=dark'),
 ]
 
 
