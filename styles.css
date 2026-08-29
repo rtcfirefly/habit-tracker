@@ -1705,6 +1705,7 @@ input, select, button {
 }
 
 .intro-card {
+  position: relative;
   width: 100%;
   max-width: 22rem;
   max-height: 100%;
@@ -1763,6 +1764,7 @@ input, select, button {
 }
 
 .intro-nav {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1770,7 +1772,13 @@ input, select, button {
   margin-top: 1.1rem;
 }
 
+/* Pinned to the middle of the card rather than centred in the space left over
+   between the two controls - those are different widths once the forward arrow
+   becomes the finish button, so sharing the slack lands the dots off centre */
 .intro-dots {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   gap: 0.35rem;
 }
@@ -1789,29 +1797,86 @@ input, select, button {
   background: #4CAF50;
 }
 
-.intro-skip {
-  padding: 0.45rem 0.2rem;
-  border: none;
-  background: none;
+/* Matched pair, so the dots stay centred between them */
+.intro-step {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid #e0e2e5;
+  border-radius: 50%;
+  background: transparent;
+  color: #5c6169;
   font: inherit;
-  font-size: 0.85rem;
-  color: #7a8087;
   cursor: pointer;
 }
 
-.intro-next {
-  padding: 0.45rem 1rem;
+.intro-step svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.intro-step:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Kept in place rather than hidden on the first slide, so nothing shifts */
+.intro-step:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* The last slide's forward arrow is the way out, so it stops being an arrow */
+.intro-step.is-done {
+  width: auto;
+  padding: 0 1rem;
   border: none;
-  border-radius: 9px;
+  border-radius: 20px;
   background: #4CAF50;
-  font: inherit;
   font-size: 0.88rem;
   color: #fff;
+}
+
+.intro-step.is-done:hover:not(:disabled) {
+  background: #43a047;
+}
+
+.intro-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #9aa0a6;
   cursor: pointer;
 }
 
-.intro-next:hover {
-  background: #43a047;
+.intro-close svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.intro-close:hover {
+  background: rgba(0, 0, 0, 0.06);
 }
 
 /* --- slide art --- */
@@ -1968,8 +2033,27 @@ input, select, button {
   background: #4CAF50;
 }
 
-.dark-mode .intro-skip {
-  color: #a0a6ad;
+.dark-mode .intro-step {
+  border-color: #555;
+  color: #c3c8ce;
+}
+
+.dark-mode .intro-step:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* After the border rule above, or the finish button keeps a stray outline */
+.dark-mode .intro-step.is-done {
+  border: none;
+  color: #fff;
+}
+
+.dark-mode .intro-close {
+  color: #9aa0a6;
+}
+
+.dark-mode .intro-close:hover {
+  background: rgba(255, 255, 255, 0.09);
 }
 
 .dark-mode .intro-day,
