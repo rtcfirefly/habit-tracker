@@ -15,13 +15,15 @@ const SLIDES = [
   {
     // A real screenshot rather than a drawing of one, so the first thing
     // someone sees is what the app looks like once it has been used for a
-    // while - an empty calendar sells nothing. Both themes ship because a
-    // light screenshot on a dark card looks like a bug.
+    // while - an empty calendar sells nothing. It carries all four habit
+    // types and a day mid-progress, because the buttons are the half of the
+    // app the slide is actually explaining. Both themes ship because a light
+    // screenshot on a dark card looks like a bug.
     artClass: 'is-shot',
-    art: `<img class="intro-shot intro-shot-light" src="example-month.png?v=1.7.0"
-               alt="A month of the calendar with habit icons on most days" width="390" height="398">
-          <img class="intro-shot intro-shot-dark" src="example-month-dark.png?v=1.7.0"
-               alt="A month of the calendar with habit icons on most days" width="390" height="398">`,
+    art: `<img class="intro-shot intro-shot-light" src="example-month.png?v=1.7.1"
+               alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">
+          <img class="intro-shot intro-shot-dark" src="example-month-dark.png?v=1.7.1"
+               alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">`,
     title: 'Pick a day first',
     body: 'Habit buttons stay greyed out until you tap a day on the calendar. '
         + 'Tap one, then tap what you did — that is the whole loop.',

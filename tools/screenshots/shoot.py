@@ -73,7 +73,17 @@ SEED = """<script>
     }
     return out;
   })()));
-  localStorage.setItem('counters', JSON.stringify({}));
+  // Counters sitting at zero make the goal controls look inert, so the day the
+  // shots select gets some progress against it
+  localStorage.setItem('counters', JSON.stringify((function () {
+    var out = {}, today = new Date();
+    for (var i = 0; i < 20; i++) {
+      var d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+      if (i %% 3 === 0) continue;
+      out[d.toDateString()] = { '💊 Vitamins': 1, '📖 Read pages': 12 };
+    }
+    return out;
+  })()));
   localStorage.setItem('theme', params.get('theme') === 'dark' ? 'dark' : 'light');
   // Backdates the last backup, which is the only way to see the reminder
   // banner without waiting a week
@@ -94,8 +104,12 @@ DRIVE = """<script>
   }
   // Strips the page back to the month grid, so the shot can be used as the
   // example calendar on the first explainer slide rather than cropped by hand
-  if (params.get('only') === 'calendar') {
-    ['.app-header', '.habits-list', '.backup-nudge', '.modal'].forEach(function (sel) {
+  var only = params.get('only');
+  if (only === 'calendar' || only === 'app') {
+    var hide = only === 'app'
+      ? ['.app-header', '.backup-nudge', '.modal']
+      : ['.app-header', '.habits-list', '.backup-nudge', '.modal'];
+    hide.forEach(function (sel) {
       var el = document.querySelector(sel);
       if (el) el.style.display = 'none';
     });
@@ -153,6 +167,21 @@ DRIVE = """<script>
       return d.firstChild && d.firstChild.textContent === select;
     })[0];
     if (target) target.click();
+  }
+
+  // A full six week grid plus every habit type is taller than any slide can
+  // show. Trailing weeks carry the least - they are next month - so the grid
+  // is cut to whole weeks. Runs after select=, which re-renders the grid and the habit buttons keep their room.
+  var weeks = +params.get('weeks') || 0;
+  var skipWeeks = +params.get('skipweeks') || 0;
+  if (weeks || skipWeeks) {
+    var cells = document.querySelectorAll('.calendar .day');
+    for (var c = 0; c < cells.length; c++) {
+      var week = Math.floor(c / 7);
+      if (week < skipWeeks || (weeks && week >= skipWeeks + weeks)) {
+        cells[c].style.display = 'none';
+      }
+    }
   }
 
   // What holds focus decides whether a phone raises its keyboard
@@ -220,8 +249,8 @@ SHOTS = [
     ('nudge-390-off',      390,  844, 'seed=1&stale=9&remindoff=1'),
     ('remind-toggle-390',  390,  844, 'seed=1&stale=9&open=manage&tab=good'),
     ('remind-toggle-390-dark', 390, 844, 'seed=1&stale=9&open=manage&tab=good&theme=dark'),
-    ('example-month',      390,  398, 'seed=1&only=calendar&select=12'),
-    ('example-month-dark', 390,  398, 'seed=1&only=calendar&select=12&theme=dark'),
+    ('example-month',      390,  560, 'seed=1&only=app&skipweeks=2&weeks=3&select=12'),
+    ('example-month-dark', 390,  560, 'seed=1&only=app&skipweeks=2&weeks=3&select=12&theme=dark'),
     ('intro-1-390',        390,  844, 'slide=1'),
     ('intro-2-390',        390,  844, 'slide=2'),
     ('intro-3-390',        390,  844, 'slide=3'),
