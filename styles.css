@@ -1962,6 +1962,12 @@ input, select, button {
   background: #555;
 }
 
+/* Same specificity as the rule above, so it has to come after it or the
+   current slide's dot is indistinguishable in dark mode */
+.dark-mode .intro-dot.is-current {
+  background: #4CAF50;
+}
+
 .dark-mode .intro-skip {
   color: #a0a6ad;
 }
@@ -1983,4 +1989,56 @@ input, select, button {
 
 .dark-mode .intro-row {
   border-left-color: #4CAF50;
+}
+
+/* The example month on slide one is a real screenshot, so it gets a taller
+   frame than the drawn art and is cropped rather than scaled down to nothing */
+.intro-art.is-shot {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid #e4e6e9;
+}
+
+/* The frame crops mid-row, which reads as a mistake on a screenshot. Fading
+   the last few pixels into the card makes it read as a window onto something
+   larger, which is what it is */
+.intro-art.is-shot::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34px;
+  background: linear-gradient(rgba(255, 255, 255, 0), #fff);
+  pointer-events: none;
+}
+
+.dark-mode .intro-art.is-shot::after {
+  background: linear-gradient(rgba(43, 43, 43, 0), #2b2b2b);
+}
+
+.intro-shot {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Written as a pair rather than reusing .when-light / .when-dark, whose
+   .dark-mode variant outranks a plain class and would show both at once */
+.intro-shot-dark {
+  display: none;
+}
+
+.dark-mode .intro-shot-light {
+  display: none;
+}
+
+.dark-mode .intro-shot-dark {
+  display: block;
+}
+
+.dark-mode .intro-art.is-shot {
+  border-color: #555;
 }

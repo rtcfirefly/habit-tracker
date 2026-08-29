@@ -16,17 +16,23 @@ function runHabitTrackerTests(env) {
   const DAY = 86400000;
   const NOW = 1700000000000;
 
-  section('the explainer shows once, and only to a new arrival');
+  section('the explainer shows until there is a habit');
   {
     const dm = fresh();
-    ok('a first arrival with no habits sees it', Intro.shouldShow(dm) === true);
+    ok('an empty app shows it', Intro.shouldShow(dm) === true);
+    ok('and keeps showing it while the app is still empty',
+       Intro.shouldShow(dm) === true,
+       'skipping should not dismiss it for good - there is nothing else to see yet');
 
-    Intro.markSeen();
-    ok('and not a second time', Intro.shouldShow(dm) === false);
+    dm.addHabit('💧 Water', 'good');
+    ok('adding the first habit is what dismisses it', Intro.shouldShow(dm) === false);
+
+    dm.deleteHabit(0);
+    ok('deleting back to empty brings it back', Intro.shouldShow(dm) === true);
 
     resetStorage();
     const returning = new DataManager();
-    returning.addHabit('💧 Water', 'good');
+    returning.addHabit('🏃 Run', 'good');
     ok('someone who already has habits never sees it',
        Intro.shouldShow(returning) === false,
        'an existing user upgrading should not be shown a first-run tour');

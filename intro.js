@@ -11,16 +11,17 @@
 // are read once and then never again - there is no reason to ship them into
 // the DOM of every later visit.
 
-const SEEN_KEY = 'introSeen';
-
 const SLIDES = [
   {
-    art: `<div class="intro-art-calendar">
-            <span class="intro-day">10</span>
-            <span class="intro-day is-today">11</span>
-            <span class="intro-day is-selected">12<span class="intro-tap"></span></span>
-            <span class="intro-day">13</span>
-          </div>`,
+    // A real screenshot rather than a drawing of one, so the first thing
+    // someone sees is what the app looks like once it has been used for a
+    // while - an empty calendar sells nothing. Both themes ship because a
+    // light screenshot on a dark card looks like a bug.
+    artClass: 'is-shot',
+    art: `<img class="intro-shot intro-shot-light" src="example-month.png?v=1.7.0"
+               alt="A month of the calendar with habit icons on most days" width="390" height="398">
+          <img class="intro-shot intro-shot-dark" src="example-month-dark.png?v=1.7.0"
+               alt="A month of the calendar with habit icons on most days" width="390" height="398">`,
     title: 'Pick a day first',
     body: 'Habit buttons stay greyed out until you tap a day on the calendar. '
         + 'Tap one, then tap what you did — that is the whole loop.',
@@ -65,24 +66,16 @@ const SLIDES = [
 ];
 
 class Intro {
-  static get seen() {
-    return localStorage.getItem(SEEN_KEY) === '1';
-  }
-
-  static markSeen() {
-    localStorage.setItem(SEEN_KEY, '1');
-  }
-
   constructor() {
     this.index = 0;
     this.root = null;
   }
 
-  // Shown only to someone with no habits and no history. An existing user
-  // arriving on a new version has already worked all of this out the hard way
-  // and does not need it in their face.
+  // No habits is the whole condition: an app with nothing in it has nothing to
+  // show, so the slides stand in for the empty state and keep coming back
+  // until there is a first habit. Adding one is what dismisses them for good,
+  // which also means an existing user never sees this.
   static shouldShow(dataManager) {
-    if (Intro.seen) return false;
     return dataManager.getHabits().length === 0;
   }
 
@@ -125,7 +118,9 @@ class Intro {
     const slide = SLIDES[this.index];
     const last = this.index === SLIDES.length - 1;
 
-    this.root.querySelector('#intro-art').innerHTML = slide.art;
+    const art = this.root.querySelector('#intro-art');
+    art.className = 'intro-art' + (slide.artClass ? ' ' + slide.artClass : '');
+    art.innerHTML = slide.art;
     this.root.querySelector('#intro-title').textContent = slide.title;
     this.root.querySelector('#intro-body').textContent = slide.body;
     this.root.querySelector('#intro-tip').textContent = slide.tip;
@@ -153,7 +148,6 @@ class Intro {
   }
 
   close() {
-    Intro.markSeen();
     if (this.root) {
       this.root.remove();
       this.root = null;

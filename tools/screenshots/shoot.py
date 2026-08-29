@@ -92,6 +92,17 @@ DRIVE = """<script>
   if (params.get('open') === 'manage') {
     document.getElementById('manage-habits-button').click();
   }
+  // Strips the page back to the month grid, so the shot can be used as the
+  // example calendar on the first explainer slide rather than cropped by hand
+  if (params.get('only') === 'calendar') {
+    ['.app-header', '.habits-list', '.backup-nudge', '.modal'].forEach(function (sel) {
+      var el = document.querySelector(sel);
+      if (el) el.style.display = 'none';
+    });
+    document.body.style.margin = '0';
+    document.body.style.padding = '8px';
+  }
+
   // Advances the first-run explainer, which otherwise only ever shows slide one
   var slide = +params.get('slide') || 0;
   for (var i = 1; i < slide; i++) {
@@ -209,6 +220,8 @@ SHOTS = [
     ('nudge-390-off',      390,  844, 'seed=1&stale=9&remindoff=1'),
     ('remind-toggle-390',  390,  844, 'seed=1&stale=9&open=manage&tab=good'),
     ('remind-toggle-390-dark', 390, 844, 'seed=1&stale=9&open=manage&tab=good&theme=dark'),
+    ('example-month',      390,  398, 'seed=1&only=calendar&select=12'),
+    ('example-month-dark', 390,  398, 'seed=1&only=calendar&select=12&theme=dark'),
     ('intro-1-390',        390,  844, 'slide=1'),
     ('intro-2-390',        390,  844, 'slide=2'),
     ('intro-3-390',        390,  844, 'slide=3'),
