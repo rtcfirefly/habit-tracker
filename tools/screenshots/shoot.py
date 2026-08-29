@@ -105,6 +105,15 @@ DRIVE = """<script>
   // Strips the page back to the month grid, so the shot can be used as the
   // example calendar on the first explainer slide rather than cropped by hand
   var only = params.get('only');
+  if (only === 'header') {
+    ['.calendar-header', '.weekdays', '.calendar', '.habits-list', '.backup-nudge', '.modal']
+      .forEach(function (sel) {
+        var el = document.querySelector(sel);
+        if (el) el.style.display = 'none';
+      });
+    document.body.style.margin = '0';
+    document.body.style.padding = '8px';
+  }
   if (only === 'calendar' || only === 'app') {
     var hide = only === 'app'
       ? ['.app-header', '.backup-nudge', '.modal']
@@ -184,6 +193,34 @@ DRIVE = """<script>
     }
   }
 
+  // Rings one or more elements, so a shot used as a callout can point at the
+  // thing it is talking about instead of relying on the caption
+  // Rings elements so a shot used as a callout points at what it describes.
+  //
+  // Done with layout, not measured coordinates. A fixed position box computed
+  // from getBoundingClientRect is placed at whatever width the window happens
+  // to be when the script runs, and --screenshot resizes afterwards - which
+  // put the first attempt at this both too wide and 150px up the page.
+  //
+  // Several matches get one wrapper around the lot rather than an outline
+  // each: outlining three stacked full width rows individually just draws
+  // stripes, which reads as three unrelated things instead of one region.
+  var ring = params.get('ring');
+  if (ring) {
+    var found = [].slice.call(document.querySelectorAll(ring));
+    if (found.length === 1) {
+      found[0].style.outline = '3px solid #1a73e8';
+      found[0].style.outlineOffset = '3px';
+      found[0].style.borderRadius = '10px';
+    } else if (found.length > 1) {
+      var wrap = document.createElement('div');
+      wrap.style.cssText = 'outline:3px solid #1a73e8;outline-offset:-1px;'
+        + 'border-radius:10px;box-shadow:0 0 0 4px rgba(26,115,232,0.18)';
+      found[0].parentNode.insertBefore(wrap, found[0]);
+      found.forEach(function (el) { wrap.appendChild(el); });
+    }
+  }
+
   // What holds focus decides whether a phone raises its keyboard
   if (params.get('focus')) {
     var a = document.activeElement;
@@ -251,6 +288,10 @@ SHOTS = [
     ('remind-toggle-390-dark', 390, 844, 'seed=1&stale=9&open=manage&tab=good&theme=dark'),
     ('example-month',      390,  560, 'seed=1&only=app&skipweeks=2&weeks=3&select=12'),
     ('example-month-dark', 390,  560, 'seed=1&only=app&skipweeks=2&weeks=3&select=12&theme=dark'),
+    ('example-gear',       390,   64, 'seed=1&only=header&ring=%23manage-habits-button'),
+    ('example-gear-dark',  390,   64, 'seed=1&only=header&ring=%23manage-habits-button&theme=dark'),
+    ('example-data',       390,  600, 'seed=1&open=manage&tab=good&ring=.file-backup,.backup-remind,.modal-footer'),
+    ('example-data-dark',  390,  600, 'seed=1&open=manage&tab=good&ring=.file-backup,.backup-remind,.modal-footer&theme=dark'),
     ('intro-1-390',        390,  844, 'slide=1'),
     ('intro-2-390',        390,  844, 'slide=2'),
     ('intro-3-390',        390,  844, 'slide=3'),

@@ -1969,7 +1969,7 @@ input, select, button {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  width: 12rem;
+  width: 15rem;
 }
 
 .intro-row {
@@ -2081,32 +2081,64 @@ input, select, button {
   height: 270px;
 }
 
-/* Scaled to fit rather than cropped: the point of this shot is the whole
-   screen at once - a month of icons and every kind of habit button under it -
-   so losing either end to a crop would lose the slide's argument */
-.intro-shot {
+/* The gear above the habit rows, with a chevron between: where settings is,
+   then what to do once you are in it */
+.intro-art.is-path {
+  height: 200px;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.intro-pic {
   display: block;
-  height: 100%;
-  width: auto;
   max-width: 100%;
   border-radius: 10px;
   border: 1px solid #e4e6e9;
 }
 
+/* Scaled to fit rather than cropped: these shots are making a point about a
+   whole screen at once - a month of icons with every kind of habit button
+   under it, the data controls sitting at the foot of settings - so losing
+   either end to a crop would lose the slide's argument */
+.intro-art.is-shot .intro-pic {
+  height: 100%;
+  width: auto;
+}
+
+.intro-art.is-path .intro-pic {
+  width: 15rem;
+  height: auto;
+}
+
+.intro-down {
+  display: inline-flex;
+  color: #9aa0a6;
+}
+
+.intro-down svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 /* Written as a pair rather than reusing .when-light / .when-dark, whose
    .dark-mode variant outranks a plain class and would show both at once */
-.intro-shot-dark {
+.intro-pic-dark {
   display: none;
 }
 
-.dark-mode .intro-shot-light {
+.dark-mode .intro-pic-light {
   display: none;
 }
 
-.dark-mode .intro-shot-dark {
+.dark-mode .intro-pic-dark {
   display: block;
 }
 
-.dark-mode .intro-shot {
+.dark-mode .intro-pic {
   border-color: #555;
 }

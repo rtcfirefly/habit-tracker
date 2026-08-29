@@ -13,6 +13,7 @@
 
 const CHEVRON_LEFT = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>';
 const CHEVRON_RIGHT = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>';
+const CHEVRON_DOWN = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>';
 
 const SLIDES = [
   {
@@ -21,9 +22,9 @@ const SLIDES = [
     // the app the slide is explaining. Both themes ship because a light
     // screenshot on a dark card looks like a bug.
     artClass: 'is-shot',
-    art: `<img class="intro-shot intro-shot-light" src="example-month.png?v=1.8.0"
+    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.9.0"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">
-          <img class="intro-shot intro-shot-dark" src="example-month-dark.png?v=1.8.0"
+          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.9.0"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">`,
     title: 'Tap a day, then tap what you did',
     body: 'Habit buttons stay greyed out until a day is selected.',
@@ -40,22 +41,32 @@ const SLIDES = [
     tip: 'Good, neutral and bad are one tap. Counters track a daily goal.'
   },
   {
-    art: `<div class="intro-art-rows">
+    // The gear above the rows, because "in settings" is not much use to
+    // someone who has not spotted the only button in the header
+    artClass: 'is-path',
+    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.9.0"
+               alt="The settings button in the top right of the header" width="390" height="64">
+          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.9.0"
+               alt="The settings button in the top right of the header" width="390" height="64">
+          <span class="intro-down">${CHEVRON_DOWN}</span>
+          <div class="intro-art-rows">
             <span class="intro-row"><span class="intro-grip"></span>🏃 Run</span>
             <span class="intro-row is-lifted"><span class="intro-grip"></span>💧 Water</span>
             <span class="intro-row"><span class="intro-grip"></span>🧘 Stretch</span>
           </div>`,
     title: 'Drag to reorder, tap to rename',
-    body: 'Both live in settings, on the habit itself.',
+    body: 'Open settings with the gear, then act on the habit itself.',
     tip: 'The buttons follow this order, so put your daily ones first.'
   },
   {
-    art: `<div class="intro-art-shield">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z"/><polyline points="9 12 11 14 15 10"/></svg>
-          </div>`,
+    artClass: 'is-shot',
+    art: `<img class="intro-pic intro-pic-light" src="example-data.png?v=1.9.0"
+               alt="The bottom of settings, with the backup and data controls ringed" width="390" height="600">
+          <img class="intro-pic intro-pic-dark" src="example-data-dark.png?v=1.9.0"
+               alt="The bottom of settings, with the backup and data controls ringed" width="390" height="600">`,
     title: 'Everything stays on this device',
     body: 'No account, no server — and clearing browser data erases it.',
-    tip: 'So back it up from settings. You will be nudged after a week.'
+    tip: 'Back up from the bottom of settings: a file, or export. Nudged after a week.'
   }
 ];
 
