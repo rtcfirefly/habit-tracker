@@ -51,6 +51,9 @@ STILL = """<style>
 SEED = """<script>
 (function () {
   var params = new URLSearchParams(location.search);
+  // Theme is set before the seed bails out, so an unseeded page - the first
+  // run explainer, which only shows with no habits - can still be shot dark
+  localStorage.setItem('theme', params.get('theme') === 'dark' ? 'dark' : 'light');
   if (!params.get('seed')) return;
   var many = +params.get('many') || 0;
   localStorage.clear();
@@ -89,6 +92,13 @@ DRIVE = """<script>
   if (params.get('open') === 'manage') {
     document.getElementById('manage-habits-button').click();
   }
+  // Advances the first-run explainer, which otherwise only ever shows slide one
+  var slide = +params.get('slide') || 0;
+  for (var i = 1; i < slide; i++) {
+    var nextButton = document.getElementById('intro-next');
+    if (nextButton) nextButton.click();
+  }
+
   var tab = params.get('tab');
   if (tab) {
     var order = ['good', 'bad', 'neutral', 'counter'];
@@ -199,6 +209,12 @@ SHOTS = [
     ('nudge-390-off',      390,  844, 'seed=1&stale=9&remindoff=1'),
     ('remind-toggle-390',  390,  844, 'seed=1&stale=9&open=manage&tab=good'),
     ('remind-toggle-390-dark', 390, 844, 'seed=1&stale=9&open=manage&tab=good&theme=dark'),
+    ('intro-1-390',        390,  844, 'slide=1'),
+    ('intro-2-390',        390,  844, 'slide=2'),
+    ('intro-3-390',        390,  844, 'slide=3'),
+    ('intro-4-390',        390,  844, 'slide=4'),
+    ('intro-1-390-dark',   390,  844, 'slide=1&theme=dark'),
+    ('intro-4-390-dark',   390,  844, 'slide=4&theme=dark'),
 ]
 
 

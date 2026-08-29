@@ -20,7 +20,8 @@ const SOURCES = {
   'file-backup.js': 'FileBackup',
   'calendar-view.js': 'CalendarView',
   'habits-view.js': 'HabitsView',
-  'habit-manager.js': 'HabitManager'
+  'habit-manager.js': 'HabitManager',
+  'intro.js': 'Intro'
 };
 
 for (const [file, className] of Object.entries(SOURCES)) {

@@ -165,6 +165,18 @@ renderBackupRow(fileBackup.state, fileBackup.lastWritten);
 renderNudge();
 fileBackup.load();
 
+// The explainer covers things the interface cannot say for itself - most of
+// all that no habit button does anything until a day is selected, which
+// otherwise reads as a broken app. Opened last so it lands on top of a page
+// that has already rendered behind it.
+if (Intro.shouldShow(dataManager)) {
+  const intro = new Intro();
+  // Settings is where the first habit gets added, and that is the next thing
+  // to do after reading the slides
+  intro.onClose = () => habitManager.open();
+  intro.open();
+}
+
 // localStorage is the only copy of this history, so ask the browser not to
 // evict it under storage pressure. No UI, and unrelated to export: it protects
 // against the browser deciding, not against a person clearing site data.

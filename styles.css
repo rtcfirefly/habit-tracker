@@ -1691,3 +1691,296 @@ input, select, button {
     --habit-icon-size: 16px;
   }
 }
+
+/* === FIRST RUN EXPLAINER === */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.intro-card {
+  width: 100%;
+  max-width: 22rem;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 1.4rem 1.3rem 1rem;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+/* Focused on open so the dialog owns the keyboard, but the ring is noise on
+   something nobody tabbed to */
+.intro-card:focus {
+  outline: none;
+}
+
+.intro-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Fixed rather than min, so the card does not resize under the reader as
+     they page through slides whose art is different heights */
+  height: 120px;
+  margin-bottom: 1rem;
+}
+
+/* Art sizes itself; without this the column layouts stretch to the card */
+.intro-art > * {
+  flex: none;
+}
+
+.intro-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+}
+
+.intro-body {
+  margin: 0 0 0.7rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: #444;
+}
+
+/* The tip carries the actually-hidden feature on each slide, so it is set
+   apart rather than run together with the body */
+.intro-tip {
+  margin: 0;
+  padding: 0.6rem 0.7rem;
+  border-radius: 10px;
+  background: #f2f6f2;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #43604a;
+  text-align: left;
+}
+
+.intro-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 1.1rem;
+}
+
+.intro-dots {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.intro-dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: #d3d7db;
+  cursor: pointer;
+}
+
+.intro-dot.is-current {
+  background: #4CAF50;
+}
+
+.intro-skip {
+  padding: 0.45rem 0.2rem;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.85rem;
+  color: #7a8087;
+  cursor: pointer;
+}
+
+.intro-next {
+  padding: 0.45rem 1rem;
+  border: none;
+  border-radius: 9px;
+  background: #4CAF50;
+  font: inherit;
+  font-size: 0.88rem;
+  color: #fff;
+  cursor: pointer;
+}
+
+.intro-next:hover {
+  background: #43a047;
+}
+
+/* --- slide art --- */
+.intro-art-calendar {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.intro-day {
+  position: relative;
+  width: 44px;
+  height: 56px;
+  padding-top: 0.3rem;
+  border: 1px solid #e4e6e9;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.8rem;
+  color: #9aa0a6;
+}
+
+.intro-day.is-today {
+  color: #333;
+  font-weight: 600;
+}
+
+.intro-day.is-selected {
+  border: 2px solid #1a73e8;
+  background: #e3f0fd;
+  color: #1a73e8;
+  font-weight: 600;
+}
+
+/* A fingertip on the selected day, so the slide shows the tap rather than
+   only describing it */
+.intro-tap {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  border-radius: 50%;
+  background: rgba(26, 115, 232, 0.35);
+  box-shadow: 0 0 0 5px rgba(26, 115, 232, 0.14);
+}
+
+.intro-art-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.intro-typed {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #dcdfe3;
+  border-radius: 8px;
+  background: #fff;
+  color: #555;
+}
+
+.intro-arrow {
+  color: #9aa0a6;
+}
+
+.intro-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem 0.35rem 0.35rem;
+  border: 2px solid #2e7d32;
+  border-radius: 999px;
+  background: #fff;
+  font-weight: 500;
+}
+
+.intro-chip-emoji {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid #2e7d32;
+  background: #c8e6c9;
+  font-size: 0.8rem;
+}
+
+.intro-art-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  width: 12rem;
+}
+
+.intro-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #e4e6e9;
+  border-left: 3px solid #4CAF50;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.82rem;
+  text-align: left;
+}
+
+.intro-row.is-lifted {
+  transform: translateX(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+}
+
+/* The six-dot drag handle, drawn rather than shipped as an image */
+.intro-grip {
+  flex: none;
+  width: 8px;
+  height: 14px;
+  background-image: radial-gradient(circle, #b6bcc2 1.1px, transparent 1.2px);
+  background-size: 4px 4.7px;
+}
+
+.intro-art-shield svg {
+  width: 62px;
+  height: 62px;
+  fill: none;
+  stroke: #4CAF50;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dark-mode .intro-card {
+  background: #2b2b2b;
+  color: #eee;
+}
+
+.dark-mode .intro-body {
+  color: #c3c8ce;
+}
+
+.dark-mode .intro-tip {
+  background: #22301f;
+  color: #b8d6bd;
+}
+
+.dark-mode .intro-dot {
+  background: #555;
+}
+
+.dark-mode .intro-skip {
+  color: #a0a6ad;
+}
+
+.dark-mode .intro-day,
+.dark-mode .intro-typed,
+.dark-mode .intro-chip,
+.dark-mode .intro-row {
+  background: #3a3a3a;
+  border-color: #555;
+  color: #ddd;
+}
+
+.dark-mode .intro-day.is-selected {
+  border-color: #64b5f6;
+  background: #24425e;
+  color: #90caf9;
+}
+
+.dark-mode .intro-row {
+  border-left-color: #4CAF50;
+}

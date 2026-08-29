@@ -16,6 +16,22 @@ function runHabitTrackerTests(env) {
   const DAY = 86400000;
   const NOW = 1700000000000;
 
+  section('the explainer shows once, and only to a new arrival');
+  {
+    const dm = fresh();
+    ok('a first arrival with no habits sees it', Intro.shouldShow(dm) === true);
+
+    Intro.markSeen();
+    ok('and not a second time', Intro.shouldShow(dm) === false);
+
+    resetStorage();
+    const returning = new DataManager();
+    returning.addHabit('💧 Water', 'good');
+    ok('someone who already has habits never sees it',
+       Intro.shouldShow(returning) === false,
+       'an existing user upgrading should not be shown a first-run tour');
+  }
+
   section('the backup reminder fires only when it should');
   {
     resetStorage();
