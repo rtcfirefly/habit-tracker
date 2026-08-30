@@ -1753,9 +1753,14 @@ input, select, button {
   pointer-events: none;
 }
 
-/* Screenshots get a ceiling; the drawn art is already its own size */
+/* The screenshot takes every pixel the slide's own wording leaves it, up to a
+   ceiling, and gives them back on a short screen. A fixed height either wastes
+   the room a one-line title leaves on a tall phone, or overflows a 568px one -
+   flex-shrink settles both without a media query. */
 .intro-art.is-shot {
-  height: 240px;
+  flex: 0 1 auto;
+  height: 330px;
+  min-height: 0;
 }
 
 /* Art sizes itself; without this the column layouts stretch to the card */

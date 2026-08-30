@@ -22,9 +22,9 @@ const SLIDES = [
     // the app the slide is explaining. Both themes ship because a light
     // screenshot on a dark card looks like a bug.
     artClass: 'is-shot',
-    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.13.1"
+    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.13.2"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">
-          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.13.1"
+          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.13.2"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">`,
     title: 'Tap a day, then tap what you did',
     body: 'Habit buttons stay greyed out until a day is selected.'
@@ -52,9 +52,9 @@ const SLIDES = [
     // The gear, because "in settings" is not much use to someone who has not
     // worked out that the one button in the header is a button
     artClass: 'is-strip',
-    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.13.1"
+    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.13.2"
                alt="The settings button in the top right of the header" width="390" height="64">
-          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.13.1"
+          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.13.2"
                alt="The settings button in the top right of the header" width="390" height="64">`,
     title: 'The gear opens settings',
     body: 'Everything about your habits lives in there.'
