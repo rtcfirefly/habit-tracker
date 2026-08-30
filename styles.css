@@ -1892,63 +1892,11 @@ input, select, button {
   background: rgba(0, 0, 0, 0.06);
 }
 
-/* --- slide art --- */
-.intro-art-calendar {
-  display: flex;
-  gap: 0.4rem;
-}
-
-.intro-day {
-  position: relative;
-  width: 44px;
-  height: 56px;
-  padding-top: 0.3rem;
-  border: 1px solid #e4e6e9;
-  border-radius: 8px;
-  background: #fff;
-  font-size: 0.8rem;
-  color: #9aa0a6;
-}
-
-.intro-day.is-today {
-  color: #333;
-  font-weight: 600;
-}
-
-.intro-day.is-selected {
-  border: 2px solid #1a73e8;
-  background: #e3f0fd;
-  color: #1a73e8;
-  font-weight: 600;
-}
-
-/* A fingertip on the selected day, so the slide shows the tap rather than
-   only describing it */
-.intro-tap {
-  position: absolute;
-  left: 50%;
-  bottom: 6px;
-  width: 16px;
-  height: 16px;
-  margin-left: -8px;
-  border-radius: 50%;
-  background: rgba(26, 115, 232, 0.35);
-  box-shadow: 0 0 0 5px rgba(26, 115, 232, 0.14);
-}
-
 .intro-art-name {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 0.85rem;
-}
-
-.intro-typed {
-  padding: 0.4rem 0.6rem;
-  border: 1px solid #dcdfe3;
-  border-radius: 8px;
-  background: #fff;
-  color: #555;
 }
 
 .intro-arrow {
@@ -2014,16 +1962,6 @@ input, select, button {
   background-size: 4px 4.7px;
 }
 
-.intro-art-shield svg {
-  width: 62px;
-  height: 62px;
-  fill: none;
-  stroke: #4CAF50;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
 .dark-mode .intro-card {
   background: #2b2b2b;
   color: #eee;
@@ -2066,19 +2004,11 @@ input, select, button {
   background: rgba(255, 255, 255, 0.09);
 }
 
-.dark-mode .intro-day,
-.dark-mode .intro-typed,
 .dark-mode .intro-chip,
 .dark-mode .intro-row {
   background: #3a3a3a;
   border-color: #555;
   color: #ddd;
-}
-
-.dark-mode .intro-day.is-selected {
-  border-color: #64b5f6;
-  background: #24425e;
-  color: #90caf9;
 }
 
 .dark-mode .intro-row {
@@ -2129,12 +2059,6 @@ input, select, button {
 }
 
 /* === EXPLAINER ART ADDED WITH THE LONGER DECK === */
-/* Neighbouring-month days on the jump-months slide */
-.intro-day.is-other {
-  background: #fafafa;
-  color: #c2c6ca;
-}
-
 .intro-art-chips {
   display: flex;
   flex-direction: column;
@@ -2167,7 +2091,7 @@ input, select, button {
 }
 
 .intro-art-counter {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.45rem 0.7rem;
@@ -2223,11 +2147,6 @@ input, select, button {
   height: 1em;
   margin-left: 2px;
   background: #1a73e8;
-}
-
-.dark-mode .intro-day.is-other {
-  background: #333;
-  color: #6b7076;
 }
 
 .dark-mode .intro-art-counter,

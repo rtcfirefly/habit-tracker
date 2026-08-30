@@ -22,49 +22,39 @@ const SLIDES = [
     // the app the slide is explaining. Both themes ship because a light
     // screenshot on a dark card looks like a bug.
     artClass: 'is-shot',
-    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.12.0"
+    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.13.0"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">
-          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.12.0"
+          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.13.0"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">`,
     title: 'Tap a day, then tap what you did',
     body: 'Habit buttons stay greyed out until a day is selected.'
   },
   {
-    art: `<div class="intro-art-name">
-            <span class="intro-typed">💧 Water</span>
-            <span class="intro-arrow">→</span>
-            <span class="intro-chip good"><span class="intro-chip-emoji good">💧</span> Water</span>
-          </div>`,
-    title: 'Start the name with an emoji',
-    body: 'It becomes that habit’s icon on the calendar.'
-  },
-  {
+    // Naming, the three tap-once types and the counter were a slide each.
+    // They are one idea seen four ways - what a habit can be - and paging
+    // through four near-identical cards to learn it was the wrong shape.
     art: `<div class="intro-art-chips">
             <span class="intro-chip good"><span class="intro-chip-emoji good">💧</span> Water</span>
             <span class="intro-chip neutral"><span class="intro-chip-emoji neutral">☕</span> Coffee</span>
             <span class="intro-chip bad"><span class="intro-chip-emoji bad">🚬</span> Smoke</span>
+            <span class="intro-art-counter">
+              <span class="intro-chip-emoji counter">💊</span>
+              <span class="intro-counter-name">Vitamins</span>
+              <span class="intro-counter-btn minus">−</span>
+              <span class="intro-counter-value">1/2</span>
+              <span class="intro-counter-btn plus">+</span>
+            </span>
           </div>`,
-    title: 'Good, neutral or bad',
-    body: 'Each is a single tap on the day you picked.'
-  },
-  {
-    art: `<div class="intro-art-counter">
-            <span class="intro-chip-emoji counter">💊</span>
-            <span class="intro-counter-name">Vitamins</span>
-            <span class="intro-counter-btn minus">−</span>
-            <span class="intro-counter-value">1/2</span>
-            <span class="intro-counter-btn plus">+</span>
-          </div>`,
-    title: 'Counters track a daily goal',
-    body: 'Tap plus and minus until you reach it.'
+    title: 'Good, neutral, bad, or a counter',
+    body: 'Start the name with an emoji and it becomes the icon.'
   },
   {
     // The gear, because "in settings" is not much use to someone who has not
     // worked out that the one button in the header is a button
     artClass: 'is-strip',
-    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.12.0"
+    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.13.0"
                alt="The settings button in the top right of the header" width="390" height="64">
-          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.12.0"
+          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.13.0"
                alt="The settings button in the top right of the header" width="390" height="64">`,
     title: 'The gear opens settings',
     body: 'Everything about your habits lives in there.'
@@ -88,13 +78,6 @@ const SLIDES = [
     body: 'It turns into a text box where it sits.'
   },
   {
-    art: `<div class="intro-art-shield">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z"/><polyline points="9 12 11 14 15 10"/></svg>
-          </div>`,
-    title: 'Everything stays on this device',
-    body: 'No account, no server — and clearing browser data erases it.'
-  },
-  {
     // The three controls drawn and labelled, rather than a screenshot of the
     // whole dialog with a ring round the corner it lives in. A ring says
     // where; it does not say which button does what, and that was the part
@@ -115,8 +98,8 @@ const SLIDES = [
             <span class="intro-bk-label c2">Export a copy</span>
             <span class="intro-bk-label c3">Import a copy</span>
           </div>`,
-    title: 'Backing up sits at the foot of settings',
-    body: 'Choose a file once and it stays up to date on its own.'
+    title: 'Everything stays on this device',
+    body: 'No account and no server, so back it up from the foot of settings.'
   }
 ];
 
