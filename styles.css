@@ -783,7 +783,6 @@ input, select, button {
   border-radius: 12px;
   margin-bottom: 0.5rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  cursor: grab;
   transition: all 0.2s;
   position: relative;
 }
@@ -813,9 +812,23 @@ input, select, button {
   border-left: 4px solid #2196F3;
 }
 
+/* Lifted rather than faded: it follows the finger now, and something being
+   dragged under your thumb should look like the thing on top */
 .manage-item.dragging {
-  opacity: 0.5;
-  transform: rotate(2deg);
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+  transition: none;
+}
+
+/* Where it will land if you let go */
+.manage-item.drop-target {
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.35);
+}
+
+.dark-mode .manage-item.dragging {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
 }
 
 .manage-item-content {
@@ -829,6 +842,9 @@ input, select, button {
 .drag-handle {
   flex: none;
   cursor: grab;
+  /* The gesture belongs to the drag, not to the scroller. Without this a touch
+     drag is stolen by the page and the row never moves. */
+  touch-action: none;
   font-size: 1.1rem;
   color: #999;
   user-select: none;
@@ -839,10 +855,11 @@ input, select, button {
 
 .drag-handle:hover {
   color: #555;
+  background: rgba(0, 0, 0, 0.1);
 }
 
-.drag-handle:hover {
-  background: rgba(0,0,0,0.1);
+.drag-handle:active {
+  cursor: grabbing;
 }
 
 .habit-name-display {

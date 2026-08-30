@@ -138,7 +138,8 @@ class HabitManager {
   createHabitItem(habit, index) {
     const wrapper = document.createElement('div');
     wrapper.className = `manage-item ${habit.type}`;
-    wrapper.draggable = true;
+    // Read back after a drag to work out where the row landed
+    wrapper.dataset.index = String(index);
     
     const content = document.createElement('div');
     content.className = 'manage-item-content';
@@ -164,6 +165,20 @@ class HabitManager {
     dragHandle.textContent = '⠿';
     dragHandle.className = 'drag-handle';
     return dragHandle;
+  }
+
+  // Which row a pointer is over. Pure, because the one thing this file needs
+  // proving is the arithmetic: a touch drag cannot be driven by the screenshot
+  // harness or by the DOM stub, so the browser half is verified by hand and
+  // this half is verified by the suite.
+  static rowUnder(rows, pointerY) {
+    if (!rows.length) return null;
+    for (const row of rows) {
+      if (pointerY >= row.top && pointerY <= row.bottom) return row.index;
+    }
+    // Past either end, the nearest row is the answer - dragging above the
+    // first row means the top, not nothing
+    return pointerY < rows[0].top ? rows[0].index : rows[rows.length - 1].index;
   }
 
 
@@ -291,22 +306,65 @@ class HabitManager {
   
 
 
+  // Pointer events, not HTML5 drag and drop. Dragging a habit did nothing at
+  // all on a phone: dragstart/dragover/drop never fire for touch, and this app
+  // is used on a phone. Pointer events cover mouse and touch in one path.
+  //
+  // The grip starts the drag rather than the whole row, so the list still
+  // scrolls under a finger - and because the grip is what the app's own
+  // tooltip has always pointed at.
   addDragHandlers(wrapper, index) {
-    wrapper.addEventListener('dragstart', () => {
-      this.dragStartIndex = index;
+    const handle = wrapper.querySelector('.drag-handle');
+    if (!handle || !window.PointerEvent) return;
+
+    handle.addEventListener('pointerdown', (event) => {
+      // Or the browser takes the gesture for scrolling and the drag dies
+      event.preventDefault();
+
+      const list = wrapper.parentNode;
+      const startY = event.clientY;
+      let target = index;
+
+      // Measured once at the start: the rows do not move during the drag, only
+      // the dragged one does, and re-reading them mid-gesture would chase it
+      const rows = [...list.querySelectorAll('.manage-item')].map(element => {
+        const rect = element.getBoundingClientRect();
+        return { element, index: Number(element.dataset.index), top: rect.top, bottom: rect.bottom };
+      });
+
+      const mark = () => rows.forEach(row => {
+        row.element.classList.toggle('drop-target', row.index === target && row.element !== wrapper);
+      });
+
+      const onMove = (moveEvent) => {
+        wrapper.style.transform = `translateY(${moveEvent.clientY - startY}px)`;
+        target = HabitManager.rowUnder(rows, moveEvent.clientY);
+        mark();
+      };
+
+      const onEnd = (endEvent) => {
+        handle.removeEventListener('pointermove', onMove);
+        handle.removeEventListener('pointerup', onEnd);
+        handle.removeEventListener('pointercancel', onCancel);
+        wrapper.style.transform = '';
+        wrapper.classList.remove('dragging');
+        rows.forEach(row => row.element.classList.remove('drop-target'));
+
+        if (endEvent.type === 'pointerup' && target !== null && target !== index) {
+          this.dataManager.reorderHabits(index, target);
+          this.renderForm();
+          this.notifyHabitsChanged();
+        }
+      };
+
+      const onCancel = (cancelEvent) => onEnd(cancelEvent);
+
       wrapper.classList.add('dragging');
-    });
-    
-    wrapper.addEventListener('dragend', () => {
-      wrapper.classList.remove('dragging');
-    });
-    
-    wrapper.addEventListener('dragover', (e) => e.preventDefault());
-    
-    wrapper.addEventListener('drop', () => {
-      this.dataManager.reorderHabits(this.dragStartIndex, index);
-      this.renderForm();
-      this.notifyHabitsChanged();
+      // Capture, so the gesture keeps reporting once the finger leaves the grip
+      handle.setPointerCapture(event.pointerId);
+      handle.addEventListener('pointermove', onMove);
+      handle.addEventListener('pointerup', onEnd);
+      handle.addEventListener('pointercancel', onCancel);
     });
   }
 

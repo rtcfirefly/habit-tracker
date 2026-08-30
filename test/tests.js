@@ -16,6 +16,23 @@ function runHabitTrackerTests(env) {
   const DAY = 86400000;
   const NOW = 1700000000000;
 
+  section('a drag lands on the row under the finger');
+  {
+    // Three rows, 40px each, stacked from y=100
+    const rows = [
+      { index: 0, top: 100, bottom: 140 },
+      { index: 1, top: 140, bottom: 180 },
+      { index: 2, top: 180, bottom: 220 }
+    ];
+    ok('a finger on the first row targets it', HabitManager.rowUnder(rows, 110) === 0);
+    ok('on the second targets the second', HabitManager.rowUnder(rows, 160) === 1);
+    ok('on the third targets the third', HabitManager.rowUnder(rows, 200) === 2);
+    ok('dragged above the list, the top row', HabitManager.rowUnder(rows, 10) === 0,
+       'dragging past the top should mean the top, not nothing');
+    ok('dragged below the list, the bottom row', HabitManager.rowUnder(rows, 900) === 2);
+    ok('an empty list has no target', HabitManager.rowUnder([], 120) === null);
+  }
+
   section('every explainer slide makes one point');
   {
     const slides = Intro.slides;

@@ -17,6 +17,7 @@ class El {
     this.parentNode = null;
     this.disabled = false;
     this.tabIndex = 0;
+    this.dataset = {};
 
     const self = this;
     this.classList = {
@@ -103,6 +104,11 @@ globalThis.document = {
   createElement: tag => new El(tag),
   createTextNode: text => { const e = new El('#text'); e.textContent = text; return e; }
 };
+
+// Enough of a window for feature detection. PointerEvent is present so the
+// drag wiring takes its real path here rather than the early return, even
+// though a gesture itself cannot be driven from this stub.
+globalThis.window = { PointerEvent: function PointerEvent() {} };
 
 globalThis.localStorage = {
   _d: {},
