@@ -1,4 +1,10 @@
 /* === BASE STYLES === */
+/* Set by the inline script in the head before first paint; ThemeManager moves
+   the same class onto the body once its scripts have loaded */
+html.dark-mode {
+  background: #1e1e1e;
+}
+
 body {
   font-family: sans-serif;
   margin: 1rem;
@@ -1116,16 +1122,18 @@ input, select, button {
   color: #b0b4ba;
 }
 
-/* The appearance button carries both icons; the class on body picks one */
-.when-dark {
+/* The appearance button carries all three icons; the mode class on body picks
+   one. Keyed on the mode rather than the resolved colours, so system reads as
+   system instead of impersonating whichever of the two it currently matches. */
+.footer-action .icon-system,
+.footer-action .icon-light,
+.footer-action .icon-dark {
   display: none;
 }
 
-.dark-mode .when-light {
-  display: none;
-}
-
-.dark-mode .when-dark {
+.mode-system .icon-system,
+.mode-light .icon-light,
+.mode-dark .icon-dark {
   display: inline-flex;
 }
 
@@ -2048,8 +2056,8 @@ input, select, button {
   height: auto;
 }
 
-/* Written as a pair rather than reusing .when-light / .when-dark, whose
-   .dark-mode variant outranks a plain class and would show both at once */
+/* Written as a pair rather than reusing the appearance button's icon classes,
+   whose .dark-mode variants outrank a plain class and would show both at once */
 .intro-pic-dark {
   display: none;
 }
