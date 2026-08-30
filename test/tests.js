@@ -105,14 +105,26 @@ function runHabitTrackerTests(env) {
        marked.length === 1 && marked[0].childElementCount === 1,
        marked.map(m => m.childElementCount).join(','));
 
+    // A day ticked before the switch, with no count of its own, keeps its mark:
+    // the count stands in for the tick only where there is a count
+    const earlier = new Date(2026, 7, 10).toDateString();
+    dm.toggleHabitCompletion(earlier, '🍺 NA Beer');
+    cal.render();
+    const both = list(calEl.querySelectorAll('.day'))
+      .map(d => d.querySelector('.day-dots'))
+      .filter(dots => dots.childElementCount > 0);
+    ok('a day with only the old tick still shows it',
+       both.length === 2 && both.every(d => d.childElementCount === 1),
+       both.map(m => m.childElementCount).join(','));
+
     // Turning counting off again brings the old tick back into view
     dm.updateHabit(0, '🍺 NA Beer', 'neutral', null, false);
     cal.render();
     const after = list(calEl.querySelectorAll('.day'))
       .map(d => d.querySelector('.day-dots'))
       .filter(dots => dots.childElementCount > 0);
-    ok('and it is still one icon once counting is switched off',
-       after.length === 1 && after[0].childElementCount === 1,
+    ok('and both days still carry one icon once counting is switched off',
+       after.length === 2 && after.every(d => d.childElementCount === 1),
        after.map(m => m.childElementCount).join(','));
   }
 
