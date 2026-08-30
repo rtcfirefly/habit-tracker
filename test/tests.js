@@ -482,14 +482,15 @@ function runHabitTrackerTests(env) {
     ok('opening the dialog puts one entry on the stack', history.entries.length === 1);
 
     manager.openHabitScreen(0);
-    ok('a second panel does not add a second entry', history.entries.length === 1,
-       'two entries would need two back() calls to close both, which browsers may coalesce');
+    ok('the panel on top adds one of its own', history.entries.length === 2);
 
     window.fireBack();
     ok('back closes the habit screen first',
        modal.querySelectorAll('.habit-screen').length === 0 && body.hidden === false);
     ok('the dialog is still open behind it', modal.style.display !== 'none');
-    ok('and the trap is re-armed for the next press', history.entries.length === 1);
+    ok('and the dialog’s own entry is still on the stack, for the next press',
+       history.entries.length === 1,
+       'this is the one that used to be missing, so the second press left the app');
 
     window.fireBack();
     ok('back then closes the dialog', modal.style.display === 'none');
@@ -501,7 +502,18 @@ function runHabitTrackerTests(env) {
     manager.open();
     ok('open again, one entry', history.entries.length === 1);
     manager.close();
+    BackTrap.flush();
     ok('closing by hand takes it off', history.entries.length === 0);
+
+    // Closing the dialog with a screen open unwinds two entries, which has to
+    // be one go(-2) rather than two back() calls a browser may fold into one
+    manager.open();
+    manager.openHabitScreen(0);
+    ok('two panels, two entries', history.entries.length === 2);
+    manager.close();
+    BackTrap.flush();
+    ok('closing both at once gives both entries back, in one unwind',
+       history.entries.length === 0, String(history.entries.length));
   }
 
   section('one habit screen at a time, and the dialog takes it with it');

@@ -4,52 +4,79 @@
 // From inside a dialog, a sheet or the guide that is never what was meant: the
 // gesture means "leave this", and the thing to leave is the panel on top.
 //
-// One history entry covers however many panels are open, rather than one each.
-// Popping it closes the topmost panel and, if anything is still open, pushes a
-// fresh entry so the next back is caught too. Two entries for two panels would
-// mean closing both at once needs two back() calls in the same tick, which
-// browsers are entitled to coalesce - this way the count never goes above one.
+// One history entry per open panel, pushed as it opens. Back then pops exactly
+// one and the browser does the unwinding for us.
+//
+// The first version of this kept a single entry and pushed a replacement from
+// inside the popstate handler, to avoid ever needing two back() calls at once.
+// Re-arming during a pop does not reliably take, so the second press found
+// nothing of ours on the stack and left the app - which is the whole thing
+// this exists to prevent. Closing several panels at once is handled instead by
+// counting what is owed and unwinding it with one history.go(-n).
 
 class BackTrap {
-  // Called by a panel when it opens. close() will be called with no arguments
-  // when the gesture reaches it.
+  // Called by a panel as it opens
   static push(close) {
     if (!BackTrap.layers.length) {
-      history.pushState({ overlay: true }, '');
       window.addEventListener('popstate', BackTrap.onPop);
     }
     BackTrap.layers.push(close);
+    history.pushState({ overlay: BackTrap.layers.length }, '');
   }
 
   // Called by a panel that closed some other way - a button, Escape, the
-  // backdrop. The entry is only given back once the last panel has gone.
+  // backdrop. Its entry is still on the stack and has to come off, or the next
+  // back press would be swallowed by an entry nothing is listening to.
   static remove(close) {
     const at = BackTrap.layers.indexOf(close);
     if (at === -1) return;
 
     BackTrap.layers.splice(at, 1);
-    if (BackTrap.layers.length) return;
+    if (!BackTrap.layers.length) {
+      window.removeEventListener('popstate', BackTrap.onPop);
+    }
 
-    window.removeEventListener('popstate', BackTrap.onPop);
-    // Ours to give back: nothing else pushed it, and leaving it on the stack
-    // would make the next back press do nothing at all
-    history.back();
+    // Not while handling a pop: the browser has already taken that entry
+    if (BackTrap.popping) return;
+
+    // Batched, because closing the dialog also closes the habit screen inside
+    // it - two entries in one tick, which is one go(-2) rather than two
+    // back() calls a browser may fold into one
+    BackTrap.owed += 1;
+    if (BackTrap.scheduled) return;
+
+    BackTrap.scheduled = true;
+    Promise.resolve().then(BackTrap.flush);
+  }
+
+  // Unwind whatever is owed, now. Called on its own by the batching above; the
+  // tests call it directly, because a microtask has not run yet at the point
+  // an assertion right after a close wants to look at the stack.
+  static flush() {
+    const owed = BackTrap.owed;
+    BackTrap.owed = 0;
+    BackTrap.scheduled = false;
+    if (owed > 0) history.go(-owed);
   }
 }
 
 BackTrap.layers = [];
+BackTrap.owed = 0;
+BackTrap.scheduled = false;
+BackTrap.popping = false;
 
 BackTrap.onPop = () => {
   const close = BackTrap.layers.pop();
-
-  if (BackTrap.layers.length) {
-    history.pushState({ overlay: true }, '');
-  } else {
+  if (!BackTrap.layers.length) {
     window.removeEventListener('popstate', BackTrap.onPop);
   }
 
-  // Last, and after the bookkeeping: the panel's own close() will call
-  // remove(), which finds nothing and does nothing, which is right - the
-  // browser has already taken the entry
-  if (close) close();
+  // The panel's own close() will call remove(), which must not ask the browser
+  // to go back again for an entry it has just taken by itself
+  BackTrap.popping = true;
+  try {
+    if (close) close();
+  } finally {
+    BackTrap.popping = false;
+  }
 };

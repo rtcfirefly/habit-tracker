@@ -303,7 +303,15 @@ DRIVE = """<script>
   // finished and the measurement below would read the state before it, which
   // looks exactly like the trap not working. This fires the same event the
   // browser fires, in time to be measured.
-  if (params.get('back')) {
+  // back=N presses it N times, so a shot can walk out through several panels.
+  // Dispatched rather than history.back(): back() is asynchronous, so the
+  // popstate would land after this script finished and the measurement below
+  // would read the state before it - which looks exactly like the trap not
+  // working. This fires the same event the browser fires, in time to be seen.
+  // It does not unwind the real stack, so it tests the unwinding of panels
+  // rather than the browser's own bookkeeping.
+  var presses = +params.get('back') || 0;
+  for (var press = 0; press < presses; press++) {
     window.dispatchEvent(new PopStateEvent('popstate', { state: history.state }));
   }
 

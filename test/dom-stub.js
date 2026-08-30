@@ -136,7 +136,17 @@ globalThis.history = {
   entries: [],
   state: null,
   pushState(state) { this.entries.push(state); this.state = state; },
-  back() { this.entries.pop(); this.state = this.entries[this.entries.length - 1] || null; }
+  back() { this.go(-1); },
+  // Each step back is a pop the page hears about, which is what the browser
+  // does and what the trap's bookkeeping is counted against
+  go(delta) {
+    for (let step = 0; step < Math.abs(delta); step++) {
+      if (!this.entries.length) break;
+      this.entries.pop();
+      this.state = this.entries[this.entries.length - 1] || null;
+      (globalThis.window.listeners.popstate || []).slice().forEach(fn => fn());
+    }
+  }
 };
 
 globalThis.window = {
@@ -148,10 +158,9 @@ globalThis.window = {
     const at = of.indexOf(fn);
     if (at !== -1) of.splice(at, 1);
   },
-  // What a back gesture does: the browser pops its own entry, then tells the page
+  // What a back gesture does: the browser pops its entry and tells the page
   fireBack() {
-    globalThis.history.back();
-    (this.listeners.popstate || []).slice().forEach(fn => fn());
+    globalThis.history.go(-1);
   }
 };
 
