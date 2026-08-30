@@ -111,24 +111,27 @@ class HabitsView {
     count.className = 'counter-value';
     count.textContent = `${value}`;
 
-    // The word carries the direction, so the number does not have to: a goal
-    // is something to reach, a limit is something to stay under, and a tally
-    // is just a number.
+    // Just the two numbers. Which way they mean is already on the button: a
+    // limit belongs to a bad habit, which is red, and going past one turns the
+    // number red and rings the button. Spelling "of max 3" out here cost more
+    // width than the whole name on a 320px phone.
     if (DataManager.hasTarget(habit)) {
       const target = document.createElement('span');
       target.className = 'counter-goal';
-      target.textContent = DataManager.direction(habit.type) === 'limit'
-        ? ` of max ${habit.goal}`
-        : `/${habit.goal}`;
+      target.textContent = `/${habit.goal}`;
       count.appendChild(target);
     }
 
     button.appendChild(nameSpan);
     button.appendChild(count);
 
-    button.title = DataManager.hasTarget(habit)
-      ? `${habit.name}: ${value} of ${habit.goal} — tap to add one`
-      : `${habit.name}: ${value} — tap to add one`;
+    const said = DataManager.hasTarget(habit)
+      ? (DataManager.direction(habit.type) === 'limit'
+          ? `${value} of a limit of ${habit.goal}`
+          : `${value} of a goal of ${habit.goal}`)
+      : `counted ${value}`;
+    button.title = `${habit.name}: ${said} — tap to add one`;
+    button.setAttribute('aria-label', button.title);
 
     button.addEventListener('click', () => {
       if (!this.selectedDate) return;
