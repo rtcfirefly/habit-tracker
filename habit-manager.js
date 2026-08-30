@@ -1,12 +1,14 @@
-// Tabs need a label short enough for four of them to sit across a 320px phone
-// without wrapping; the prose forms are for placeholders and empty states.
-const TYPE_TABS = { good: 'Good', bad: 'Bad', neutral: 'Neutral', counter: 'Counter' };
+// Three tabs, not four: counting is a property of a habit now, not a kind of
+// one. The prose forms are for placeholders and empty states.
+const TYPE_TABS = { good: 'Good', bad: 'Bad', neutral: 'Neutral' };
 const TYPE_NOUN = {
   good: 'good habit',
   bad: 'bad habit',
-  neutral: 'neutral habit',
-  counter: 'counter habit'
+  neutral: 'neutral habit'
 };
+
+// What the number is called, per kind. The word is the whole explanation.
+const TARGET_WORD = { good: 'Goal', bad: 'Limit' };
 
 class HabitManager {
   constructor(modalElement, formElement, dataManager) {
@@ -38,16 +40,6 @@ class HabitManager {
     }
   }
 
-  createHabitTypeOptions() {
-    const types = ['good', 'bad', 'neutral', 'counter'];
-    return types.map(type => {
-      const option = document.createElement('option');
-      option.value = type;
-      option.text = type;
-      return option;
-    });
-  }
-
   createAddHabitSection(currentType = null) {
     const type = currentType || this.activeTab;
 
@@ -63,13 +55,6 @@ class HabitManager {
     // is about to type rather than on a card they read once and closed
     nameInput.placeholder = `Add a ${TYPE_NOUN[type]}, e.g. 💧 Water`;
     nameInput.setAttribute('aria-label', `Name of the new ${TYPE_NOUN[type]}`);
-
-    const goalInput = document.createElement('input');
-    goalInput.type = 'number';
-    goalInput.className = 'goal-input';
-    goalInput.placeholder = 'Goal';
-    goalInput.min = '1';
-    goalInput.setAttribute('aria-label', 'Daily goal');
 
     const addButton = document.createElement('button');
     addButton.className = 'add-habit-button';
@@ -88,11 +73,9 @@ class HabitManager {
         return;
       }
 
-      const goal = type === 'counter' ? parseInt(goalInput.value) || 1 : null;
-
       // Reported next to the field rather than in an alert(), which stole focus
       // and threw away what had been typed
-      if (!this.dataManager.addHabit(name, type, goal)) {
+      if (!this.dataManager.addHabit(name, type)) {
         error.textContent = `You already have a habit called “${name}”.`;
         nameInput.classList.add('invalid');
         nameInput.focus();
@@ -115,13 +98,9 @@ class HabitManager {
         submit();
       }
     };
-    goalInput.onkeydown = nameInput.onkeydown;
     addButton.onclick = submit;
 
     row.appendChild(nameInput);
-    if (type === 'counter') {
-      row.appendChild(goalInput);
-    }
     row.appendChild(addButton);
 
     section.appendChild(row);
@@ -159,6 +138,224 @@ class HabitManager {
     this.addDragHandlers(wrapper, index);
     
     return wrapper;
+  }
+
+  // "goal 30" / "max 3" / "counting" - or nothing at all when the habit is a
+  // plain one tap. Short enough to sit on a row beside a name at 320px.
+  static countSummary(habit) {
+    if (!DataManager.isCounted(habit)) return '';
+    if (!DataManager.hasTarget(habit)) return 'counting';
+    return DataManager.direction(habit.type) === 'limit'
+      ? `max ${habit.goal}`
+      : `goal ${habit.goal}`;
+  }
+
+  // One habit, on its own. It replaces the dialog's body the way the About view
+  // does rather than opening a second dialog over the first: two dialogs means
+  // two focus traps and two Escape handlers, and the one underneath wins the
+  // key while the one on top holds the eye.
+  openHabitScreen(index) {
+    const habit = this.dataManager.getHabits()[index];
+    if (!habit) return;
+
+    const body = this.modalElement.querySelector('.modal-body');
+    const title = this.modalElement.querySelector('#manage-modal-title');
+    const previousTitle = title.textContent;
+
+    const screen = document.createElement('div');
+    screen.className = 'habit-screen';
+    screen.tabIndex = -1;
+
+    const close = () => {
+      screen.remove();
+      body.hidden = false;
+      title.textContent = previousTitle;
+      this.renderForm();
+      this.notifyHabitsChanged();
+      const back = this.modalElement.querySelector('.habit-name-display');
+      (back || this.modalElement.querySelector('.modal-content')).focus();
+    };
+
+    const draw = () => {
+      const current = this.dataManager.getHabits()[index];
+      this.clearElement(screen);
+      screen.appendChild(this.screenBack(close));
+      screen.appendChild(this.screenName(current, index));
+      screen.appendChild(this.screenCounting(current, index, draw));
+      screen.appendChild(this.screenDelete(current, index, close));
+    };
+
+    // No kind control: which tab you came from already said it, and a habit
+    // that is in the wrong one is moved by dragging it, not by a second way of
+    // saying the same thing
+    title.textContent = EmojiUtils.removeEmoji(habit.name) || habit.name;
+    body.hidden = true;
+    this.modalElement.querySelector('.modal-content').appendChild(screen);
+    draw();
+    screen.focus();
+  }
+
+  screenBack(close) {
+    const back = document.createElement('button');
+    back.className = 'habit-screen-back';
+    back.textContent = '‹ Back';
+    back.onclick = close;
+    return back;
+  }
+
+  screenName(habit, index) {
+    const field = document.createElement('div');
+    field.className = 'habit-screen-field';
+
+    const label = document.createElement('label');
+    label.className = 'habit-screen-label';
+    label.textContent = 'Name';
+    label.htmlFor = 'habit-screen-name';
+
+    const input = document.createElement('input');
+    input.className = 'habit-screen-input';
+    input.id = 'habit-screen-name';
+    input.value = habit.name;
+
+    const save = () => {
+      const name = input.value.trim();
+      if (!name || name === habit.name) {
+        input.value = habit.name;
+        return;
+      }
+      if (!this.dataManager.updateHabit(index, name, habit.type)) {
+        input.value = habit.name;
+      }
+    };
+
+    input.onblur = save;
+    input.onkeydown = (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        input.blur();
+      }
+    };
+
+    field.appendChild(label);
+    field.appendChild(input);
+    return field;
+  }
+
+  screenCounting(habit, index, redraw) {
+    const field = document.createElement('div');
+    field.className = 'habit-screen-field';
+
+    const label = document.createElement('label');
+    label.className = 'habit-screen-label';
+    label.textContent = 'Counting';
+    field.appendChild(label);
+
+    const counted = DataManager.isCounted(habit);
+    const seg = document.createElement('div');
+    seg.className = 'habit-screen-seg';
+    seg.setAttribute('role', 'group');
+
+    [['Once', false], ['Counts', true]].forEach(([text, on]) => {
+      const choice = document.createElement('button');
+      choice.className = 'habit-screen-choice' + (counted === on ? ' on' : '');
+      choice.textContent = text;
+      choice.setAttribute('aria-pressed', String(counted === on));
+      choice.onclick = () => {
+        this.dataManager.updateHabit(index, habit.name, habit.type, on ? (habit.goal || 1) : null, on);
+        redraw();
+      };
+      seg.appendChild(choice);
+    });
+
+    field.appendChild(seg);
+
+    if (counted) {
+      field.appendChild(DataManager.direction(habit.type) === 'tally'
+        ? this.screenTally()
+        : this.screenTarget(habit, index, redraw));
+    } else {
+      field.appendChild(this.screenSays('One tap and it is done.'));
+    }
+
+    return field;
+  }
+
+  // Neutral counts and does not finish. There is nothing to reach, so there is
+  // no number to set - which is the whole reason neutral needs no choice
+  // between a goal and a limit.
+  screenTally() {
+    return this.screenSays('Counts up. There is nothing to reach.');
+  }
+
+  screenTarget(habit, index, redraw) {
+    const wrap = document.createElement('div');
+
+    const word = TARGET_WORD[habit.type];
+    const goal = Number(habit.goal) > 0 ? Number(habit.goal) : 1;
+
+    const stepper = document.createElement('div');
+    stepper.className = 'habit-screen-stepper';
+
+    const set = (next) => {
+      this.dataManager.updateHabit(index, habit.name, habit.type, Math.max(1, next), true);
+      redraw();
+    };
+
+    const minus = document.createElement('button');
+    minus.className = 'habit-screen-step';
+    minus.textContent = '−';
+    minus.title = `One less than the ${word.toLowerCase()}`;
+    minus.disabled = goal <= 1;
+    minus.onclick = () => set(goal - 1);
+
+    const value = document.createElement('b');
+    value.textContent = String(goal);
+
+    const plus = document.createElement('button');
+    plus.className = 'habit-screen-step';
+    plus.textContent = '+';
+    plus.title = `One more than the ${word.toLowerCase()}`;
+    plus.onclick = () => set(goal + 1);
+
+    const unit = document.createElement('span');
+    unit.className = 'habit-screen-unit';
+    unit.textContent = 'a day';
+
+    const heading = document.createElement('span');
+    heading.className = 'habit-screen-word';
+    heading.textContent = word;
+
+    stepper.appendChild(heading);
+    stepper.appendChild(minus);
+    stepper.appendChild(value);
+    stepper.appendChild(plus);
+    stepper.appendChild(unit);
+
+    wrap.appendChild(stepper);
+    wrap.appendChild(this.screenSays(DataManager.direction(habit.type) === 'limit'
+      ? `Fine until you pass ${goal}.`
+      : `Done when you reach ${goal}.`));
+    return wrap;
+  }
+
+  screenSays(text) {
+    const says = document.createElement('p');
+    says.className = 'habit-screen-says';
+    says.textContent = text;
+    return says;
+  }
+
+  screenDelete(habit, index, close) {
+    const remove = document.createElement('button');
+    remove.className = 'habit-screen-delete';
+    remove.textContent = 'Delete habit';
+    remove.onclick = () => {
+      if (confirm(`Delete "${habit.name}"?`)) {
+        this.dataManager.deleteHabit(index);
+        close();
+      }
+    };
+    return remove;
   }
 
   createDragHandle() {
@@ -203,7 +400,7 @@ class HabitManager {
       display.textContent = habit.name;
     }
     
-    display.onclick = () => this.startInlineEdit(display, habit, index);
+    display.onclick = () => this.openHabitScreen(index);
     
     return display;
   }
@@ -263,30 +460,16 @@ class HabitManager {
     const controls = document.createElement('div');
     controls.className = 'habit-controls';
     
-    // Only show goal input for counter habits
-    if (habit.type === 'counter') {
-      const goalInput = document.createElement('input');
-      goalInput.type = 'number';
-      goalInput.className = 'goal-input';
-      goalInput.placeholder = 'Goal';
-      goalInput.min = '1';
-      goalInput.value = habit.goal || '';
-      goalInput.title = 'Goal for this counter habit';
-      goalInput.setAttribute('aria-label', `Daily goal for ${habit.name}`);
-
-      const goalLabel = document.createElement('span');
-      goalLabel.className = 'goal-label';
-      goalLabel.textContent = 'goal';
-      controls.appendChild(goalLabel);
-      
-      goalInput.onchange = (e) => {
-        const goal = parseInt(e.target.value) || 1;
-        this.dataManager.updateHabit(index, habit.name, habit.type, goal);
-        this.notifyHabitsChanged();
-      };
-      
-      controls.appendChild(goalInput);
+    // What counting this habit does, as text rather than a control. The row
+    // stays a row; the screen behind the name is where it is changed.
+    const summary = HabitManager.countSummary(habit);
+    if (summary) {
+      const note = document.createElement('span');
+      note.className = 'habit-count-note';
+      note.textContent = summary;
+      controls.appendChild(note);
     }
+
     
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'delete-btn';
@@ -377,13 +560,12 @@ class HabitManager {
     const groupedHabits = this.groupHabitsByType(habits);
     
     // Same order as the habit buttons under the calendar: good and bad at
-    // opposite ends with neutral between, counters last
-    const typeOrder = ['good', 'neutral', 'bad', 'counter'];
+    // opposite ends with neutral between
+    const typeOrder = ['good', 'neutral', 'bad'];
     const typeLabels = {
       good: 'Good Habits',
-      bad: 'Bad Habits', 
-      neutral: 'Neutral Habits',
-      counter: 'Counter Habits'
+      bad: 'Bad Habits',
+      neutral: 'Neutral Habits'
     };
     
     // Create tabs

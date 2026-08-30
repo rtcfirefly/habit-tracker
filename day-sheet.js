@@ -66,7 +66,7 @@ class DaySheet {
     // The same order as the buttons under the calendar, from the same function,
     // so the two lists cannot drift apart
     DataManager.inDisplayOrder(habits).forEach(habit => list.appendChild(
-      habit.type === 'counter' ? this.counterRow(habit) : this.toggleRow(habit)
+      DataManager.isCounted(habit) ? this.counterRow(habit) : this.toggleRow(habit)
     ));
   }
 
@@ -128,7 +128,10 @@ class DaySheet {
 
   counterRow(habit) {
     const value = this.dataManager.getCounterValue(this.dateKey, habit.name);
-    const row = this.row(habit, DataManager.progressPercent(value, habit.goal));
+    const row = this.row(habit, DataManager.hasTarget(habit)
+      ? DataManager.progressPercent(value, habit.goal)
+      : 0);
+    if (DataManager.countState(habit, value) === 'over') row.classList.add('over-limit');
 
     const minus = document.createElement('button');
     minus.className = 'day-sheet-step minus';
@@ -142,7 +145,9 @@ class DaySheet {
 
     const count = document.createElement('span');
     count.className = 'day-sheet-count';
-    count.textContent = `${value}/${habit.goal}`;
+    count.textContent = DataManager.hasTarget(habit)
+      ? (DataManager.direction(habit.type) === 'limit' ? `${value} of ${habit.goal}` : `${value}/${habit.goal}`)
+      : `${value}`;
 
     const plus = document.createElement('button');
     plus.className = 'day-sheet-step plus';

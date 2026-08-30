@@ -30,8 +30,10 @@ HABITS = [
     {'name': '🚬 Smoke', 'type': 'bad'},
     {'name': '🍰 Late snack', 'type': 'bad'},
     {'name': '☕ Coffee', 'type': 'neutral'},
-    {'name': '💊 Vitamins', 'type': 'counter', 'goal': 2},
-    {'name': '📖 Read pages', 'type': 'counter', 'goal': 30},
+    {'name': '💊 Vitamins', 'type': 'good', 'counted': True, 'goal': 2},
+    {'name': '📖 Read pages', 'type': 'good', 'counted': True, 'goal': 30},
+    {'name': '🚬 Cigarettes', 'type': 'bad', 'counted': True, 'goal': 3},
+    {'name': '☕ Coffees', 'type': 'neutral', 'counted': True},
 ]
 
 # Injected into <head>, so the store is populated before the app's scripts run
@@ -87,7 +89,12 @@ SEED = """<script>
     for (var i = 0; i < 20; i++) {
       var d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
       if (i %% 3 === 0) continue;
-      out[d.toDateString()] = { '💊 Vitamins': 1, '📖 Read pages': i %% 4 === 0 ? 30 : 12 };
+      out[d.toDateString()] = {
+        '💊 Vitamins': 1,
+        '📖 Read pages': i %% 4 === 0 ? 30 : 12,
+        '🚬 Cigarettes': i %% 5 === 0 ? 5 : 1,
+        '☕ Coffees': 3
+      };
     }
     return out;
   })()));
@@ -145,7 +152,7 @@ DRIVE = """<script>
 
   var tab = params.get('tab');
   if (tab) {
-    var order = ['good', 'bad', 'neutral', 'counter'];
+    var order = ['good', 'bad', 'neutral'];
     var tabs = document.querySelectorAll('.habit-tab');
     if (tabs[order.indexOf(tab)]) tabs[order.indexOf(tab)].click();
   }
@@ -183,6 +190,14 @@ DRIVE = """<script>
   // The about view lives behind a footer button, so a shot of it has to press
   // that button rather than pass a state in
   if (params.get('about')) document.getElementById('about-button').click();
+
+  // The per-habit screen sits behind a habit's name, so a shot of it taps one
+  var screenFor = params.get('screen');
+  if (screenFor) {
+    var names = [].slice.call(document.querySelectorAll('.habit-name-display'));
+    var hit = names.filter(function (n) { return n.textContent.indexOf(screenFor) !== -1; })[0];
+    if (hit) hit.click();
+  }
   // Relaunching the guide from about closes the dialog and opens the deck, so
   // the shot has to press it rather than assume it worked
   if (params.get('replay')) document.getElementById('about-guide').click();
@@ -317,11 +332,14 @@ SHOTS = [
     ('app-390-dark-sel',   390,  900, 'seed=1&theme=dark&select=12'),
     ('modal-good-390',     390,  844, 'seed=1&open=manage&tab=good'),
     ('modal-good-320',     320,  760, 'seed=1&open=manage&tab=good'),
-    ('modal-counter-390',  390,  844, 'seed=1&open=manage&tab=counter'),
     ('modal-neutral-390',  390,  844, 'seed=1&open=manage&tab=neutral'),
     ('modal-empty-390',    390,  844, 'open=manage&tab=neutral'),
     ('modal-good-900',     900,  900, 'seed=1&open=manage&tab=good'),
     ('modal-good-390-dark', 390, 844, 'seed=1&open=manage&tab=good&theme=dark'),
+    ('habit-screen-390',  390,  844, 'seed=1&open=manage&tab=good&screen=Read'),
+    ('habit-screen-390-dark', 390, 844, 'seed=1&open=manage&tab=good&screen=Read&theme=dark'),
+    ('habit-screen-bad',  390,  844, 'seed=1&open=manage&tab=bad&screen=Cigarettes'),
+    ('habit-screen-tally', 390, 844, 'seed=1&open=manage&tab=neutral&screen=Coffees'),
     ('about-390',         390,  844, 'seed=1&open=manage&about=1'),
     ('about-390-dark',    390,  844, 'seed=1&open=manage&about=1&theme=dark'),
     ('about-replay',      390,  844, 'seed=1&open=manage&about=1&replay=1'),

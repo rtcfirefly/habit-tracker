@@ -2857,3 +2857,195 @@ input, select, button {
 .spotlight-hint.is-under-centre::before {
   display: none;
 }
+
+/* === ONE HABIT, ON ITS OWN === */
+/* Replaces the dialog body, like the About view. Not a second dialog: two
+   dialogs means two focus traps and two Escape handlers fighting. */
+.habit-screen {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.9rem 1rem 1.1rem;
+}
+
+.habit-screen:focus {
+  outline: none;
+}
+
+.habit-screen-back {
+  padding: 0.35rem 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.85rem;
+  color: #1a56c4;
+  cursor: pointer;
+}
+
+.habit-screen-field {
+  margin-top: 0.9rem;
+}
+
+.habit-screen-label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #7a8087;
+}
+
+.habit-screen-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.95rem;
+}
+
+.habit-screen-seg {
+  display: inline-flex;
+  border: 1px solid #d8dbdf;
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.habit-screen-choice {
+  padding: 0.4rem 0.9rem;
+  border: none;
+  background: #fff;
+  font: inherit;
+  font-size: 0.85rem;
+  color: #5c6169;
+  cursor: pointer;
+}
+
+/* The chosen half is named, not merely lit: an unlabelled off state reads as
+   absence rather than as a choice someone made */
+.habit-screen-choice.on {
+  background: #e8f2ff;
+  color: #1a56c4;
+  font-weight: 600;
+}
+
+.habit-screen-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.7rem;
+  font-size: 0.95rem;
+}
+
+.habit-screen-word {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: #7a8087;
+}
+
+.habit-screen-step {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1.5px solid #cfd4d9;
+  border-radius: 50%;
+  background: none;
+  font: inherit;
+  font-size: 1.05rem;
+  line-height: 1;
+  color: inherit;
+  cursor: pointer;
+}
+
+.habit-screen-step:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.habit-screen-stepper b {
+  min-width: 2rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.habit-screen-unit {
+  font-size: 0.85rem;
+  color: #7a8087;
+}
+
+/* The sentence is the specification: it names the number and what reaching it
+   means, so nobody has to remember what "goal" does on a bad habit */
+.habit-screen-says {
+  margin: 0.6rem 0 0;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  background: #f2f6f2;
+  font-size: 0.82rem;
+  color: #43604a;
+}
+
+.habit-screen-delete {
+  margin-top: 1.4rem;
+  padding: 0.4rem 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.88rem;
+  color: #c62828;
+  cursor: pointer;
+}
+
+/* What counting does, as text on the row */
+.habit-count-note {
+  flex: none;
+  font-size: 0.78rem;
+  color: #7a8087;
+  white-space: nowrap;
+}
+
+/* Past a limit. The fill runs out at the limit, so without a mark of its own
+   four past a limit of three looks exactly like three. */
+.habit-counter.over-limit,
+.day-sheet-row.over-limit {
+  border-color: #c62828;
+  box-shadow: 0 0 0 2px rgba(198, 40, 40, 0.22);
+}
+
+.habit-emoji.over-limit {
+  border-color: #c62828;
+  box-shadow: 0 0 0 2px rgba(198, 40, 40, 0.35);
+}
+
+.dark-mode .habit-screen-input,
+.dark-mode .habit-screen-choice {
+  background: #3a3a3a;
+  border-color: #555;
+  color: #eee;
+}
+
+.dark-mode .habit-screen-choice.on {
+  background: #24425e;
+  color: #90caf9;
+}
+
+.dark-mode .habit-screen-seg {
+  border-color: #555;
+}
+
+.dark-mode .habit-screen-step {
+  border-color: #555;
+}
+
+.dark-mode .habit-screen-says {
+  background: #22301f;
+  color: #b8d6bd;
+}
+
+.dark-mode .habit-count-note,
+.dark-mode .habit-screen-label,
+.dark-mode .habit-screen-unit,
+.dark-mode .habit-screen-word {
+  color: #a0a6ad;
+}

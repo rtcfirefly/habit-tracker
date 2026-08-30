@@ -19,7 +19,7 @@ class HabitsView {
 
 
   createHabitButton(habit) {
-    if (habit.type === 'counter') {
+    if (DataManager.isCounted(habit)) {
       return this.createCounterHabit(habit);
     }
     
@@ -78,12 +78,15 @@ class HabitsView {
     const value = this.selectedDate
       ? this.dataManager.getCounterValue(this.selectedDate, habit.name)
       : 0;
-    const progress = DataManager.progressPercent(value, habit.goal);
+    // A tally has nothing to fill toward, so it does not fill
+    const state = DataManager.countState(habit, value);
+    const progress = DataManager.hasTarget(habit)
+      ? DataManager.progressPercent(value, habit.goal)
+      : 0;
     button.style.setProperty('--pct', `${progress}%`);
 
-    if (this.selectedDate && this.dataManager.isCounterHabitCompleted(this.selectedDate, habit.name)) {
-      button.classList.add('completed');
-    }
+    if (state === 'done') button.classList.add('completed');
+    if (state === 'over') button.classList.add('over-limit');
 
     const nameSpan = document.createElement('span');
     nameSpan.className = 'counter-name';
@@ -108,15 +111,24 @@ class HabitsView {
     count.className = 'counter-value';
     count.textContent = `${value}`;
 
-    const goal = document.createElement('span');
-    goal.className = 'counter-goal';
-    goal.textContent = `/${habit.goal}`;
-    count.appendChild(goal);
+    // The word carries the direction, so the number does not have to: a goal
+    // is something to reach, a limit is something to stay under, and a tally
+    // is just a number.
+    if (DataManager.hasTarget(habit)) {
+      const target = document.createElement('span');
+      target.className = 'counter-goal';
+      target.textContent = DataManager.direction(habit.type) === 'limit'
+        ? ` of max ${habit.goal}`
+        : `/${habit.goal}`;
+      count.appendChild(target);
+    }
 
     button.appendChild(nameSpan);
     button.appendChild(count);
 
-    button.title = `${habit.name}: ${value} of ${habit.goal} — tap to add one`;
+    button.title = DataManager.hasTarget(habit)
+      ? `${habit.name}: ${value} of ${habit.goal} — tap to add one`
+      : `${habit.name}: ${value} — tap to add one`;
 
     button.addEventListener('click', () => {
       if (!this.selectedDate) return;

@@ -45,6 +45,49 @@ function runHabitTrackerTests(env) {
     ok('an empty list has no target', HabitManager.rowUnder([], 120) === null);
   }
 
+  section('a number means what the habit’s kind says it means');
+  {
+    ok('good counts toward a goal', DataManager.direction('good') === 'goal');
+    ok('bad counts against a limit', DataManager.direction('bad') === 'limit');
+    ok('neutral just counts', DataManager.direction('neutral') === 'tally');
+
+    const goal = { name: '📖 Read', type: 'good', counted: true, goal: 30 };
+    ok('short of a goal is under', DataManager.countState(goal, 12) === 'under');
+    ok('reaching a goal is done', DataManager.countState(goal, 30) === 'done');
+    ok('past a goal is still done', DataManager.countState(goal, 44) === 'done');
+
+    const limit = { name: '🚬 Smoke', type: 'bad', counted: true, goal: 3 };
+    ok('inside a limit is under, not done',
+       DataManager.countState(limit, 2) === 'under',
+       'a ceiling is only survived at the end of the day, never completed at 2pm');
+    ok('sitting on a limit is still inside it', DataManager.countState(limit, 3) === 'under');
+    ok('past a limit is over', DataManager.countState(limit, 4) === 'over');
+    ok('a limit is never done', DataManager.countState(limit, 3) !== 'done');
+
+    const tally = { name: '☕ Coffee', type: 'neutral', counted: true };
+    ok('a tally with something on it is counting', DataManager.countState(tally, 3) === 'counting');
+    ok('a tally never finishes', DataManager.countState(tally, 99) !== 'done');
+    ok('nothing logged is nothing, whatever the kind',
+       DataManager.countState(goal, 0) === 'none' && DataManager.countState(tally, 0) === 'none');
+
+    ok('a tally has no target to measure against', DataManager.hasTarget(tally) === false);
+    ok('a counted habit with no number has none either',
+       DataManager.hasTarget({ type: 'good', counted: true }) === false);
+  }
+
+  section('the retired counter type migrates to the one that asserts nothing');
+  {
+    const migrated = DataManager.migrate([
+      { name: '📖 Read', type: 'counter', goal: 30 },
+      { name: '💧 Water', type: 'good' }
+    ]);
+    ok('a counter becomes neutral', migrated[0].type === 'neutral',
+       'good would make the app congratulate someone for counting cigarettes');
+    ok('and stays counted', migrated[0].counted === true);
+    ok('keeping its number for if it is retyped later', migrated[0].goal === 30);
+    ok('everything else is left alone', migrated[1].type === 'good' && !migrated[1].counted);
+  }
+
   section('every explainer slide makes one point');
   {
     const slides = Intro.slides;
@@ -167,13 +210,13 @@ function runHabitTrackerTests(env) {
   {
     const dm = fresh();
     const day = 'Mon Aug 10 2026';
-    dm.addHabit('💧 Water', 'counter', 8);
+    dm.addHabit('💧 Water', 'good', 8, true);
     dm.setCounterValue(day, '💧 Water', 8);
     dm.toggleHabitCompletion(day, '💧 Water');
 
     ok('completed before the rename', dm.isCounterHabitCompleted(day, '💧 Water') === true);
 
-    dm.updateHabit(0, '💧 Water intake', 'counter', 8);
+    dm.updateHabit(0, '💧 Water intake', 'good', 8, true);
 
     ok('counter value moved to the new name', dm.getCounterValue(day, '💧 Water intake') === 8);
     ok('old counter key removed', dm.getCounterValue(day, '💧 Water') === 0);
@@ -185,7 +228,7 @@ function runHabitTrackerTests(env) {
   section('reading a counter has no side effect');
   {
     const dm = fresh();
-    dm.addHabit('💧 Water', 'counter', 8);
+    dm.addHabit('💧 Water', 'good', 8, true);
 
     for (let i = 0; i < 50; i++) dm.getCounterValue('Day ' + i, '💧 Water');
     ok('reads create no date buckets', Object.keys(dm.counters).length === 0);
@@ -216,7 +259,7 @@ function runHabitTrackerTests(env) {
        dm.getHabits().length === 1 && dm.getHabits()[0].name === 'keep');
 
     const valid = dm.importData(JSON.stringify({
-      habits: [{ name: '💧 W', type: 'counter' }],
+      habits: [{ name: '💧 W', type: 'good', counted: true }],
       completions: { d: ['💧 W'] },
       counters: { d: { '💧 W': 4 } }
     }));
@@ -290,7 +333,7 @@ function runHabitTrackerTests(env) {
     const dm = fresh();
     dm.addHabit('💧 Water', 'good');
     dm.addHabit('🚬 Smoke', 'bad');
-    dm.addHabit('⏰ Wake', 'counter', 1);
+    dm.addHabit('⏰ Wake', 'good', 1, true);
 
     const day = new Date(2026, 7, 12).toDateString();
     dm.toggleHabitCompletion(day, '💧 Water');
@@ -402,12 +445,12 @@ function runHabitTrackerTests(env) {
       const dm = fresh();
       ['💧 Water', '🏃 Run', '🧘 Stretch'].forEach(n => dm.addHabit(n, 'good'));
       dm.addHabit('🚬 Smoke', 'bad');
-      dm.addHabit('📖 Read', 'counter', 30);
+      dm.addHabit('📖 Read', 'good', 30, true);
 
       const form = fixture('div');
       const manager = new HabitManager(fixture('div'), form, dm);
 
-      const reserved = ['good', 'bad', 'neutral', 'counter'].map(type => {
+      const reserved = ['good', 'bad', 'neutral'].map(type => {
         manager.switchTab(type);
         return form.querySelector('.tab-content-wrapper').style.minHeight;
       });

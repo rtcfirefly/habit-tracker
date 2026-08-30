@@ -7,7 +7,22 @@ class DataManager {
   }
 
   loadHabits() {
-    return JSON.parse(localStorage.getItem('habits') || '[]');
+    return DataManager.migrate(JSON.parse(localStorage.getItem('habits') || '[]'));
+  }
+
+  // Counting used to be a fourth type. It is a property now, because it is a
+  // way of measuring a habit rather than a kind of habit - "read pages" is a
+  // good habit whether or not you count the pages.
+  //
+  // A stored counter carries no good/bad/neutral, so there is nothing to infer
+  // from and guessing would be worse than not: a cigarette counter guessed as
+  // good becomes a habit the app congratulates you for. Neutral is the type
+  // that asserts nothing, so that is where they land. The old goal is kept,
+  // unused, so retyping the habit to good or bad brings its number back.
+  static migrate(habits) {
+    return habits.map(habit => (habit.type === 'counter'
+      ? { ...habit, type: 'neutral', counted: true }
+      : habit));
   }
 
   loadCompletions() {
@@ -41,7 +56,7 @@ class DataManager {
     return this.habits.some((habit, index) => index !== exceptIndex && habit.name === name);
   }
 
-  addHabit(name, type, goal = null) {
+  addHabit(name, type, goal = null, counted = false) {
     // Completions and counters are keyed by name, so two habits sharing one
     // would toggle and count as a single habit
     if (this.hasHabitNamed(name)) {
@@ -49,15 +64,16 @@ class DataManager {
     }
 
     const habit = { name, type };
-    if (type === 'counter' && goal !== null) {
-      habit.goal = goal;
+    if (counted) {
+      habit.counted = true;
+      if (goal !== null) habit.goal = goal;
     }
     this.habits.push(habit);
     this.saveData();
     return true;
   }
 
-  updateHabit(index, name, type, goal = null) {
+  updateHabit(index, name, type, goal = null, counted = null) {
     if (this.habits[index] && !this.hasHabitNamed(name, index)) {
       const oldName = this.habits[index].name;
       const newName = name;
@@ -66,11 +82,19 @@ class DataManager {
       this.habits[index].name = newName;
       this.habits[index].type = type;
       
-      // Handle counter goal
-      if (type === 'counter' && goal !== null) {
+      // The goal is never deleted on a type change. It is the number someone
+      // typed, and switching a habit between kinds - or off counting and back
+      // - should not silently throw it away; direction() decides whether it
+      // means anything, and countState() ignores it when it does not.
+      if (goal !== null) {
         this.habits[index].goal = goal;
-      } else if (type !== 'counter') {
-        delete this.habits[index].goal;
+      }
+      if (counted === null) {
+        // not stated, leave as it is
+      } else if (counted) {
+        this.habits[index].counted = true;
+      } else {
+        delete this.habits[index].counted;
       }
       
       // If the name changed, re-key every record that is stored by habit name
@@ -203,6 +227,42 @@ class DataManager {
     this.setCounterValue(dateKey, habitName, currentValue - 1);
   }
 
+  // What a number means depends on the habit, and the habit's own type already
+  // says which way is better. Nothing to choose and nothing to explain: a good
+  // habit whose number was a ceiling would be a bad habit in the wrong tab.
+  static direction(type) {
+    if (type === 'good') return 'goal';    // done when you reach it
+    if (type === 'bad') return 'limit';    // fine until you pass it
+    return 'tally';                        // neutral: counted, never finished
+  }
+
+  static isCounted(habit) {
+    return Boolean(habit && habit.counted);
+  }
+
+  // Whether a counted habit has a number to be measured against at all. A
+  // neutral one is a bare tally: it counts, and there is nothing to reach.
+  static hasTarget(habit) {
+    return DataManager.isCounted(habit) &&
+           DataManager.direction(habit.type) !== 'tally' &&
+           Number(habit.goal) > 0;
+  }
+
+  // one of: none (nothing logged), counting (a tally with no target),
+  // under (on the way, or inside a limit), done (reached a goal), over (past a
+  // limit). The calendar and the buttons both read this rather than each
+  // deciding for themselves.
+  static countState(habit, value) {
+    if (!value || value <= 0) return 'none';
+    if (!DataManager.hasTarget(habit)) return 'counting';
+
+    const goal = Number(habit.goal);
+    if (DataManager.direction(habit.type) === 'limit') {
+      return value > goal ? 'over' : 'under';
+    }
+    return value >= goal ? 'done' : 'under';
+  }
+
   // The order habits appear in, everywhere they are listed. Good and bad sit at
   // opposite ends with neutral between, so a row reads as a scale rather than
   // putting the two opposites side by side; counters come last.
@@ -229,12 +289,13 @@ class DataManager {
     return DataManager.progressPercent(this.getCounterValue(dateKey, habitName), habit.goal);
   }
 
+  // Reaching a goal is done. Staying inside a limit is not "done" - it is only
+  // known at the end of the day, and a tally is never done at all - so this is
+  // true for one state and one state only.
   isCounterHabitCompleted(dateKey, habitName) {
     const habit = this.habits.find(h => h.name === habitName);
-    if (!habit || habit.type !== 'counter') return false;
-    
-    const currentValue = this.getCounterValue(dateKey, habitName);
-    return currentValue >= habit.goal;
+    if (!DataManager.isCounted(habit)) return false;
+    return DataManager.countState(habit, this.getCounterValue(dateKey, habitName)) === 'done';
   }
 
   exportData() {
@@ -269,6 +330,9 @@ class DataManager {
         throw new Error('Invalid data format: counters must be an object');
       }
 
+      // 'counter' stays valid forever: it is not offered any more, but every
+      // backup written before this change still says it, and those files are
+      // the only copy of some people's history. loadHabits() migrates it.
       const validHabitTypes = ['good', 'bad', 'neutral', 'counter'];
       const seenNames = new Set();
       for (const habit of importedData.habits) {
@@ -280,9 +344,11 @@ class DataManager {
         }
         seenNames.add(habit.name);
 
-        // A counter with no usable goal can never be completed, so repair it
-        // rather than rejecting a backup written before goals were required
-        if (habit.type === 'counter') {
+        // A counted habit with no usable goal can never be completed, so
+        // repair it rather than rejecting a backup. Keyed on `counted` as
+        // well as the retired type, because both shapes exist in files people
+        // already have on disk.
+        if (habit.counted || habit.type === 'counter') {
           const goal = Math.floor(Number(habit.goal));
           habit.goal = Number.isFinite(goal) && goal >= 1 ? goal : 1;
         }

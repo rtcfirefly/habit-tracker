@@ -146,15 +146,28 @@ class CalendarView {
     // A day at 29 of 30 used to draw nothing at all, so it looked exactly like
     // a day at zero; the chip now fills by how far it got.
     habits.forEach(habit => {
-      if (habit.type !== 'counter') return;
+      if (!DataManager.isCounted(habit)) return;
 
       const value = this.dataManager.getCounterValue(dayKey, habit.name);
-      if (value <= 0) return;
+      const state = DataManager.countState(habit, value);
+      if (state === 'none') return;
+
+      const target = DataManager.hasTarget(habit)
+        ? (DataManager.direction(habit.type) === 'limit'
+            ? ` of max ${habit.goal}`
+            : `/${habit.goal}`)
+        : '';
 
       const indicator = this.createHabitIndicator(
-        habit.name, 'counter', `${habit.name}: ${value}/${habit.goal}`, false);
+        habit.name, habit.type, `${habit.name}: ${value}${target}`, false);
       indicator.classList.add('filling');
-      indicator.style.setProperty('--pct', `${DataManager.progressPercent(value, habit.goal)}%`);
+      // Over a limit is its own mark rather than a fuller version of under it:
+      // the fill runs out at the limit, so without this, four past a limit of
+      // three looks exactly like three.
+      if (state === 'over') indicator.classList.add('over-limit');
+      indicator.style.setProperty('--pct', DataManager.hasTarget(habit)
+        ? `${DataManager.progressPercent(value, habit.goal)}%`
+        : '100%');
       dots.appendChild(indicator);
     });
 
