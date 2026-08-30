@@ -1292,11 +1292,14 @@ input, select, button {
   gap: 0.4rem;
 }
 
+/* No reserved slot. 40px was sized for "12/30" and a neutral habit's number is
+   just a number - there is no max to leave room for - so a tally sat with a
+   gap the width of a denominator it does not have. Tabular figures keep the
+   button from shifting as the count crosses ten. */
 .counter-value {
   font-weight: bold;
-  min-width: 40px;
-  text-align: center;
   font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .counter-btn {
