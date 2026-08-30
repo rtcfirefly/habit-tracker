@@ -2066,11 +2066,21 @@ input, select, button {
 }
 
 /* === EXPLAINER ART ADDED WITH THE LONGER DECK === */
+/* The four sit as one set, so they are one width. Left to size themselves the
+   three pills came out ~100px against the counter's ~250px, which read as
+   three small things and one big one rather than four kinds of the same
+   thing - and at 320 the counter nearly spanned the card. */
 .intro-art-chips {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   gap: 0.45rem;
+  width: 100%;
+  max-width: 15rem;
+}
+
+.intro-art-chips .intro-chip {
+  justify-content: flex-start;
 }
 
 /* The chip borders carry the habit type, matching the real buttons. Good is
