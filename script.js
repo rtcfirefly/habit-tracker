@@ -59,9 +59,12 @@ document.getElementById('next-month').onclick = () => {
   calendarView.goToNextMonth();
 };
 
-// Global function for modal close button
+// The dialog's X, from the markup. dismiss() rather than close(): with a
+// habit's screen open, the X backs out to the list first - closing the dialog
+// from inside a habit dropped you on the calendar with no way back to where
+// you were.
 function closeManageModal() {
-  habitManager.close();
+  habitManager.dismiss();
 }
 
 // --- the day sheet --------------------------------------------------------

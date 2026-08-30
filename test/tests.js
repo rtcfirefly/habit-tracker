@@ -439,8 +439,16 @@ function runHabitTrackerTests(env) {
        modal.querySelectorAll('.habit-screen').length === 1);
     ok('the list is still put away', body.hidden === true);
 
-    // Closing the dialog with a screen open used to leave the screen in the
-    // DOM and the list hidden behind it, so the next open showed the leftovers
+    // The X and the backdrop both go through dismiss(), which backs out one
+    // layer: from inside a habit that means the list, not the calendar
+    manager.dismiss();
+    ok('dismissing from a screen lands on the list, not outside the dialog',
+       modal.querySelectorAll('.habit-screen').length === 0 && body.hidden === false);
+
+    manager.openHabitScreen(0);
+    // Closing the dialog outright with a screen open used to leave the screen
+    // in the DOM and the list hidden behind it, so the next open showed the
+    // leftovers of the last visit
     manager.close();
     ok('closing the dialog takes the screen with it',
        modal.querySelectorAll('.habit-screen').length === 0);

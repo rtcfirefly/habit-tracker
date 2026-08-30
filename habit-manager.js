@@ -29,7 +29,7 @@ class HabitManager {
   setupModalCloseHandler() {
     this.modalElement.addEventListener('click', (e) => {
       if (e.target === this.modalElement) {
-        this.close();
+        this.dismiss();
       }
     });
 
@@ -210,6 +210,19 @@ class HabitManager {
 
   closeHabitScreen() {
     if (this.habitScreen) this.habitScreen();
+  }
+
+  // Back out one layer. A habit's screen is a place inside the dialog, so
+  // every way of saying "leave" - the X, the backdrop, Escape - puts you back
+  // in the list first and closes the dialog only from there. Dropping
+  // straight to the calendar from inside a habit loses the place you were in
+  // and gives no way back to it except starting again.
+  dismiss() {
+    if (this.habitScreen) {
+      this.closeHabitScreen();
+      return;
+    }
+    this.close();
   }
 
   screenBack(close) {
@@ -696,13 +709,7 @@ class HabitManager {
   handleKeydown(event) {
     if (event.key === 'Escape') {
       event.preventDefault();
-      // One layer at a time: a screen is a place inside the dialog, so leaving
-      // it should put you back in the list rather than shut everything
-      if (this.habitScreen) {
-        this.closeHabitScreen();
-        return;
-      }
-      this.close();
+      this.dismiss();
       return;
     }
 
