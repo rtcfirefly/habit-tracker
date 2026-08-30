@@ -2520,6 +2520,8 @@ input, select, button {
   text-align: left;
 }
 
+/* Shares everything with the source link except being a button */
+.about-action,
 .about-link {
   display: inline-flex;
   align-items: center;
@@ -2533,10 +2535,19 @@ input, select, button {
   text-decoration: none;
 }
 
+.about-action {
+  font: inherit;
+  font-size: 0.88rem;
+  background: none;
+  cursor: pointer;
+}
+
+.about-action:hover,
 .about-link:hover {
   background: rgba(0, 0, 0, 0.04);
 }
 
+.about-action svg,
 .about-link svg {
   width: 18px;
   height: 18px;
@@ -2572,11 +2583,13 @@ input, select, button {
   color: #c3c8ce;
 }
 
+.dark-mode .about-action,
 .dark-mode .about-link {
   border-color: #555;
   color: #7dd888;
 }
 
+.dark-mode .about-action:hover,
 .dark-mode .about-link:hover {
   background: rgba(255, 255, 255, 0.07);
 }

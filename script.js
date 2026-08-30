@@ -85,6 +85,17 @@ function showAbout(show) {
   (show ? aboutPanel : document.getElementById('about-button')).focus();
 }
 
+// The guide is otherwise unreachable once there is a habit, which is the same
+// moment it stops appearing on its own - so the only way back to it has to be
+// somewhere deliberate rather than in the reader's way
+document.getElementById('about-guide').onclick = () => {
+  showAbout(false);
+  habitManager.close();
+  // No onClose: the spotlight exists to get a first habit added, and someone
+  // who found this button has already been through the settings dialog
+  new Intro().open();
+};
+
 document.getElementById('about-button').onclick = () => showAbout(true);
 document.getElementById('about-back').onclick = () => showAbout(false);
 

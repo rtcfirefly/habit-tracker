@@ -211,6 +211,9 @@ DRIVE = """<script>
   // The about view lives behind a footer button, so a shot of it has to press
   // that button rather than pass a state in
   if (params.get('about')) document.getElementById('about-button').click();
+  // Relaunching the guide from about closes the dialog and opens the deck, so
+  // the shot has to press it rather than assume it worked
+  if (params.get('replay')) document.getElementById('about-guide').click();
 
   var tap = params.get('tap');
   if (tap) {
@@ -305,6 +308,7 @@ SHOTS = [
     ('modal-good-390-dark', 390, 844, 'seed=1&open=manage&tab=good&theme=dark'),
     ('about-390',         390,  844, 'seed=1&open=manage&about=1'),
     ('about-390-dark',    390,  844, 'seed=1&open=manage&about=1&theme=dark'),
+    ('about-replay',      390,  844, 'seed=1&open=manage&about=1&replay=1'),
     ('modal-rename-390',   390,  844, 'seed=1&open=manage&tab=good&edit=0'),
     ('nudge-390',          390,  844, 'seed=1&stale=9'),
     ('nudge-390-dark',     390,  844, 'seed=1&stale=9&theme=dark'),
