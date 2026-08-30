@@ -152,17 +152,7 @@ class HabitsView {
       this.habitsListElement.appendChild(hint);
     }
 
-    // Sort habits by type for consistent grouping
-    // Good and bad sit at opposite ends with neutral between them, so the row
-    // reads as a scale rather than putting the two opposites side by side
-    const typeOrder = ['good', 'neutral', 'bad', 'counter'];
-    const sortedHabits = habits.slice().sort((a, b) => {
-      const aIndex = typeOrder.indexOf(a.type);
-      const bIndex = typeOrder.indexOf(b.type);
-      return aIndex - bIndex;
-    });
-
-    sortedHabits.forEach(habit => {
+    DataManager.inDisplayOrder(habits).forEach(habit => {
       const button = this.createHabitButton(habit);
       this.habitsListElement.appendChild(button);
     });

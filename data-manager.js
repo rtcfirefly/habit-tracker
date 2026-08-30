@@ -203,6 +203,18 @@ class DataManager {
     this.setCounterValue(dateKey, habitName, currentValue - 1);
   }
 
+  // The order habits appear in, everywhere they are listed. Good and bad sit at
+  // opposite ends with neutral between, so a row reads as a scale rather than
+  // putting the two opposites side by side; counters come last.
+  //
+  // Shared rather than repeated: the buttons under the calendar and the day
+  // sheet list the same habits, and a reader comparing them should not have to
+  // work out whether two sorts agree.
+  static inDisplayOrder(habits) {
+    const order = ['good', 'neutral', 'bad', 'counter'];
+    return habits.slice().sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
+  }
+
   // How far a counter got, as a whole percent, clamped. Pure and static so the
   // fill can be tested without a browser - it is CSS that draws it, but this
   // decides the number.

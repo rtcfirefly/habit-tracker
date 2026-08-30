@@ -2723,18 +2723,40 @@ input, select, button {
   font-size: 0.9rem;
 }
 
-.day-sheet-row.is-good    { border-left-color: #4CAF50; }
-.day-sheet-row.is-bad     { border-left-color: #F44336; }
-.day-sheet-row.is-neutral { border-left-color: #b8860b; }
-.day-sheet-row.is-counter { border-left-color: #1a73e8; }
+/* The same fill as the buttons under the calendar, from the same custom
+   property: a plain habit is 0 or 100, a counter is however far it got */
+.day-sheet-row {
+  background-image: linear-gradient(to right, var(--fill) 0 var(--pct, 0%), transparent var(--pct, 0%));
+  background-repeat: no-repeat;
+}
+
+.day-sheet-row.is-good    { border-left-color: #4CAF50; --fill: rgba(76, 175, 80, 0.38); }
+.day-sheet-row.is-bad     { border-left-color: #F44336; --fill: rgba(198, 40, 40, 0.28); }
+.day-sheet-row.is-neutral { border-left-color: #b8860b; --fill: rgba(184, 134, 11, 0.32); }
+.day-sheet-row.is-counter { border-left-color: #1a73e8; --fill: rgba(26, 115, 232, 0.28); }
+
+.dark-mode .day-sheet-row.is-good    { --fill: rgba(76, 175, 80, 0.50); }
+.dark-mode .day-sheet-row.is-bad     { --fill: rgba(220, 60, 60, 0.42); }
+.dark-mode .day-sheet-row.is-neutral { --fill: rgba(212, 160, 23, 0.45); }
+.dark-mode .day-sheet-row.is-counter { --fill: rgba(80, 150, 240, 0.45); }
+
+/* A plain habit's row is the control, so it has to look like one */
+.day-sheet-row.is-toggle {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.day-sheet-row.is-toggle:focus-visible {
+  outline: 2px solid #1a73e8;
+  outline-offset: 2px;
+}
 
 .day-sheet-name {
   flex: 1;
   min-width: 0;
 }
 
-.day-sheet-step,
-.day-sheet-tick {
+.day-sheet-step {
   flex: none;
   width: 34px;
   height: 34px;
@@ -2761,17 +2783,6 @@ input, select, button {
   text-align: center;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-}
-
-.day-sheet-tick {
-  border: 2px solid #81c784;
-  color: #2e7d32;
-}
-
-.day-sheet-tick.on {
-  background: #4CAF50;
-  border-color: #4CAF50;
-  color: #fff;
 }
 
 .day-sheet-done {

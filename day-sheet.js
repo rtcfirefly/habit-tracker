@@ -63,13 +63,18 @@ class DaySheet {
       return;
     }
 
-    habits.forEach(habit => list.appendChild(
+    // The same order as the buttons under the calendar, from the same function,
+    // so the two lists cannot drift apart
+    DataManager.inDisplayOrder(habits).forEach(habit => list.appendChild(
       habit.type === 'counter' ? this.counterRow(habit) : this.toggleRow(habit)
     ));
   }
 
-  row(habit) {
+  // percent fills the row the way it fills a habit button: a plain habit is
+  // all or nothing, a counter is however far it got
+  row(habit, percent) {
     const row = document.createElement('div');
+    row.style.setProperty('--pct', `${percent}%`);
     // is-good rather than good: the stylesheet carries bare `.good { background:
     // green }` rules that paint any element wearing the type class, which
     // turned every row in here into a solid colour block
@@ -91,27 +96,39 @@ class DaySheet {
     return row;
   }
 
+  // No tick. The fill says whether it happened, exactly as it does on the
+  // button under the calendar, and the whole row is the control - a checkbox
+  // beside a row that was already tappable was two ways to say one thing.
   toggleRow(habit) {
-    const row = this.row(habit);
     const done = this.dataManager.isHabitCompleted(this.dateKey, habit.name);
+    const row = this.row(habit, done ? 100 : 0);
 
-    const tick = document.createElement('button');
-    tick.className = 'day-sheet-tick' + (done ? ' on' : '');
-    tick.textContent = '✓';
-    tick.title = done ? `Undo ${habit.name}` : `Mark ${habit.name} done`;
-    tick.setAttribute('aria-pressed', String(done));
-    tick.onclick = () => {
+    row.classList.add('is-toggle');
+    if (done) row.classList.add('completed');
+    row.setAttribute('role', 'button');
+    row.setAttribute('tabindex', '0');
+    row.setAttribute('aria-pressed', String(done));
+    row.title = done ? `Undo ${habit.name}` : `Mark ${habit.name} done`;
+
+    const toggle = () => {
       this.dataManager.toggleHabitCompletion(this.dateKey, habit.name);
       this.changed();
     };
 
-    row.appendChild(tick);
+    row.onclick = toggle;
+    row.onkeydown = (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        toggle();
+      }
+    };
+
     return row;
   }
 
   counterRow(habit) {
-    const row = this.row(habit);
     const value = this.dataManager.getCounterValue(this.dateKey, habit.name);
+    const row = this.row(habit, DataManager.progressPercent(value, habit.goal));
 
     const minus = document.createElement('button');
     minus.className = 'day-sheet-step minus';
