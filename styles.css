@@ -2222,9 +2222,12 @@ input, select, button {
   color: #444;
 }
 
-/* No side margin: the leader line is centred on the grid column, so nudging
-   the control inside its column left the line pointing three pixels beside it */
+/* Centred in its column, not stretched across it. A grid item fills its track
+   by default, so the button spread the full width of the widest column and sat
+   hard against the left edge of the panel while the two icons beside it read
+   as centred. */
 .intro-bk-ctl.is-button {
+  justify-self: center;
   margin: 0.35rem 0;
   padding: 0.3rem 0.5rem;
   border: 1px solid #ddd;
