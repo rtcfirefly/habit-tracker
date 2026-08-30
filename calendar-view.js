@@ -134,8 +134,17 @@ class CalendarView {
 
     const habits = this.dataManager.getHabits();
 
+    // A habit that has been switched to counting can have a tick from before
+    // the switch and a count from after it, and both stores keep their record
+    // - deliberately, so switching back does not lose the old days. The count
+    // is what a counted habit means now, so it is the one that draws; the tick
+    // is left alone and comes back if counting is turned off again.
+    const counted = new Set(habits.filter(DataManager.isCounted).map(habit => habit.name));
+
     // Completed habits, including ones whose habit has since been deleted
     this.dataManager.getCompletedHabitsForDate(dayKey).forEach(habitName => {
+      if (counted.has(habitName)) return;
+
       const habit = habits.find(h => h.name === habitName);
       dots.appendChild(habit
         ? this.createHabitIndicator(habitName, habit.type, habit.name, false)

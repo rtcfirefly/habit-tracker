@@ -75,6 +75,47 @@ function runHabitTrackerTests(env) {
        DataManager.hasTarget({ type: 'good', counted: true }) === false);
   }
 
+  section('a habit switched to counting is drawn once, not twice');
+  {
+    const dm = fresh();
+    const day = new Date(2026, 7, 12).toDateString();
+
+    // Ticked while it was a plain habit...
+    dm.addHabit('🍺 NA Beer', 'neutral');
+    dm.toggleHabitCompletion(day, '🍺 NA Beer');
+    ok('the tick is recorded', dm.isHabitCompleted(day, '🍺 NA Beer') === true);
+
+    // ...then switched to counting, which keeps the old tick on purpose
+    dm.updateHabit(0, '🍺 NA Beer', 'neutral', null, true);
+    dm.setCounterValue(day, '🍺 NA Beer', 1);
+    ok('the tick is still there underneath', dm.isHabitCompleted(day, '🍺 NA Beer') === true,
+       'switching should not throw away days recorded before the switch');
+
+    const calEl = fixture('div');
+    calEl.className = 'calendar';
+    const cal = new CalendarView(calEl, fixture('h2'), dm);
+    cal.currentDate = new Date(2026, 7, 15);
+    cal.render();
+
+    const marked = list(calEl.querySelectorAll('.day'))
+      .map(d => d.querySelector('.day-dots'))
+      .filter(dots => dots.childElementCount > 0);
+
+    ok('the day carries one icon, not one per store',
+       marked.length === 1 && marked[0].childElementCount === 1,
+       marked.map(m => m.childElementCount).join(','));
+
+    // Turning counting off again brings the old tick back into view
+    dm.updateHabit(0, '🍺 NA Beer', 'neutral', null, false);
+    cal.render();
+    const after = list(calEl.querySelectorAll('.day'))
+      .map(d => d.querySelector('.day-dots'))
+      .filter(dots => dots.childElementCount > 0);
+    ok('and it is still one icon once counting is switched off',
+       after.length === 1 && after[0].childElementCount === 1,
+       after.map(m => m.childElementCount).join(','));
+  }
+
   section('the retired counter type migrates to the one that asserts nothing');
   {
     const migrated = DataManager.migrate([
