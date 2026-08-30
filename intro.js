@@ -22,9 +22,9 @@ const SLIDES = [
     // the app the slide is explaining. Both themes ship because a light
     // screenshot on a dark card looks like a bug.
     artClass: 'is-shot',
-    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.11.0"
+    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.12.0"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">
-          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.11.0"
+          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.12.0"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">`,
     title: 'Tap a day, then tap what you did',
     body: 'Habit buttons stay greyed out until a day is selected.'
@@ -62,9 +62,9 @@ const SLIDES = [
     // The gear, because "in settings" is not much use to someone who has not
     // worked out that the one button in the header is a button
     artClass: 'is-strip',
-    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.11.0"
+    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.12.0"
                alt="The settings button in the top right of the header" width="390" height="64">
-          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.11.0"
+          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.12.0"
                alt="The settings button in the top right of the header" width="390" height="64">`,
     title: 'The gear opens settings',
     body: 'Everything about your habits lives in there.'
@@ -211,7 +211,7 @@ class Intro {
   }
 
   next() {
-    if (this.index === SLIDES.length - 1) this.close();
+    if (this.index === SLIDES.length - 1) this.close(true);
     else { this.index++; this.render(); }
   }
 
@@ -219,11 +219,78 @@ class Intro {
     if (this.index > 0) { this.index--; this.render(); }
   }
 
-  close() {
+  // finished is false when the reader closed the deck rather than reaching the
+  // end of it. What follows is a prompt to tap the gear, and pushing that at
+  // someone who just dismissed the guide would be reading the X backwards.
+  close(finished = false) {
     if (this.root) {
       this.root.remove();
       this.root = null;
     }
-    if (this.onClose) this.onClose();
+    if (this.onClose) this.onClose(finished);
+  }
+}
+
+
+// Dims the app and leaves one control lit, so the last step of the guide is
+// the reader doing the thing rather than reading about it. The gear is the
+// only way into an empty app, and tapping it once is what teaches it.
+class Spotlight {
+  constructor(target) {
+    this.target = target;
+    this.root = null;
+    this.hint = null;
+  }
+
+  show() {
+    if (this.root) return;
+
+    this.root = document.createElement('div');
+    this.root.className = 'spotlight';
+    document.body.appendChild(this.root);
+
+    // The hint hangs off the header rather than being placed in pixels. An
+    // earlier version measured the gear with getBoundingClientRect, which is
+    // read at whatever width the window happens to be at the time - fine in a
+    // browser, wrong in every screenshot, and wrong again on a rotate.
+    this.hint = document.createElement('div');
+    this.hint.className = 'spotlight-hint';
+    this.hint.innerHTML = `
+      <p class="spotlight-text">Tap the gear to add your first habit</p>
+      <button class="spotlight-skip" id="spotlight-skip">Not now</button>`;
+    this.target.parentNode.appendChild(this.hint);
+
+    this.hint.querySelector('#spotlight-skip').onclick = () => this.hide();
+
+    // The dimmed area swallows taps: the point is that one control works
+    this.root.onclick = () => this.pulse();
+
+    this.onTargetClick = () => this.hide();
+    this.target.addEventListener('click', this.onTargetClick);
+
+    document.addEventListener('keydown', this.onKeydown = (event) => {
+      if (event.key === 'Escape') this.hide();
+    });
+
+    this.target.classList.add('is-spotlit');
+  }
+
+  pulse() {
+    this.target.classList.remove('is-pulsing');
+    // Reading offsetWidth restarts the animation; without it a second tap on
+    // the dimmed area does nothing at all
+    void this.target.offsetWidth;
+    this.target.classList.add('is-pulsing');
+  }
+
+  hide() {
+    if (!this.root) return;
+    this.target.classList.remove('is-spotlit', 'is-pulsing');
+    this.target.removeEventListener('click', this.onTargetClick);
+    document.removeEventListener('keydown', this.onKeydown);
+    this.hint.remove();
+    this.root.remove();
+    this.root = null;
+    this.hint = null;
   }
 }

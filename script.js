@@ -171,9 +171,15 @@ fileBackup.load();
 // that has already rendered behind it.
 if (Intro.shouldShow(dataManager)) {
   const intro = new Intro();
-  // Settings is where the first habit gets added, and that is the next thing
-  // to do after reading the slides
-  intro.onClose = () => habitManager.open();
+  // The guide ends by dimming the app around the gear and waiting. Opening
+  // settings for them would skip the one gesture the whole app depends on,
+  // and they would be left in a dialog they did not ask for and have not been
+  // shown the way back into.
+  intro.onClose = (finished) => {
+    if (finished) {
+      new Spotlight(document.getElementById('manage-habits-button')).show();
+    }
+  };
   intro.open();
 }
 

@@ -2336,3 +2336,105 @@ input, select, button {
 .dark-mode .intro-bk-label {
   color: #b2b8c0;
 }
+
+/* === SPOTLIGHT ON THE GEAR === */
+.spotlight {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: rgba(0, 0, 0, 0.62);
+}
+
+/* Raised above the dim rather than cut out of it: a hole punched with a huge
+   box-shadow cannot take a tap, and taking the tap is the entire point.
+   No position here - the button is already absolutely placed against the
+   header, and setting position:relative sent it back to the top left. */
+.header-action.is-spotlit {
+  z-index: 160;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.28);
+}
+
+.header-action.is-spotlit svg {
+  stroke: #2e7d32;
+}
+
+.header-action.is-pulsing {
+  animation: spotlight-pulse 0.5s ease-out 2;
+}
+
+@keyframes spotlight-pulse {
+  0%   { box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.28); }
+  50%  { box-shadow: 0 0 0 14px rgba(255, 255, 255, 0.16); }
+  100% { box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.28); }
+}
+
+/* Hung off the header, so it tracks the gear at any width without measuring */
+.spotlight-hint {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 160;
+  width: 15rem;
+  margin-top: 0.75rem;
+  padding: 0.7rem 0.85rem 0.5rem;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  text-align: right;
+}
+
+/* The pointer back up at the gear, sitting on the hint's own top edge */
+.spotlight-hint::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  /* Half the gear's 38px, so the point lands under its middle */
+  right: 19px;
+  width: 14px;
+  height: 14px;
+  margin-right: -7px;
+  background: #fff;
+  transform: rotate(45deg);
+  border-radius: 2px;
+}
+
+.spotlight-text {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: #333;
+}
+
+.spotlight-skip {
+  margin-top: 0.3rem;
+  padding: 0.25rem 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.8rem;
+  color: #7a8087;
+  cursor: pointer;
+}
+
+.dark-mode .header-action.is-spotlit {
+  background: #2b2b2b;
+}
+
+.dark-mode .header-action.is-spotlit svg {
+  stroke: #7dd888;
+}
+
+.dark-mode .spotlight-hint,
+.dark-mode .spotlight-hint::before {
+  background: #2b2b2b;
+}
+
+.dark-mode .spotlight-text {
+  color: #eee;
+}
+
+.dark-mode .spotlight-skip {
+  color: #a0a6ad;
+}

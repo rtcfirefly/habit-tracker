@@ -195,6 +195,15 @@ DRIVE = """<script>
 
   // Rings one or more elements, so a shot used as a callout can point at the
   // thing it is talking about instead of relying on the caption
+  // Clicks something after the slides have run, which is the only way to reach
+  // what the guide leaves behind - the spotlight, and whether the gear under
+  // it still takes a tap through the dim
+  var tap = params.get('tap');
+  if (tap) {
+    var hit = document.querySelector(tap);
+    if (hit) hit.click();
+  }
+
   // Rings elements so a shot used as a callout points at what it describes.
   //
   // Done with layout, not measured coordinates. A fixed position box computed
@@ -301,6 +310,9 @@ SHOTS = [
     ('intro-7-390',       390,  844, 'slide=7'),
     ('intro-8-390',       390,  844, 'slide=8'),
     ('intro-9-390',       390,  844, 'slide=9'),
+    ('spotlight-390',     390,  844, 'slide=10'),
+    ('spotlight-390-dark', 390, 844, 'slide=10&theme=dark'),
+    ('spotlight-tapped',  390,  844, 'slide=10&tap=%23manage-habits-button'),
     ('intro-1-390-dark',   390,  844, 'slide=1&theme=dark'),
     ('intro-5-390-dark',   390,  844, 'slide=5&theme=dark'),
     ('intro-9-390-dark',   390,  844, 'slide=9&theme=dark'),
