@@ -37,39 +37,35 @@ const SLIDES = [
     // the app the slide is explaining. Both themes ship because a light
     // screenshot on a dark card looks like a bug.
     artClass: 'is-shot',
-    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=2.0.0"
+    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=2.0.1"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">
-          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=2.0.0"
+          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=2.0.1"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">`,
     title: 'Tap a day, then tap what you did',
     body: 'The icons on a day are what you logged against it.'
   },
   {
-    // Naming, the three tap-once types and the counter were a slide each.
-    // They are one idea seen four ways - what a habit can be - and paging
-    // through four near-identical cards to learn it was the wrong shape.
+    // Three kinds, one of which is counted, rather than four kinds one of
+    // which is a counter. The chips carry it: same three shapes, and the one
+    // with a number on it is a good habit like the one above it.
     art: `<div class="intro-art-chips">
             <span class="intro-chip good"><span class="intro-chip-emoji good">💧</span> Water</span>
             <span class="intro-chip neutral"><span class="intro-chip-emoji neutral">☕</span> Coffee</span>
             <span class="intro-chip bad"><span class="intro-chip-emoji bad">🚬</span> Smoke</span>
-            <span class="intro-art-counter">
-              <span class="intro-chip-emoji counter">💊</span>
-              <span class="intro-counter-name">Vitamins</span>
-              <span class="intro-counter-btn minus">−</span>
-              <span class="intro-counter-value">1/2</span>
-              <span class="intro-counter-btn plus">+</span>
+            <span class="intro-chip good"><span class="intro-chip-emoji good">📖</span> Read pages
+              <span class="intro-chip-count">12<span class="intro-chip-goal">/30</span></span>
             </span>
           </div>`,
-    title: 'Four kinds of habit',
-    body: 'Good, bad and neutral are one tap; a counter has a daily goal.'
+    title: 'Good, bad, or neutral',
+    body: 'Any of them can count instead of being a single tap.'
   },
   {
     // The gear, because "in settings" is not much use to someone who has not
     // worked out that the one button in the header is a button
     artClass: 'is-strip',
-    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=2.0.0"
+    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=2.0.1"
                alt="The Manage Habits button in the top right of the header" width="390" height="64">
-          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=2.0.0"
+          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=2.0.1"
                alt="The Manage Habits button in the top right of the header" width="390" height="64">`,
     title: 'The gear opens Manage Habits',
     body: 'Add, rename and reorder your habits from there.'

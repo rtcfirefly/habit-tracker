@@ -2128,57 +2128,6 @@ input, select, button {
   background: #ffcdd2;
 }
 
-.intro-chip-emoji.counter {
-  border-color: #1a73e8;
-  background: #d6e6fb;
-}
-
-.intro-art-counter {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.45rem 0.7rem;
-  border: 2px solid #1a73e8;
-  border-radius: 12px;
-  background: #fff;
-  font-size: 0.85rem;
-}
-
-.intro-counter-name {
-  min-width: 4.5rem;
-  text-align: left;
-}
-
-.intro-counter-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  font-size: 0.9rem;
-}
-
-.intro-counter-btn.minus {
-  border: 1.5px solid #e57373;
-  color: #c62828;
-}
-
-.intro-counter-btn.plus {
-  border: 1.5px solid #81c784;
-  color: #2e7d32;
-}
-
-.intro-counter-value {
-  min-width: 2rem;
-  font-weight: 600;
-}
-
-.dark-mode .intro-art-counter {
-  background: #3a3a3a;
-  color: #ddd;
-}
-
 /* === BACKUP SLIDE: THE CONTROLS, LABELLED === */
 /* One grid so each leader line and label land under their own control
    automatically - three separate rows would need the widths kept in step by
@@ -3048,4 +2997,17 @@ input, select, button {
 .dark-mode .habit-screen-unit,
 .dark-mode .habit-screen-word {
   color: #a0a6ad;
+}
+
+/* The counted chip on the kinds slide */
+.intro-chip-count {
+  margin-left: 0.35rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.intro-chip-goal {
+  font-size: 0.78em;
+  font-weight: 400;
+  opacity: 0.7;
 }
