@@ -22,9 +22,9 @@ const SLIDES = [
     // the app the slide is explaining. Both themes ship because a light
     // screenshot on a dark card looks like a bug.
     artClass: 'is-shot',
-    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.16.2"
+    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.17.0"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">
-          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.16.2"
+          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.17.0"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">`,
     title: 'Tap a day, then tap what you did',
     body: 'Habit buttons stay greyed out until a day is selected.'
@@ -52,9 +52,9 @@ const SLIDES = [
     // The gear, because "in settings" is not much use to someone who has not
     // worked out that the one button in the header is a button
     artClass: 'is-strip',
-    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.16.2"
+    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.17.0"
                alt="The settings button in the top right of the header" width="390" height="64">
-          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.16.2"
+          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.17.0"
                alt="The settings button in the top right of the header" width="390" height="64">`,
     title: 'The gear opens settings',
     body: 'Everything about your habits lives in there.'
@@ -205,6 +205,9 @@ class Intro {
       const dot = document.createElement('button');
       dot.className = 'intro-dot' + (i === this.index ? ' is-current' : '');
       dot.setAttribute('aria-label', `Slide ${i + 1} of ${SLIDES.length}`);
+      // Without this a screen reader hears six identically named buttons and
+      // no way to tell which one it is on
+      if (i === this.index) dot.setAttribute('aria-current', 'true');
       dot.onclick = () => { this.index = i; this.render(); };
       dots.appendChild(dot);
     });
@@ -273,6 +276,7 @@ class Spotlight {
     });
 
     this.target.classList.add('is-spotlit');
+    document.body.classList.add('is-spotlighting');
   }
 
   pulse() {
@@ -286,6 +290,7 @@ class Spotlight {
   hide() {
     if (!this.root) return;
     this.target.classList.remove('is-spotlit', 'is-pulsing');
+    document.body.classList.remove('is-spotlighting');
     this.target.removeEventListener('click', this.onTargetClick);
     document.removeEventListener('keydown', this.onKeydown);
     this.hint.remove();

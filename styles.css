@@ -1841,13 +1841,23 @@ input, select, button {
 }
 
 .intro-dot {
+  position: relative;
   width: 7px;
   height: 7px;
   padding: 0;
   border: none;
   border-radius: 50%;
-  background: #d3d7db;
+  /* #d3d7db was 1.5:1 on white - visible as a group, invisible as a control */
+  background: #b0b6bd;
   cursor: pointer;
+}
+
+/* A 7px button is a 7px target. The dot stays 7px and the finger gets 19,
+   without moving anything or changing what is drawn. */
+.intro-dot::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
 }
 
 .intro-dot.is-current {
@@ -2315,11 +2325,28 @@ input, select, button {
 }
 
 /* === SPOTLIGHT ON THE GEAR === */
+/* A light veil that still swallows taps. The dimming itself is done by the
+   app content below, because black over black does nothing: a 0.62 scrim
+   lifted the page background to grey and left the title at pure #000, which
+   made the heading the highest-contrast mark on a screen whose whole job was
+   to point at the gear. */
 .spotlight {
   position: fixed;
   inset: 0;
   z-index: 150;
-  background: rgba(0, 0, 0, 0.62);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* Everything except the one lit control. Opacity takes the text with it, which
+   a scrim cannot do. */
+.is-spotlighting .app-header h1,
+.is-spotlighting .backup-nudge,
+.is-spotlighting .calendar-header,
+.is-spotlighting .weekdays,
+.is-spotlighting .calendar,
+.is-spotlighting .habits-list {
+  opacity: 0.32;
+  filter: grayscale(0.5);
 }
 
 /* Raised above the dim rather than cut out of it: a hole punched with a huge
@@ -2384,19 +2411,24 @@ input, select, button {
   color: #333;
 }
 
+/* The only way past the coach mark on a phone - there is no Escape key and the
+   dimmed area deliberately does not dismiss - so it has to pass contrast and
+   look like a control. #7a8087 was 4.0:1, under AA. */
 .spotlight-skip {
   margin-top: 0.3rem;
-  padding: 0.25rem 0;
+  padding: 0.35rem 0;
   border: none;
   background: none;
   font: inherit;
   font-size: 0.8rem;
-  color: #7a8087;
+  color: #5c6169;
+  text-decoration: underline;
   cursor: pointer;
 }
 
+/* Lighter than the card behind it, or "lit" is carried by the stroke alone */
 .dark-mode .header-action.is-spotlit {
-  background: #2b2b2b;
+  background: #3f3f3f;
 }
 
 .dark-mode .header-action.is-spotlit svg {
@@ -2406,6 +2438,12 @@ input, select, button {
 .dark-mode .spotlight-hint,
 .dark-mode .spotlight-hint::before {
   background: #2b2b2b;
+}
+
+/* A dark card's shadow is invisible on a dark scrim, so the hint needs an edge
+   to separate it from the page at all */
+.dark-mode .spotlight-hint {
+  border: 1px solid #4a4a4a;
 }
 
 .dark-mode .spotlight-text {
