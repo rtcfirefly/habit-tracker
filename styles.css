@@ -2233,6 +2233,7 @@ input, select, button {
   align-items: center;
   gap: 0 0.55rem;
   width: 100%;
+  padding: 0 0.2rem;
   font-size: 0.72rem;
   text-align: center;
 }
@@ -2270,8 +2271,10 @@ input, select, button {
   color: #444;
 }
 
+/* No side margin: the leader line is centred on the grid column, so nudging
+   the control inside its column left the line pointing three pixels beside it */
 .intro-bk-ctl.is-button {
-  margin: 0.35rem 0 0.35rem 0.4rem;
+  margin: 0.35rem 0;
   padding: 0.3rem 0.5rem;
   border: 1px solid #ddd;
   border-radius: 8px;

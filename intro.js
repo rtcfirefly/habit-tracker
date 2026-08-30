@@ -22,9 +22,9 @@ const SLIDES = [
     // the app the slide is explaining. Both themes ship because a light
     // screenshot on a dark card looks like a bug.
     artClass: 'is-shot',
-    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.17.1"
+    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.17.2"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">
-          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.17.1"
+          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.17.2"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">`,
     title: 'Tap a day, then tap what you did',
     body: 'The icons on a day are what you logged against it.'
@@ -52,9 +52,9 @@ const SLIDES = [
     // The gear, because "in settings" is not much use to someone who has not
     // worked out that the one button in the header is a button
     artClass: 'is-strip',
-    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.17.1"
+    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.17.2"
                alt="The Manage Habits button in the top right of the header" width="390" height="64">
-          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.17.1"
+          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.17.2"
                alt="The Manage Habits button in the top right of the header" width="390" height="64">`,
     title: 'The gear opens Manage Habits',
     body: 'Add, rename and reorder your habits from there.'
@@ -111,9 +111,9 @@ const SLIDES = [
             <span class="intro-bk-line c1"></span>
             <span class="intro-bk-line c2"></span>
             <span class="intro-bk-line c3"></span>
-            <span class="intro-bk-label c1">Live file backup</span>
-            <span class="intro-bk-label c2">Export a copy</span>
-            <span class="intro-bk-label c3">Import a copy</span>
+            <span class="intro-bk-label c1">Kept up to date</span>
+            <span class="intro-bk-label c2">Export</span>
+            <span class="intro-bk-label c3">Import</span>
           </div>`,
     title: 'Everything stays on this device',
     body: 'Nothing is uploaded anywhere, so keep a backup of your own.'
@@ -185,6 +185,18 @@ class Intro {
     const art = this.root.querySelector('#intro-art');
     art.className = 'intro-art' + (slide.artClass ? ' ' + slide.artClass : '');
     art.innerHTML = slide.art;
+
+    // Choosing a file needs the File System Access API, and script.js hides
+    // that row outright where it is missing - most notably on iOS, which is
+    // exactly the phone this deck is drawn for. Pointing a labelled arrow at a
+    // control the reader does not have is worse than not mentioning it.
+    if (typeof FileBackup !== 'undefined' && !FileBackup.supported) {
+      const backup = art.querySelector('.intro-art-backup');
+      if (backup) {
+        backup.querySelectorAll('.c1').forEach(el => el.remove());
+        backup.style.gridTemplateColumns = '1fr 1fr';
+      }
+    }
     this.root.querySelector('#intro-title').textContent = slide.title;
     this.root.querySelector('#intro-body').textContent = slide.body;
     // Back is kept in place rather than removed on the first slide, so the
