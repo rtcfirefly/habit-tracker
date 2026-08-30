@@ -45,17 +45,9 @@ class DaySheet {
     this.root.querySelector('#day-sheet-done').onclick = () => this.close();
     this.root.querySelector('#day-sheet-close').onclick = () => this.close();
 
-    // A phone's back gesture means "leave this", and without an entry of our
-    // own in the history it means "leave the app" - which, from a sheet that
-    // opens over the calendar, throws the whole thing away to close a panel.
-    // One pushed entry turns that gesture into closing the sheet.
-    this.popped = false;
-    this.onPopState = () => {
-      this.popped = true;
-      this.close();
-    };
-    history.pushState({ daySheet: true }, '');
-    window.addEventListener('popstate', this.onPopState);
+    // Back closes the sheet rather than the app
+    this.backClose = () => this.close();
+    BackTrap.push(this.backClose);
     // Tapping the dark around it is the other way out, as with the habit dialog
     this.root.onclick = (event) => {
       if (event.target === this.root) this.close();
@@ -192,19 +184,9 @@ class DaySheet {
   close() {
     if (!this.root) return;
 
-    window.removeEventListener('popstate', this.onPopState);
     this.root.remove();
     this.root = null;
     this.dateKey = null;
-
-    // Closed by Done, the X, Escape or the backdrop: the entry pushed on open
-    // is still on the stack, so take it off. Closed by the back gesture
-    // itself: the browser has already popped it, and calling back() again
-    // would leave the app, which is the thing this exists to prevent.
-    if (this.popped) {
-      this.popped = false;
-    } else {
-      history.back();
-    }
+    BackTrap.remove(this.backClose);
   }
 }

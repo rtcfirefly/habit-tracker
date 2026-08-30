@@ -182,12 +182,16 @@ class HabitManager {
       body.hidden = false;
       title.textContent = previousTitle;
       this.habitScreen = null;
+      BackTrap.remove(backClose);
       this.renderForm();
       this.notifyHabitsChanged();
       const dialog = this.modalElement.querySelector('.modal-content');
       if (dialog) dialog.focus();
     };
     this.habitScreen = close;
+
+    const backClose = () => this.closeHabitScreen();
+    BackTrap.push(backClose);
 
     const draw = () => {
       const current = this.dataManager.getHabits()[index];
@@ -746,6 +750,12 @@ class HabitManager {
   open() {
     this.previouslyFocused = document.activeElement;
     this.modalElement.style.display = 'flex';
+
+    // Back closes the dialog rather than the app. The habit screen pushes a
+    // layer of its own on top, so back unwinds one place at a time - the same
+    // order the X and Escape take.
+    this.backClose = () => this.close();
+    BackTrap.push(this.backClose);
     this.renderForm();
 
     // Focus the dialog, not the name field. Focusing a text input raises the
@@ -761,6 +771,7 @@ class HabitManager {
   close() {
     this.closeHabitScreen();
     this.modalElement.style.display = 'none';
+    BackTrap.remove(this.backClose);
 
     // Back to whatever opened it, rather than dumping focus on the body
     if (this.previouslyFocused && this.previouslyFocused.focus) {

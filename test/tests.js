@@ -456,6 +456,54 @@ function runHabitTrackerTests(env) {
     ok('selection survived the re-render', cal.selectedDate !== null);
   }
 
+  section('back unwinds one panel at a time, and never leaves the app');
+  {
+    const dm = fresh();
+    dm.addHabit('💧 Water', 'good');
+
+    const modal = fixture('div');
+    const content = fixture('div');
+    content.classList.add('modal-content');
+    const heading = fixture('h2');
+    heading.setAttribute('id', 'manage-modal-title');
+    heading.textContent = 'Manage Habits';
+    const body = fixture('div');
+    body.classList.add('modal-body');
+    const form = fixture('div');
+    body.appendChild(form);
+    content.appendChild(heading);
+    content.appendChild(body);
+    modal.appendChild(content);
+
+    const manager = new HabitManager(modal, form, dm);
+    history.entries.length = 0;
+
+    manager.open();
+    ok('opening the dialog puts one entry on the stack', history.entries.length === 1);
+
+    manager.openHabitScreen(0);
+    ok('a second panel does not add a second entry', history.entries.length === 1,
+       'two entries would need two back() calls to close both, which browsers may coalesce');
+
+    window.fireBack();
+    ok('back closes the habit screen first',
+       modal.querySelectorAll('.habit-screen').length === 0 && body.hidden === false);
+    ok('the dialog is still open behind it', modal.style.display !== 'none');
+    ok('and the trap is re-armed for the next press', history.entries.length === 1);
+
+    window.fireBack();
+    ok('back then closes the dialog', modal.style.display === 'none');
+    ok('and the stack is given back, so the next press leaves the app as normal',
+       history.entries.length === 0);
+
+    // Closing by hand has to give the entry back too, or the next back press
+    // would be swallowed by an entry nothing is listening to
+    manager.open();
+    ok('open again, one entry', history.entries.length === 1);
+    manager.close();
+    ok('closing by hand takes it off', history.entries.length === 0);
+  }
+
   section('one habit screen at a time, and the dialog takes it with it');
   {
     const dm = fresh();

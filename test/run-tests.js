@@ -15,6 +15,7 @@ const ROOT = path.join(__dirname, '..');
 // The app's files are classic scripts defining global classes, so each one is
 // evaluated and its class captured rather than imported.
 const SOURCES = {
+  'back-trap.js': 'BackTrap',
   'emoji-utils.js': 'EmojiUtils',
   'data-manager.js': 'DataManager',
   'file-backup.js': 'FileBackup',

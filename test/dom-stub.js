@@ -130,7 +130,30 @@ globalThis.document = {
 // Enough of a window for feature detection. PointerEvent is present so the
 // drag wiring takes its real path here rather than the early return, even
 // though a gesture itself cannot be driven from this stub.
-globalThis.window = { PointerEvent: function PointerEvent() {} };
+// Enough history for the back trap: the stub records what was pushed so a
+// test can see whether an overlay put an entry on and took it off again.
+globalThis.history = {
+  entries: [],
+  state: null,
+  pushState(state) { this.entries.push(state); this.state = state; },
+  back() { this.entries.pop(); this.state = this.entries[this.entries.length - 1] || null; }
+};
+
+globalThis.window = {
+  PointerEvent: function PointerEvent() {},
+  listeners: {},
+  addEventListener(type, fn) { (this.listeners[type] = this.listeners[type] || []).push(fn); },
+  removeEventListener(type, fn) {
+    const of = this.listeners[type] || [];
+    const at = of.indexOf(fn);
+    if (at !== -1) of.splice(at, 1);
+  },
+  // What a back gesture does: the browser pops its own entry, then tells the page
+  fireBack() {
+    globalThis.history.back();
+    (this.listeners.popstate || []).slice().forEach(fn => fn());
+  }
+};
 
 globalThis.localStorage = {
   _d: {},
