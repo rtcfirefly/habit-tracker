@@ -148,7 +148,9 @@ class HabitsView {
       const placeholder = document.createElement('div');
       placeholder.style.textAlign = 'center';
       placeholder.style.color = '#888';
-      placeholder.textContent = 'No habits yet. Click "⚙️" to add some!';
+      // Same wording as the first-run coach mark, which points at the same
+      // button: tap, not click, and named rather than quoted as an emoji
+      placeholder.textContent = 'No habits yet. Tap the gear to add one.';
       this.habitsListElement.appendChild(placeholder);
       return;
     }

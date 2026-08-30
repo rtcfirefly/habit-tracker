@@ -22,12 +22,12 @@ const SLIDES = [
     // the app the slide is explaining. Both themes ship because a light
     // screenshot on a dark card looks like a bug.
     artClass: 'is-shot',
-    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.17.0"
+    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.17.1"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">
-          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.17.0"
+          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.17.1"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">`,
     title: 'Tap a day, then tap what you did',
-    body: 'Habit buttons stay greyed out until a day is selected.'
+    body: 'The icons on a day are what you logged against it.'
   },
   {
     // Naming, the three tap-once types and the counter were a slide each.
@@ -45,19 +45,19 @@ const SLIDES = [
               <span class="intro-counter-btn plus">+</span>
             </span>
           </div>`,
-    title: 'Good, neutral, bad, or a counter',
-    body: 'Start the name with an emoji and it becomes the icon.'
+    title: 'Four kinds of habit',
+    body: 'Good, bad and neutral are one tap; a counter has a daily goal.'
   },
   {
     // The gear, because "in settings" is not much use to someone who has not
     // worked out that the one button in the header is a button
     artClass: 'is-strip',
-    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.17.0"
-               alt="The settings button in the top right of the header" width="390" height="64">
-          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.17.0"
-               alt="The settings button in the top right of the header" width="390" height="64">`,
-    title: 'The gear opens settings',
-    body: 'Everything about your habits lives in there.'
+    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.17.1"
+               alt="The Manage Habits button in the top right of the header" width="390" height="64">
+          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.17.1"
+               alt="The Manage Habits button in the top right of the header" width="390" height="64">`,
+    title: 'The gear opens Manage Habits',
+    body: 'Add, rename and reorder your habits from there.'
   },
   {
     art: `<div class="intro-art-rows">
@@ -65,8 +65,8 @@ const SLIDES = [
             <span class="intro-row is-lifted"><span class="intro-grip"></span>💧 Water</span>
             <span class="intro-row"><span class="intro-grip"></span>🧘 Stretch</span>
           </div>`,
-    title: 'Drag a habit by its handle',
-    body: 'The buttons follow this order, so put your daily ones first.'
+    title: 'Drag the grip to reorder',
+    body: 'Habit buttons appear in this order, so put the ones you tap most on top.'
   },
   {
     // The app's own manage-item markup, classes and all, rather than a
@@ -91,8 +91,8 @@ const SLIDES = [
               </div>
             </div>
           </div>`,
-    title: 'In the settings, tap a habit to rename it',
-    body: 'The name becomes a text box where it sits.'
+    title: 'Tap a name to change it',
+    body: 'It turns into a text box you can edit.'
   },
   {
     // The three controls drawn and labelled, rather than a screenshot of the
@@ -116,7 +116,7 @@ const SLIDES = [
             <span class="intro-bk-label c3">Import a copy</span>
           </div>`,
     title: 'Everything stays on this device',
-    body: 'No account and no server, so back it up from the foot of settings.'
+    body: 'Nothing is uploaded anywhere, so keep a backup of your own.'
   }
 ];
 
@@ -195,8 +195,8 @@ class Intro {
     // The last slide's forward arrow becomes the way out, and says so
     const next = this.root.querySelector('#intro-next');
     next.classList.toggle('is-done', last);
-    next.innerHTML = last ? 'Get started' : CHEVRON_RIGHT;
-    next.title = last ? 'Get started' : 'Next';
+    next.innerHTML = last ? 'Done' : CHEVRON_RIGHT;
+    next.title = last ? 'Done' : 'Next';
     next.setAttribute('aria-label', next.title);
 
     const dots = this.root.querySelector('#intro-dots');

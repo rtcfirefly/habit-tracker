@@ -59,7 +59,9 @@ class HabitManager {
 
     const nameInput = document.createElement('input');
     nameInput.className = 'habit-name-input';
-    nameInput.placeholder = `Add a ${TYPE_NOUN[type]}…`;
+    // The emoji example is the whole lesson about icons, taught where someone
+    // is about to type rather than on a card they read once and closed
+    nameInput.placeholder = `Add a ${TYPE_NOUN[type]}, e.g. 💧 Water`;
     nameInput.setAttribute('aria-label', `Name of the new ${TYPE_NOUN[type]}`);
 
     const goalInput = document.createElement('input');
