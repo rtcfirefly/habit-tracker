@@ -22,22 +22,12 @@ const SLIDES = [
     // the app the slide is explaining. Both themes ship because a light
     // screenshot on a dark card looks like a bug.
     artClass: 'is-shot',
-    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.10.0"
+    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.11.0"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">
-          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.10.0"
+          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.11.0"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">`,
     title: 'Tap a day, then tap what you did',
     body: 'Habit buttons stay greyed out until a day is selected.'
-  },
-  {
-    art: `<div class="intro-art-calendar">
-            <span class="intro-day is-other">30</span>
-            <span class="intro-day is-other">31<span class="intro-tap"></span></span>
-            <span class="intro-day">1</span>
-            <span class="intro-day">2</span>
-          </div>`,
-    title: 'Faded days are another month',
-    body: 'Tap one to jump to that month.'
   },
   {
     art: `<div class="intro-art-name">
@@ -72,9 +62,9 @@ const SLIDES = [
     // The gear, because "in settings" is not much use to someone who has not
     // worked out that the one button in the header is a button
     artClass: 'is-strip',
-    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.10.0"
+    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.11.0"
                alt="The settings button in the top right of the header" width="390" height="64">
-          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.10.0"
+          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.11.0"
                alt="The settings button in the top right of the header" width="390" height="64">`,
     title: 'The gear opens settings',
     body: 'Everything about your habits lives in there.'
@@ -105,13 +95,28 @@ const SLIDES = [
     body: 'No account, no server — and clearing browser data erases it.'
   },
   {
-    artClass: 'is-shot',
-    art: `<img class="intro-pic intro-pic-light" src="example-data.png?v=1.10.0"
-               alt="The bottom of settings, with the backup and data controls ringed" width="390" height="600">
-          <img class="intro-pic intro-pic-dark" src="example-data-dark.png?v=1.10.0"
-               alt="The bottom of settings, with the backup and data controls ringed" width="390" height="600">`,
-    title: 'Back up from the bottom of settings',
-    body: 'Write straight to a file, or export one.'
+    // The three controls drawn and labelled, rather than a screenshot of the
+    // whole dialog with a ring round the corner it lives in. A ring says
+    // where; it does not say which button does what, and that was the part
+    // people were being left to guess.
+    art: `<div class="intro-art-backup">
+            <span class="intro-bk-panel"></span>
+            <span class="intro-bk-ctl c1 is-button">Choose file</span>
+            <span class="intro-bk-ctl c2">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </span>
+            <span class="intro-bk-ctl c3">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </span>
+            <span class="intro-bk-line c1"></span>
+            <span class="intro-bk-line c2"></span>
+            <span class="intro-bk-line c3"></span>
+            <span class="intro-bk-label c1">Live file backup</span>
+            <span class="intro-bk-label c2">Export a copy</span>
+            <span class="intro-bk-label c3">Import a copy</span>
+          </div>`,
+    title: 'Backing up sits at the foot of settings',
+    body: 'Choose a file once and it stays up to date on its own.'
   }
 ];
 

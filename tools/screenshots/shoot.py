@@ -301,10 +301,9 @@ SHOTS = [
     ('intro-7-390',       390,  844, 'slide=7'),
     ('intro-8-390',       390,  844, 'slide=8'),
     ('intro-9-390',       390,  844, 'slide=9'),
-    ('intro-10-390',      390,  844, 'slide=10'),
     ('intro-1-390-dark',   390,  844, 'slide=1&theme=dark'),
     ('intro-5-390-dark',   390,  844, 'slide=5&theme=dark'),
-    ('intro-10-390-dark',  390,  844, 'slide=10&theme=dark'),
+    ('intro-9-390-dark',   390,  844, 'slide=9&theme=dark'),
 ]
 
 
