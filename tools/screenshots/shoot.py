@@ -192,11 +192,15 @@ DRIVE = """<script>
   if (params.get('about')) document.getElementById('about-button').click();
 
   // The per-habit screen sits behind a habit's name, so a shot of it taps one
+  // Comma separated, so a shot can tap one name after another - which is how
+  // a second screen gets opened on top of the first
   var screenFor = params.get('screen');
   if (screenFor) {
-    var names = [].slice.call(document.querySelectorAll('.habit-name-display'));
-    var hit = names.filter(function (n) { return n.textContent.indexOf(screenFor) !== -1; })[0];
-    if (hit) hit.click();
+    screenFor.split(',').forEach(function (want) {
+      var names = [].slice.call(document.querySelectorAll('.habit-name-display'));
+      var hit = names.filter(function (n) { return n.textContent.indexOf(want) !== -1; })[0];
+      if (hit) hit.click();
+    });
   }
   // Relaunching the guide from about closes the dialog and opens the deck, so
   // the shot has to press it rather than assume it worked

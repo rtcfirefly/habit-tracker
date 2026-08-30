@@ -403,33 +403,49 @@ function runHabitTrackerTests(env) {
     ok('selection survived the re-render', cal.selectedDate !== null);
   }
 
-  section('dismissing an unchanged rename leaves the modal alone');
+  section('one habit screen at a time, and the dialog takes it with it');
   {
     const dm = fresh();
     dm.addHabit('💧 Water', 'good');
+    dm.addHabit('📖 Read', 'good', 30, true);
 
+    // The dialog's own shape, since the screen swaps the body out and puts the
+    // habit's name in the heading
+    const modal = fixture('div');
+    const content = fixture('div');
+    content.classList.add('modal-content');
+    const heading = fixture('h2');
+    heading.setAttribute('id', 'manage-modal-title');
+    heading.textContent = 'Manage Habits';
+    const body = fixture('div');
+    body.classList.add('modal-body');
     const form = fixture('div');
-    const manager = new HabitManager(fixture('div'), form, dm);
+    body.appendChild(form);
+    content.appendChild(heading);
+    content.appendChild(body);
+    modal.appendChild(content);
+
+    const manager = new HabitManager(modal, form, dm);
     manager.renderForm();
 
-    const tabsBefore = form.children[0];
-    const display = form.querySelector('.habit-name-display');
-    ok('a name display was rendered', !!display);
+    manager.openHabitScreen(0);
+    ok('a screen opens', modal.querySelectorAll('.habit-screen').length === 1);
+    ok('the list is put away while it is up', body.hidden === true);
+    ok('and the heading says which habit', heading.textContent === 'Water');
 
-    manager.startInlineEdit(display, dm.getHabits()[0], 0);
-    ok('editing swaps in an input', !!form.querySelector('.habit-name-edit'));
+    // Tapping a second name used to append a second screen under the first
+    manager.openHabitScreen(1);
+    ok('a second name replaces it rather than stacking',
+       modal.querySelectorAll('.habit-screen').length === 1);
+    ok('the list is still put away', body.hidden === true);
 
-    form.querySelector('.habit-name-edit').onblur();
-
-    ok('display is restored', !!form.querySelector('.habit-name-display'));
-    ok('the input is gone', !form.querySelector('.habit-name-edit'));
-    ok('the modal was not rebuilt', form.children[0] === tabsBefore);
-
-    manager.startInlineEdit(form.querySelector('.habit-name-display'), dm.getHabits()[0], 0);
-    const input = form.querySelector('.habit-name-edit');
-    input.value = '💧 Hydrate';
-    input.onblur();
-    ok('an actual rename is applied', dm.getHabits()[0].name === '💧 Hydrate', dm.getHabits()[0].name);
+    // Closing the dialog with a screen open used to leave the screen in the
+    // DOM and the list hidden behind it, so the next open showed the leftovers
+    manager.close();
+    ok('closing the dialog takes the screen with it',
+       modal.querySelectorAll('.habit-screen').length === 0);
+    ok('and gives the list back', body.hidden === false);
+    ok('and puts the heading back', heading.textContent === 'Manage Habits');
   }
 
   // Only a real browser gives boxes dimensions, so this is the one thing the

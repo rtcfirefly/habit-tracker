@@ -83,8 +83,23 @@ class El {
         return this._matches(attr[1]) && String(actual) === attr[3];
       }
 
+      if (part.startsWith('#')) {
+        return this.attrs.id === part.slice(1);
+      }
+
       return part.split('.').filter(Boolean).every(c => this.classList.contains(c));
     });
+  }
+
+  // Detach from wherever it is. The app uses this to tear down overlays and
+  // panels it built; the stub had no way to model a node leaving the tree.
+  remove() {
+    if (this.parentNode) {
+      const kids = this.parentNode.children;
+      const at = kids.indexOf(this);
+      if (at !== -1) kids.splice(at, 1);
+      this.parentNode = null;
+    }
   }
 
   querySelector(selector) {

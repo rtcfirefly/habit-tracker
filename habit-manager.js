@@ -17,6 +17,8 @@ class HabitManager {
     this.dataManager = dataManager;
     this.dragStartIndex = null;
     this.onHabitsChanged = null;
+    // Set while one habit's screen is up; calling it puts the list back
+    this.habitScreen = null;
     this.activeTab = 'good';
     
     this.previouslyFocused = null;
@@ -158,6 +160,11 @@ class HabitManager {
     const habit = this.dataManager.getHabits()[index];
     if (!habit) return;
 
+    // One at a time. Tapping a second name used to append a second screen
+    // under the first, and closing one of them put the list back while the
+    // other was still on screen.
+    this.closeHabitScreen();
+
     const body = this.modalElement.querySelector('.modal-body');
     const title = this.modalElement.querySelector('#manage-modal-title');
     const previousTitle = title.textContent;
@@ -166,15 +173,21 @@ class HabitManager {
     screen.className = 'habit-screen';
     screen.tabIndex = -1;
 
+    // Held on the manager rather than in a closure, so closing the dialog can
+    // tear it down too - shutting the dialog with a screen open left the
+    // screen in the DOM and the list hidden behind it, and the next open
+    // showed the leftovers.
     const close = () => {
       screen.remove();
       body.hidden = false;
       title.textContent = previousTitle;
+      this.habitScreen = null;
       this.renderForm();
       this.notifyHabitsChanged();
-      const back = this.modalElement.querySelector('.habit-name-display');
-      (back || this.modalElement.querySelector('.modal-content')).focus();
+      const dialog = this.modalElement.querySelector('.modal-content');
+      if (dialog) dialog.focus();
     };
+    this.habitScreen = close;
 
     const draw = () => {
       const current = this.dataManager.getHabits()[index];
@@ -193,6 +206,10 @@ class HabitManager {
     this.modalElement.querySelector('.modal-content').appendChild(screen);
     draw();
     screen.focus();
+  }
+
+  closeHabitScreen() {
+    if (this.habitScreen) this.habitScreen();
   }
 
   screenBack(close) {
@@ -403,57 +420,6 @@ class HabitManager {
     display.onclick = () => this.openHabitScreen(index);
     
     return display;
-  }
-
-  startInlineEdit(display, habit, index) {
-    const input = document.createElement('input');
-    input.className = 'habit-name-edit';
-    input.value = habit.name;
-    
-    let finished = false;
-
-    const restoreDisplay = () => {
-      // Swapping this one element back is enough. Rebuilding the whole modal
-      // here would tear down whatever control the user is part-way through
-      // clicking, swallowing the click that caused the blur.
-      finished = true;
-      input.parentNode.replaceChild(display, input);
-    };
-
-    const finishEdit = () => {
-      if (finished) {
-        return;
-      }
-
-      const newName = input.value.trim();
-      if (!newName || newName === habit.name) {
-        restoreDisplay();
-        return;
-      }
-
-      finished = true;
-
-      if (this.dataManager.updateHabit(index, newName, habit.type, habit.goal)) {
-        this.notifyHabitsChanged();
-      } else {
-        alert(`A habit named "${newName}" already exists.`);
-      }
-
-      this.renderForm();
-    };
-
-    input.onblur = finishEdit;
-    input.onkeydown = (event) => {
-      if (event.key === 'Enter') {
-        finishEdit();
-      } else if (event.key === 'Escape') {
-        restoreDisplay();
-      }
-    };
-    
-    display.parentNode.replaceChild(input, display);
-    input.focus();
-    input.select();
   }
 
   createHabitControls(habit, index) {
@@ -730,6 +696,12 @@ class HabitManager {
   handleKeydown(event) {
     if (event.key === 'Escape') {
       event.preventDefault();
+      // One layer at a time: a screen is a place inside the dialog, so leaving
+      // it should put you back in the list rather than shut everything
+      if (this.habitScreen) {
+        this.closeHabitScreen();
+        return;
+      }
       this.close();
       return;
     }
@@ -780,6 +752,7 @@ class HabitManager {
   }
 
   close() {
+    this.closeHabitScreen();
     this.modalElement.style.display = 'none';
 
     // Back to whatever opened it, rather than dumping focus on the body
