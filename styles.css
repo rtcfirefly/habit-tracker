@@ -2657,9 +2657,8 @@ input, select, button {
 }
 
 .day-sheet-title {
-  margin: 0 0 0.9rem;
+  margin: 0;
   font-size: 1.05rem;
-  text-align: center;
 }
 
 .day-sheet-list {
@@ -3025,4 +3024,57 @@ input, select, button {
   font-size: 0.78em;
   font-weight: 400;
   opacity: 0.7;
+}
+
+/* The day sheet's own header. Same asymmetric padding as the dialog's, for the
+   same reason: the X's strokes sit inside its tap target, so equal padding
+   makes it look further in than the title. */
+.day-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: -0.2rem -0.35rem 0.7rem 0;
+}
+
+.day-sheet-head .day-sheet-title {
+  margin: 0;
+}
+
+.day-sheet-close {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.day-sheet-close:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #333;
+}
+
+.day-sheet-close svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.dark-mode .day-sheet-close {
+  color: #b0b6bd;
+}
+
+.dark-mode .day-sheet-close:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: #eee;
 }

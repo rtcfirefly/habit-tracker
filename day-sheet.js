@@ -30,7 +30,12 @@ class DaySheet {
     this.root.className = 'day-sheet';
     this.root.innerHTML = `
       <div class="day-sheet-card" role="dialog" aria-modal="true" aria-labelledby="day-sheet-title" tabindex="-1">
-        <h2 class="day-sheet-title" id="day-sheet-title">${DaySheet.title(dateKey)}</h2>
+        <div class="day-sheet-head">
+          <h2 class="day-sheet-title" id="day-sheet-title">${DaySheet.title(dateKey)}</h2>
+          <button class="day-sheet-close" id="day-sheet-close" title="Close" aria-label="Close">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+          </button>
+        </div>
         <div class="day-sheet-list" id="day-sheet-list"></div>
         <button class="day-sheet-done" id="day-sheet-done">Done</button>
       </div>`;
@@ -38,6 +43,19 @@ class DaySheet {
     document.body.appendChild(this.root);
 
     this.root.querySelector('#day-sheet-done').onclick = () => this.close();
+    this.root.querySelector('#day-sheet-close').onclick = () => this.close();
+
+    // A phone's back gesture means "leave this", and without an entry of our
+    // own in the history it means "leave the app" - which, from a sheet that
+    // opens over the calendar, throws the whole thing away to close a panel.
+    // One pushed entry turns that gesture into closing the sheet.
+    this.popped = false;
+    this.onPopState = () => {
+      this.popped = true;
+      this.close();
+    };
+    history.pushState({ daySheet: true }, '');
+    window.addEventListener('popstate', this.onPopState);
     // Tapping the dark around it is the other way out, as with the habit dialog
     this.root.onclick = (event) => {
       if (event.target === this.root) this.close();
@@ -173,8 +191,20 @@ class DaySheet {
 
   close() {
     if (!this.root) return;
+
+    window.removeEventListener('popstate', this.onPopState);
     this.root.remove();
     this.root = null;
     this.dateKey = null;
+
+    // Closed by Done, the X, Escape or the backdrop: the entry pushed on open
+    // is still on the stack, so take it off. Closed by the back gesture
+    // itself: the browser has already popped it, and calling back() again
+    // would leave the app, which is the thing this exists to prevent.
+    if (this.popped) {
+      this.popped = false;
+    } else {
+      history.back();
+    }
   }
 }

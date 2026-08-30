@@ -254,34 +254,6 @@ DRIVE = """<script>
       : 'none');
   }
 
-  // Reports the rendered size of a selector back through the DOM, so before and
-  // after can be compared with real numbers instead of eyeballed
-  var measure = params.get('measure');
-  if (measure) {
-    var found = document.querySelectorAll(measure);
-    var el = found[0];
-    document.body.setAttribute('data-measured', JSON.stringify({
-      selector: measure,
-      viewport: window.innerWidth,
-      iconVar: getComputedStyle(document.querySelector('.calendar')).getPropertyValue('--habit-icon-size').trim(),
-      count: found.length,
-      top: el ? +el.getBoundingClientRect().top.toFixed(1) : null,
-      clientH: el ? el.clientHeight : null,
-      scrollH: el ? el.scrollHeight : null,
-      scrollable: el ? el.scrollHeight > el.clientHeight + 1 : null,
-      width: el ? +el.getBoundingClientRect().width.toFixed(1) : null,
-      fontSize: el ? getComputedStyle(el).fontSize : null,
-      box: el ? (function (c) {
-        return c.boxSizing + ' w:' + c.width + ' h:' + c.height +
-               ' pad:' + c.padding + ' border:' + c.borderTopWidth;
-      })(getComputedStyle(el)) : null,
-      rect: el ? [+el.getBoundingClientRect().left.toFixed(1),
-                  +el.getBoundingClientRect().right.toFixed(1),
-                  +el.getBoundingClientRect().top.toFixed(1),
-                  +el.getBoundingClientRect().bottom.toFixed(1)] : null
-    }));
-  }
-
   // Tapping a selected day again opens its sheet, so a shot of the sheet
   // selects twice
   if (params.get('sheet')) {
@@ -323,6 +295,43 @@ DRIVE = """<script>
     var names = document.querySelectorAll('.habit-name-display');
     if (names[+edit]) names[+edit].click();
   }
+
+  // Reports the rendered size of a selector back through the DOM, so before and
+  // after can be compared with real numbers instead of eyeballed
+  // Stands in for a phone's back gesture. Dispatched rather than history.back(),
+  // because back() is asynchronous - the popstate lands after this script has
+  // finished and the measurement below would read the state before it, which
+  // looks exactly like the trap not working. This fires the same event the
+  // browser fires, in time to be measured.
+  if (params.get('back')) {
+    window.dispatchEvent(new PopStateEvent('popstate', { state: history.state }));
+  }
+
+  var measure = params.get('measure');
+  if (measure) {
+    var found = document.querySelectorAll(measure);
+    var el = found[0];
+    document.body.setAttribute('data-measured', JSON.stringify({
+      selector: measure,
+      viewport: window.innerWidth,
+      iconVar: getComputedStyle(document.querySelector('.calendar')).getPropertyValue('--habit-icon-size').trim(),
+      count: found.length,
+      top: el ? +el.getBoundingClientRect().top.toFixed(1) : null,
+      clientH: el ? el.clientHeight : null,
+      scrollH: el ? el.scrollHeight : null,
+      scrollable: el ? el.scrollHeight > el.clientHeight + 1 : null,
+      width: el ? +el.getBoundingClientRect().width.toFixed(1) : null,
+      fontSize: el ? getComputedStyle(el).fontSize : null,
+      box: el ? (function (c) {
+        return c.boxSizing + ' w:' + c.width + ' h:' + c.height +
+               ' pad:' + c.padding + ' border:' + c.borderTopWidth;
+      })(getComputedStyle(el)) : null,
+      rect: el ? [+el.getBoundingClientRect().left.toFixed(1),
+                  +el.getBoundingClientRect().right.toFixed(1),
+                  +el.getBoundingClientRect().top.toFixed(1),
+                  +el.getBoundingClientRect().bottom.toFixed(1)] : null
+    }));
+  }
 })();
 </script>"""
 
@@ -349,6 +358,7 @@ SHOTS = [
     ('about-replay',      390,  844, 'seed=1&open=manage&about=1&replay=1'),
     ('day-sheet-390',     390,  844, 'seed=1&sheet=11'),
     ('day-sheet-390-dark', 390, 844, 'seed=1&sheet=11&theme=dark'),
+    ('day-sheet-back',    390,  844, 'seed=1&sheet=11&back=1'),
     ('day-hint-390',      390,  844, 'seed=1&select=11&bump=1'),
     ('day-hint-390-dark', 390,  844, 'seed=1&select=11&bump=1&theme=dark'),
     ('modal-rename-390',   390,  844, 'seed=1&open=manage&tab=good&edit=0'),
