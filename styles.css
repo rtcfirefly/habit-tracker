@@ -1731,7 +1731,7 @@ input, select, button {
 .intro-content,
 .intro-art,
 .intro-art-backup,
-.intro-art-rename,
+.intro-art-list,
 .spotlight-hint {
   box-sizing: border-box;
 }
@@ -1946,17 +1946,6 @@ input, select, button {
   background: rgba(0, 0, 0, 0.06);
 }
 
-.intro-art-name {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-}
-
-.intro-arrow {
-  color: #9aa0a6;
-}
-
 .intro-chip {
   display: inline-flex;
   align-items: center;
@@ -1980,40 +1969,6 @@ input, select, button {
   border: 2px solid #2e7d32;
   background: #c8e6c9;
   font-size: 0.8rem;
-}
-
-.intro-art-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  width: 15rem;
-}
-
-.intro-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 0.6rem;
-  border: 1px solid #e4e6e9;
-  border-left: 3px solid #4CAF50;
-  border-radius: 8px;
-  background: #fff;
-  font-size: 0.82rem;
-  text-align: left;
-}
-
-.intro-row.is-lifted {
-  transform: translateX(10px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
-}
-
-/* The six-dot drag handle, drawn rather than shipped as an image */
-.intro-grip {
-  flex: none;
-  width: 8px;
-  height: 14px;
-  background-image: radial-gradient(circle, #b6bcc2 1.1px, transparent 1.2px);
-  background-size: 4px 4.7px;
 }
 
 .dark-mode .intro-card {
@@ -2065,16 +2020,6 @@ input, select, button {
 .dark-mode .intro-chip {
   background: #3a3a3a;
   color: #ddd;
-}
-
-.dark-mode .intro-row {
-  background: #3a3a3a;
-  border-color: #555;
-  color: #ddd;
-}
-
-.dark-mode .intro-row {
-  border-left-color: #4CAF50;
 }
 
 /* The example month on slide one is a real screenshot, so it gets a taller
@@ -2199,26 +2144,7 @@ input, select, button {
   font-weight: 600;
 }
 
-/* The rename slide: a name that has become a text box */
-.intro-field {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.4rem 0.6rem;
-  border: 2px solid #1a73e8;
-  border-radius: 8px;
-  background: #fff;
-  font-size: 0.85rem;
-}
-
-.intro-caret {
-  width: 1.5px;
-  height: 1em;
-  margin-left: 2px;
-  background: #1a73e8;
-}
-
-.dark-mode .intro-art-counter,
-.dark-mode .intro-field {
+.dark-mode .intro-art-counter {
   background: #3a3a3a;
   color: #ddd;
 }
@@ -2457,29 +2383,51 @@ input, select, button {
   color: #a0a6ad;
 }
 
-/* === RENAME SLIDE: THE SETTINGS ROW, BEFORE AND AFTER === */
+/* === THE SETTINGS ROW, ON THE REORDER AND RENAME SLIDES === */
 /* Borrows .manage-item and its children wholesale, so the row on the slide is
    the row in settings rather than an approximation that drifts from it */
-.intro-art-rename {
+.intro-art-list {
   width: 100%;
   text-align: left;
 }
 
-.intro-art-rename .manage-item {
-  margin-bottom: 0;
-  cursor: default;
+.intro-art-list .manage-item {
+  margin-bottom: 0.3rem;
 }
 
-.intro-art-rename .manage-item:hover {
+.intro-art-list .manage-item:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transform: none;
+}
+
+/* The row being dragged on the reorder slide. Offset plus a shadow that is
+   actually visible on a dark card - the old drawing leaned entirely on
+   rgba(0,0,0,0.16), which on #2b2b2b is nothing at all, so in dark mode the
+   middle row just sat 10px out of line looking like a bug. */
+.intro-art-list .manage-item.is-dragged {
+  transform: translateX(12px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+}
+
+.intro-art-list .manage-item.is-dragged .drag-handle {
+  color: #2e7d32;
+  background: rgba(76, 175, 80, 0.18);
+}
+
+.dark-mode .intro-art-list .manage-item.is-dragged {
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.75);
+  border-color: #6f6f6f;
+}
+
+.dark-mode .intro-art-list .manage-item.is-dragged .drag-handle {
+  color: #7dd888;
 }
 
 /* The real field is sized for the dialog; the card is narrower. An input
    carries an intrinsic width from its size attribute - about 295px by default,
    wider than a 320px card has to give - so it is told to take the room it is
    given instead of asking for its own. */
-.intro-art-rename .habit-name-edit {
+.intro-art-list .habit-name-edit {
   width: 100%;
   min-width: 0;
   padding: 0.35rem 0.45rem;

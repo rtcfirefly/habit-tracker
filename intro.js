@@ -15,6 +15,21 @@ const CHEVRON_LEFT = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline poin
 const CHEVRON_RIGHT = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>';
 const CHEVRON_DOWN = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>';
 
+// A settings row, built from the app's own markup and classes so the guide
+// shows the thing itself rather than a drawing of it that goes stale
+function row(emoji, name, extra = '', editing = false) {
+  const middle = editing
+    ? `<input class="habit-name-edit" value="${emoji} ${name}" size="1" readonly tabindex="-1" aria-hidden="true">`
+    : `<div class="habit-name-display"><span class="habit-emoji good">${emoji}</span> ${name}</div>`;
+  return `<div class="manage-item good ${extra}">
+            <div class="manage-item-content">
+              <div class="drag-handle">⠿</div>
+              ${middle}
+              <div class="habit-controls"><button class="delete-btn" tabindex="-1">×</button></div>
+            </div>
+          </div>`;
+}
+
 const SLIDES = [
   {
     // A real screenshot rather than a drawing of one: it carries all four
@@ -22,9 +37,9 @@ const SLIDES = [
     // the app the slide is explaining. Both themes ship because a light
     // screenshot on a dark card looks like a bug.
     artClass: 'is-shot',
-    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.17.2"
+    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.18.0"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">
-          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.17.2"
+          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.18.0"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">`,
     title: 'Tap a day, then tap what you did',
     body: 'The icons on a day are what you logged against it.'
@@ -52,18 +67,22 @@ const SLIDES = [
     // The gear, because "in settings" is not much use to someone who has not
     // worked out that the one button in the header is a button
     artClass: 'is-strip',
-    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.17.2"
+    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.18.0"
                alt="The Manage Habits button in the top right of the header" width="390" height="64">
-          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.17.2"
+          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.18.0"
                alt="The Manage Habits button in the top right of the header" width="390" height="64">`,
     title: 'The gear opens Manage Habits',
     body: 'Add, rename and reorder your habits from there.'
   },
   {
-    art: `<div class="intro-art-rows">
-            <span class="intro-row"><span class="intro-grip"></span>🏃 Run</span>
-            <span class="intro-row is-lifted"><span class="intro-grip"></span>💧 Water</span>
-            <span class="intro-row"><span class="intro-grip"></span>🧘 Stretch</span>
+    // The app's own rows, like the rename slide next door. These two describe
+    // the same list in the same dialog and were drawing it two different ways
+    // - and the old drawing's grip was a faint CSS gradient, the least visible
+    // thing on a slide about grabbing the grip.
+    art: `<div class="intro-art-list">
+            ${row('🏃', 'Run')}
+            ${row('💧', 'Water', 'is-dragged')}
+            ${row('🧘', 'Stretch')}
           </div>`,
     title: 'Drag the grip to reorder',
     body: 'Habit buttons appear in this order, so put the ones you tap most on top.'
@@ -74,22 +93,10 @@ const SLIDES = [
     // this, and the point is which part of it takes the tap - so it has to be
     // the whole row, twice, not a name and a box floating on their own. The
     // emoji stays in the field because it is part of the name being edited.
-    art: `<div class="intro-art-rename">
-            <div class="manage-item good">
-              <div class="manage-item-content">
-                <div class="drag-handle">⠿</div>
-                <div class="habit-name-display"><span class="habit-emoji good">💧</span> Water</div>
-                <div class="habit-controls"><button class="delete-btn" tabindex="-1">×</button></div>
-              </div>
-            </div>
+    art: `<div class="intro-art-list">
+            ${row('💧', 'Water')}
             <span class="intro-down">${CHEVRON_DOWN}</span>
-            <div class="manage-item good">
-              <div class="manage-item-content">
-                <div class="drag-handle">⠿</div>
-                <input class="habit-name-edit" value="💧 Water" size="1" readonly tabindex="-1" aria-hidden="true">
-                <div class="habit-controls"><button class="delete-btn" tabindex="-1">×</button></div>
-              </div>
-            </div>
+            ${row('💧', 'Water', '', true)}
           </div>`,
     title: 'Tap a name to change it',
     body: 'It turns into a text box you can edit.'
