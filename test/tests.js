@@ -16,6 +16,30 @@ function runHabitTrackerTests(env) {
   const DAY = 86400000;
   const NOW = 1700000000000;
 
+  section('every explainer slide makes one point');
+  {
+    const slides = Intro.slides;
+    ok('there are slides at all', slides.length > 0);
+
+    const missing = slides.filter(s => !s.art || !s.title || !s.body);
+    ok('each has art, a title and a body', missing.length === 0,
+       missing.map(s => s.title || '(untitled)').join(', '));
+
+    const leftover = slides.filter(s => s.tip);
+    ok('none carries a trailing tip line', leftover.length === 0,
+       leftover.map(s => s.title).join(', '));
+
+    // Two sentences in a body is the shape of two ideas sharing a slide.
+    // Splitting them across slides is cheaper than making someone read twice.
+    const wordy = slides.filter(s => /[.!?]\s+\S/.test(s.body));
+    ok('each body is a single sentence', wordy.length === 0,
+       wordy.map(s => s.title).join(', '));
+
+    const unpunctuated = slides.filter(s => !/[.!?]$/.test(s.body));
+    ok('and ends in a full stop', unpunctuated.length === 0,
+       unpunctuated.map(s => s.title).join(', '));
+  }
+
   section('the explainer shows until there is a habit');
   {
     const dm = fresh();

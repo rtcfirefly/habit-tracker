@@ -1704,10 +1704,17 @@ input, select, button {
   background: rgba(0, 0, 0, 0.45);
 }
 
+/* One height for every slide. Sized to the tallest, so the arrows and dots
+   hold still while paging instead of walking up and down the screen as each
+   slide's art and wording change. Shrinks on a short screen, where scrolling
+   the card beats losing the buttons off the bottom. */
 .intro-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 22rem;
+  height: 30rem;
   max-height: 100%;
   overflow-y: auto;
   padding: 1.4rem 1.3rem 1rem;
@@ -1723,14 +1730,29 @@ input, select, button {
   outline: none;
 }
 
+/* Art, title and body travel as one block, centred in whatever room the card
+   has left. A fixed art box would hold the title at the same line on every
+   slide, but at the price of a 90px void above it on the slides whose art is
+   a single chip. */
+.intro-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .intro-art {
+  flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Fixed rather than min, so the card does not resize under the reader as
-     they page through slides whose art is different heights */
-  height: 120px;
   margin-bottom: 1rem;
+}
+
+/* Screenshots get a ceiling; the drawn art is already its own size */
+.intro-art.is-shot {
+  height: 240px;
 }
 
 /* Art sizes itself; without this the column layouts stretch to the card */
@@ -1744,32 +1766,23 @@ input, select, button {
 }
 
 .intro-body {
-  margin: 0 0 0.7rem;
+  margin: 0;
   font-size: 0.9rem;
   line-height: 1.45;
   color: #444;
 }
 
-/* The tip carries the actually-hidden feature on each slide, so it is set
-   apart rather than run together with the body */
-.intro-tip {
-  margin: 0;
-  padding: 0.6rem 0.7rem;
-  border-radius: 10px;
-  background: #f2f6f2;
-  font-size: 0.82rem;
-  line-height: 1.45;
-  color: #43604a;
-  text-align: left;
-}
-
+/* margin-top:auto rather than a fixed gap: it takes up whatever slack the
+   slide's wording leaves, which is what keeps the controls level */
 .intro-nav {
   position: relative;
+  flex: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  margin-top: 1.1rem;
+  margin-top: auto;
+  padding-top: 1.1rem;
 }
 
 /* Pinned to the middle of the card rather than centred in the space left over
@@ -1946,7 +1959,9 @@ input, select, button {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.35rem 0.7rem 0.35rem 0.35rem;
+  /* Enough left padding that the emoji's ring and the chip's own border read
+     as two things rather than one thick smudge */
+  padding: 0.35rem 0.8rem 0.35rem 0.5rem;
   border: 2px solid #2e7d32;
   border-radius: 999px;
   background: #fff;
@@ -2018,11 +2033,6 @@ input, select, button {
   color: #c3c8ce;
 }
 
-.dark-mode .intro-tip {
-  background: #22301f;
-  color: #b8d6bd;
-}
-
 .dark-mode .intro-dot {
   background: #555;
 }
@@ -2077,17 +2087,6 @@ input, select, button {
 
 /* The example month on slide one is a real screenshot, so it gets a taller
    frame than the drawn art and is cropped rather than scaled down to nothing */
-.intro-art.is-shot {
-  height: 270px;
-}
-
-/* The gear above the habit rows, with a chevron between: where settings is,
-   then what to do once you are in it */
-.intro-art.is-path {
-  height: 200px;
-  flex-direction: column;
-  gap: 0.15rem;
-}
 
 .intro-pic {
   display: block;
@@ -2105,24 +2104,10 @@ input, select, button {
   width: auto;
 }
 
-.intro-art.is-path .intro-pic {
-  width: 15rem;
+/* A wide, short crop - scaling it to the box height would leave it tiny */
+.intro-art.is-strip .intro-pic {
+  width: 100%;
   height: auto;
-}
-
-.intro-down {
-  display: inline-flex;
-  color: #9aa0a6;
-}
-
-.intro-down svg {
-  width: 20px;
-  height: 20px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }
 
 /* Written as a pair rather than reusing .when-light / .when-dark, whose
@@ -2141,4 +2126,112 @@ input, select, button {
 
 .dark-mode .intro-pic {
   border-color: #555;
+}
+
+/* === EXPLAINER ART ADDED WITH THE LONGER DECK === */
+/* Neighbouring-month days on the jump-months slide */
+.intro-day.is-other {
+  background: #fafafa;
+  color: #c2c6ca;
+}
+
+.intro-art-chips {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+/* The chip borders carry the habit type, matching the real buttons */
+.intro-chip.neutral {
+  border-color: #b8860b;
+}
+
+.intro-chip.bad {
+  border-color: #c62828;
+}
+
+.intro-chip-emoji.neutral {
+  border-color: #b8860b;
+  background: #fff3c4;
+}
+
+.intro-chip-emoji.bad {
+  border-color: #c62828;
+  background: #ffcdd2;
+}
+
+.intro-chip-emoji.counter {
+  border-color: #1a73e8;
+  background: #d6e6fb;
+}
+
+.intro-art-counter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.7rem;
+  border: 2px solid #1a73e8;
+  border-radius: 12px;
+  background: #fff;
+  font-size: 0.85rem;
+}
+
+.intro-counter-name {
+  min-width: 4.5rem;
+  text-align: left;
+}
+
+.intro-counter-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 0.9rem;
+}
+
+.intro-counter-btn.minus {
+  border: 1.5px solid #e57373;
+  color: #c62828;
+}
+
+.intro-counter-btn.plus {
+  border: 1.5px solid #81c784;
+  color: #2e7d32;
+}
+
+.intro-counter-value {
+  min-width: 2rem;
+  font-weight: 600;
+}
+
+/* The rename slide: a name that has become a text box */
+.intro-field {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.6rem;
+  border: 2px solid #1a73e8;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.85rem;
+}
+
+.intro-caret {
+  width: 1.5px;
+  height: 1em;
+  margin-left: 2px;
+  background: #1a73e8;
+}
+
+.dark-mode .intro-day.is-other {
+  background: #333;
+  color: #6b7076;
+}
+
+.dark-mode .intro-art-counter,
+.dark-mode .intro-field {
+  background: #3a3a3a;
+  color: #ddd;
 }

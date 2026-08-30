@@ -22,51 +22,96 @@ const SLIDES = [
     // the app the slide is explaining. Both themes ship because a light
     // screenshot on a dark card looks like a bug.
     artClass: 'is-shot',
-    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.9.0"
+    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.10.0"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">
-          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.9.0"
+          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.10.0"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">`,
     title: 'Tap a day, then tap what you did',
-    body: 'Habit buttons stay greyed out until a day is selected.',
-    tip: 'Tap a faded day to jump months. Arrow keys move, Enter selects.'
+    body: 'Habit buttons stay greyed out until a day is selected.'
+  },
+  {
+    art: `<div class="intro-art-calendar">
+            <span class="intro-day is-other">30</span>
+            <span class="intro-day is-other">31<span class="intro-tap"></span></span>
+            <span class="intro-day">1</span>
+            <span class="intro-day">2</span>
+          </div>`,
+    title: 'Faded days are another month',
+    body: 'Tap one to jump to that month.'
   },
   {
     art: `<div class="intro-art-name">
             <span class="intro-typed">💧 Water</span>
             <span class="intro-arrow">→</span>
-            <span class="intro-chip"><span class="intro-chip-emoji good">💧</span> Water</span>
+            <span class="intro-chip good"><span class="intro-chip-emoji good">💧</span> Water</span>
           </div>`,
     title: 'Start the name with an emoji',
-    body: 'It becomes that habit’s icon on the calendar.',
-    tip: 'Good, neutral and bad are one tap. Counters track a daily goal.'
+    body: 'It becomes that habit’s icon on the calendar.'
   },
   {
-    // The gear above the rows, because "in settings" is not much use to
-    // someone who has not spotted the only button in the header
-    artClass: 'is-path',
-    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.9.0"
+    art: `<div class="intro-art-chips">
+            <span class="intro-chip good"><span class="intro-chip-emoji good">💧</span> Water</span>
+            <span class="intro-chip neutral"><span class="intro-chip-emoji neutral">☕</span> Coffee</span>
+            <span class="intro-chip bad"><span class="intro-chip-emoji bad">🚬</span> Smoke</span>
+          </div>`,
+    title: 'Good, neutral or bad',
+    body: 'Each is a single tap on the day you picked.'
+  },
+  {
+    art: `<div class="intro-art-counter">
+            <span class="intro-chip-emoji counter">💊</span>
+            <span class="intro-counter-name">Vitamins</span>
+            <span class="intro-counter-btn minus">−</span>
+            <span class="intro-counter-value">1/2</span>
+            <span class="intro-counter-btn plus">+</span>
+          </div>`,
+    title: 'Counters track a daily goal',
+    body: 'Tap plus and minus until you reach it.'
+  },
+  {
+    // The gear, because "in settings" is not much use to someone who has not
+    // worked out that the one button in the header is a button
+    artClass: 'is-strip',
+    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.10.0"
                alt="The settings button in the top right of the header" width="390" height="64">
-          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.9.0"
-               alt="The settings button in the top right of the header" width="390" height="64">
-          <span class="intro-down">${CHEVRON_DOWN}</span>
-          <div class="intro-art-rows">
+          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.10.0"
+               alt="The settings button in the top right of the header" width="390" height="64">`,
+    title: 'The gear opens settings',
+    body: 'Everything about your habits lives in there.'
+  },
+  {
+    art: `<div class="intro-art-rows">
             <span class="intro-row"><span class="intro-grip"></span>🏃 Run</span>
             <span class="intro-row is-lifted"><span class="intro-grip"></span>💧 Water</span>
             <span class="intro-row"><span class="intro-grip"></span>🧘 Stretch</span>
           </div>`,
-    title: 'Drag to reorder, tap to rename',
-    body: 'Open settings with the gear, then act on the habit itself.',
-    tip: 'The buttons follow this order, so put your daily ones first.'
+    title: 'Drag a habit by its handle',
+    body: 'The buttons follow this order, so put your daily ones first.'
+  },
+  {
+    art: `<div class="intro-art-name">
+            <span class="intro-chip good"><span class="intro-chip-emoji good">💧</span> Water</span>
+            <span class="intro-arrow">→</span>
+            <span class="intro-field">Water<span class="intro-caret"></span></span>
+          </div>`,
+    title: 'Tap a habit’s name to rename it',
+    body: 'It turns into a text box where it sits.'
+  },
+  {
+    art: `<div class="intro-art-shield">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z"/><polyline points="9 12 11 14 15 10"/></svg>
+          </div>`,
+    title: 'Everything stays on this device',
+    body: 'No account, no server — and clearing browser data erases it.'
   },
   {
     artClass: 'is-shot',
-    art: `<img class="intro-pic intro-pic-light" src="example-data.png?v=1.9.0"
+    art: `<img class="intro-pic intro-pic-light" src="example-data.png?v=1.10.0"
                alt="The bottom of settings, with the backup and data controls ringed" width="390" height="600">
-          <img class="intro-pic intro-pic-dark" src="example-data-dark.png?v=1.9.0"
+          <img class="intro-pic intro-pic-dark" src="example-data-dark.png?v=1.10.0"
                alt="The bottom of settings, with the backup and data controls ringed" width="390" height="600">`,
-    title: 'Everything stays on this device',
-    body: 'No account, no server — and clearing browser data erases it.',
-    tip: 'Back up from the bottom of settings: a file, or export. Nudged after a week.'
+    title: 'Back up from the bottom of settings',
+    body: 'Write straight to a file, or export one.'
   }
 ];
 
@@ -74,6 +119,10 @@ class Intro {
   constructor() {
     this.index = 0;
     this.root = null;
+  }
+
+  static get slides() {
+    return SLIDES;
   }
 
   // No habits is the whole condition: an app with nothing in it has nothing to
@@ -94,10 +143,11 @@ class Intro {
         <button class="intro-close" id="intro-close" title="Close" aria-label="Close">
           <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
         </button>
-        <div class="intro-art" id="intro-art"></div>
-        <h2 class="intro-title" id="intro-title"></h2>
-        <p class="intro-body" id="intro-body"></p>
-        <p class="intro-tip" id="intro-tip"></p>
+        <div class="intro-content">
+          <div class="intro-art" id="intro-art"></div>
+          <h2 class="intro-title" id="intro-title"></h2>
+          <p class="intro-body" id="intro-body"></p>
+        </div>
         <div class="intro-nav">
           <button class="intro-step" id="intro-back" title="Back" aria-label="Back">${CHEVRON_LEFT}</button>
           <div class="intro-dots" id="intro-dots"></div>
@@ -132,7 +182,6 @@ class Intro {
     art.innerHTML = slide.art;
     this.root.querySelector('#intro-title').textContent = slide.title;
     this.root.querySelector('#intro-body').textContent = slide.body;
-    this.root.querySelector('#intro-tip').textContent = slide.tip;
     // Back is kept in place rather than removed on the first slide, so the
     // dots do not jump sideways as the pair of arrows appears and disappears
     const back = this.root.querySelector('#intro-back');
