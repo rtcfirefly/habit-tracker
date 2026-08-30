@@ -64,6 +64,17 @@ function closeManageModal() {
   habitManager.close();
 }
 
+// --- the day sheet --------------------------------------------------------
+// Where a day is edited in both directions. The buttons under the calendar
+// only add; this is where anything comes back off.
+const daySheet = new DaySheet(dataManager);
+daySheet.onChanged = () => {
+  calendarView.render();
+  habitsView.render();
+};
+
+calendarView.onDayReopened = (dateKey) => daySheet.open(dateKey);
+
 // --- about ----------------------------------------------------------------
 // Replaces the dialog's body rather than adding another row to it. The dialog
 // already carries tabs, a list and three settings rows, and this is read once.

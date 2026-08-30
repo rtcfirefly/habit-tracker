@@ -1248,6 +1248,23 @@ input, select, button {
   justify-content: space-between;
   align-items: center;
   gap: 0.8rem;
+  /* A button now, not a div holding two of them */
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.habit-counter:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.counter-goal {
+  font-size: 0.78rem;
+  font-weight: 400;
+  opacity: 0.75;
+  margin-left: 0.1rem;
 }
 
 .counter-name {
@@ -2646,3 +2663,142 @@ input, select, button {
 .habit-emoji.neutral.filling { --chip: rgba(184, 134, 11, 0.5); }
 .habit-emoji.bad.filling     { --chip: rgba(198, 40, 40, 0.45); }
 .habit-emoji.counter.filling { --chip: rgba(26, 115, 232, 0.45); }
+
+/* === THE DAY SHEET === */
+.day-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 180;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.day-sheet-card {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 22rem;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 1.1rem 1rem 0.9rem;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.day-sheet-card:focus {
+  outline: none;
+}
+
+.day-sheet-title {
+  margin: 0 0 0.9rem;
+  font-size: 1.05rem;
+  text-align: center;
+}
+
+.day-sheet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
+}
+
+.day-sheet-empty {
+  margin: 0.5rem 0 1rem;
+  text-align: center;
+  color: #7a8087;
+  font-size: 0.9rem;
+}
+
+.day-sheet-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #e4e6e9;
+  border-left: 3px solid #bbb;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.day-sheet-row.is-good    { border-left-color: #4CAF50; }
+.day-sheet-row.is-bad     { border-left-color: #F44336; }
+.day-sheet-row.is-neutral { border-left-color: #b8860b; }
+.day-sheet-row.is-counter { border-left-color: #1a73e8; }
+
+.day-sheet-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.day-sheet-step,
+.day-sheet-tick {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+  background: none;
+  font: inherit;
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.day-sheet-step.minus { border: 1.5px solid #e57373; color: #c62828; }
+.day-sheet-step.plus  { border: 1.5px solid #81c784; color: #2e7d32; }
+
+.day-sheet-step:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.day-sheet-count {
+  flex: none;
+  min-width: 3rem;
+  text-align: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.day-sheet-tick {
+  border: 2px solid #81c784;
+  color: #2e7d32;
+}
+
+.day-sheet-tick.on {
+  background: #4CAF50;
+  border-color: #4CAF50;
+  color: #fff;
+}
+
+.day-sheet-done {
+  display: block;
+  width: 100%;
+  padding: 0.55rem;
+  border: none;
+  border-radius: 10px;
+  background: #4CAF50;
+  font: inherit;
+  font-size: 0.9rem;
+  color: #fff;
+  cursor: pointer;
+}
+
+.dark-mode .day-sheet-card {
+  background: #2b2b2b;
+  color: #eee;
+}
+
+.dark-mode .day-sheet-row {
+  border-color: #4a4a4a;
+}
+
+.dark-mode .day-sheet-empty {
+  color: #a0a6ad;
+}
+
+.dark-mode .day-sheet-step.minus { color: #ef9a9a; }
+.dark-mode .day-sheet-step.plus  { color: #a5d6a7; }

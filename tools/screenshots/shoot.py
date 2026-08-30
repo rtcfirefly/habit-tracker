@@ -177,6 +177,14 @@ DRIVE = """<script>
     }));
   }
 
+  // Tapping a selected day again opens its sheet, so a shot of the sheet
+  // selects twice
+  if (params.get('sheet')) {
+    var target = [].slice.call(document.querySelectorAll('.day:not(.other-month)'))
+      .filter(function (d) { return d.firstChild && d.firstChild.textContent === params.get('sheet'); })[0];
+    if (target) { target.click(); target.click(); }
+  }
+
   // Selects a specific day, so a shot can show the selected day and today as
   // two different cells
   var select = params.get('select');
@@ -309,6 +317,8 @@ SHOTS = [
     ('about-390',         390,  844, 'seed=1&open=manage&about=1'),
     ('about-390-dark',    390,  844, 'seed=1&open=manage&about=1&theme=dark'),
     ('about-replay',      390,  844, 'seed=1&open=manage&about=1&replay=1'),
+    ('day-sheet-390',     390,  844, 'seed=1&sheet=11'),
+    ('day-sheet-390-dark', 390, 844, 'seed=1&sheet=11&theme=dark'),
     ('modal-rename-390',   390,  844, 'seed=1&open=manage&tab=good&edit=0'),
     ('nudge-390',          390,  844, 'seed=1&stale=9'),
     ('nudge-390-dark',     390,  844, 'seed=1&stale=9&theme=dark'),

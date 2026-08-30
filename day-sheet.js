@@ -1,0 +1,158 @@
+// The editor for one day.
+//
+// Habit buttons under the calendar only go up: a counter is a single tap that
+// adds one, which keeps the main screen the same shape as every other habit.
+// Everything that needs two directions - correcting a count, ticking something
+// off days later, undoing a mis-tap - happens here instead.
+//
+// Reached by tapping a day that is already selected. That is deliberately not a
+// new gesture: the first tap selects, the second opens this.
+
+class DaySheet {
+  constructor(dataManager) {
+    this.dataManager = dataManager;
+    this.root = null;
+    this.dateKey = null;
+  }
+
+  static title(dateKey) {
+    const date = new Date(dateKey);
+    return date.toLocaleDateString(undefined, {
+      weekday: 'long', day: 'numeric', month: 'long'
+    });
+  }
+
+  open(dateKey) {
+    this.close();
+    this.dateKey = dateKey;
+
+    this.root = document.createElement('div');
+    this.root.className = 'day-sheet';
+    this.root.innerHTML = `
+      <div class="day-sheet-card" role="dialog" aria-modal="true" aria-labelledby="day-sheet-title" tabindex="-1">
+        <h2 class="day-sheet-title" id="day-sheet-title">${DaySheet.title(dateKey)}</h2>
+        <div class="day-sheet-list" id="day-sheet-list"></div>
+        <button class="day-sheet-done" id="day-sheet-done">Done</button>
+      </div>`;
+
+    document.body.appendChild(this.root);
+
+    this.root.querySelector('#day-sheet-done').onclick = () => this.close();
+    // Tapping the dark around it is the other way out, as with the habit dialog
+    this.root.onclick = (event) => {
+      if (event.target === this.root) this.close();
+    };
+    this.root.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') this.close();
+    });
+
+    this.render();
+    this.root.querySelector('.day-sheet-card').focus();
+  }
+
+  render() {
+    const list = this.root.querySelector('#day-sheet-list');
+    list.textContent = '';
+
+    const habits = this.dataManager.getHabits();
+    if (!habits.length) {
+      const empty = document.createElement('p');
+      empty.className = 'day-sheet-empty';
+      empty.textContent = 'No habits yet.';
+      list.appendChild(empty);
+      return;
+    }
+
+    habits.forEach(habit => list.appendChild(
+      habit.type === 'counter' ? this.counterRow(habit) : this.toggleRow(habit)
+    ));
+  }
+
+  row(habit) {
+    const row = document.createElement('div');
+    // is-good rather than good: the stylesheet carries bare `.good { background:
+    // green }` rules that paint any element wearing the type class, which
+    // turned every row in here into a solid colour block
+    row.className = `day-sheet-row is-${habit.type}`;
+
+    const emoji = EmojiUtils.extractEmoji(habit.name);
+    if (emoji) {
+      const chip = document.createElement('span');
+      chip.className = `habit-emoji ${habit.type}`;
+      chip.textContent = emoji;
+      row.appendChild(chip);
+    }
+
+    const name = document.createElement('span');
+    name.className = 'day-sheet-name';
+    name.textContent = EmojiUtils.removeEmoji(habit.name) || habit.name;
+    row.appendChild(name);
+
+    return row;
+  }
+
+  toggleRow(habit) {
+    const row = this.row(habit);
+    const done = this.dataManager.isHabitCompleted(this.dateKey, habit.name);
+
+    const tick = document.createElement('button');
+    tick.className = 'day-sheet-tick' + (done ? ' on' : '');
+    tick.textContent = '✓';
+    tick.title = done ? `Undo ${habit.name}` : `Mark ${habit.name} done`;
+    tick.setAttribute('aria-pressed', String(done));
+    tick.onclick = () => {
+      this.dataManager.toggleHabitCompletion(this.dateKey, habit.name);
+      this.changed();
+    };
+
+    row.appendChild(tick);
+    return row;
+  }
+
+  counterRow(habit) {
+    const row = this.row(habit);
+    const value = this.dataManager.getCounterValue(this.dateKey, habit.name);
+
+    const minus = document.createElement('button');
+    minus.className = 'day-sheet-step minus';
+    minus.textContent = '−';
+    minus.title = `One less ${habit.name}`;
+    minus.disabled = value <= 0;
+    minus.onclick = () => {
+      this.dataManager.decrementCounter(this.dateKey, habit.name);
+      this.changed();
+    };
+
+    const count = document.createElement('span');
+    count.className = 'day-sheet-count';
+    count.textContent = `${value}/${habit.goal}`;
+
+    const plus = document.createElement('button');
+    plus.className = 'day-sheet-step plus';
+    plus.textContent = '+';
+    plus.title = `One more ${habit.name}`;
+    plus.onclick = () => {
+      this.dataManager.incrementCounter(this.dateKey, habit.name);
+      this.changed();
+    };
+
+    row.appendChild(minus);
+    row.appendChild(count);
+    row.appendChild(plus);
+    return row;
+  }
+
+  // The sheet redraws itself and tells the app to redraw behind it, so the
+  // calendar and the buttons under it are never a tap out of date
+  changed() {
+    this.render();
+    if (this.onChanged) this.onChanged();
+  }
+
+  close() {
+    if (!this.root) return;
+    this.root.remove();
+    this.root = null;
+    this.dateKey = null;
+  }
+}

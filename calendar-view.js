@@ -175,11 +175,20 @@ class CalendarView {
 
   addDayClickHandler(dayDiv, day, dayKey, index) {
     const select = () => {
+      // Tapping the day you are already on opens its sheet. The first tap
+      // selects, the second edits - deliberately an extension of the gesture
+      // the app is built around rather than a new one nothing advertises.
+      const reopened = this.selectedDate === dayKey;
+
       // A greyed neighbouring-month day belongs to another month, so move there
       // first; otherwise render() would immediately clear the new selection
       this.currentDate = new Date(day.getFullYear(), day.getMonth(), 1);
       this.setSelectedDate(dayKey);
       this.render();
+
+      if (reopened && this.onDayReopened) {
+        this.onDayReopened(dayKey);
+      }
     };
 
     const ARROW_OFFSETS = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
