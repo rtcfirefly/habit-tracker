@@ -2189,6 +2189,21 @@ input, select, button {
   grid-column: 3;
 }
 
+/* Without the file control - no File System Access API, so nothing to point
+   at. The two survivors move down into columns one and two; leaving them
+   where they were is what left a blank panel with the icons pushed right. */
+.intro-art-backup.is-two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.intro-art-backup.is-two .c2 {
+  grid-column: 1;
+}
+
+.intro-art-backup.is-two .c3 {
+  grid-column: 2;
+}
+
 /* Behind the controls, in the same cells: the strip they sit on in settings */
 .intro-bk-panel {
   grid-area: 1 / 1 / 2 / -1;

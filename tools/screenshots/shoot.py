@@ -54,6 +54,13 @@ SEED = """<script>
   // Theme is set before the seed bails out, so an unseeded page - the first
   // run explainer, which only shows with no habits - can still be shot dark
   localStorage.setItem('theme', params.get('theme') === 'dark' ? 'dark' : 'light');
+  // Before the early return: this is a window override, not seeded storage,
+  // and the shots that need it - the explainer - seed nothing.
+  // defineProperty, not delete: showSaveFilePicker lives on Window.prototype,
+  // so deleting it off the instance silently does nothing.
+  if (params.get('nofs')) {
+    Object.defineProperty(window, 'showSaveFilePicker', { value: undefined, configurable: true });
+  }
   if (!params.get('seed')) return;
   var many = +params.get('many') || 0;
   localStorage.clear();
@@ -92,6 +99,9 @@ SEED = """<script>
     localStorage.setItem('lastExported', String(Date.now() - stale * 86400000));
   }
   if (params.get('remindoff')) localStorage.setItem('backupRemindersOff', '1');
+  // Stands in for a browser without the File System Access API - Firefox,
+  // Firefox Focus, iOS Safari. That path renders differently and had never
+  // been shot, which is how a hole in the backup slide reached a phone.
 })();
 </script>"""
 
@@ -307,6 +317,7 @@ SHOTS = [
     ('intro-4-390',       390,  844, 'slide=4'),
     ('intro-5-390',       390,  844, 'slide=5'),
     ('intro-6-390',       390,  844, 'slide=6'),
+    ('intro-6-390-nofs',  390,  844, 'slide=6&nofs=1'),
     ('intro-1-390-dark',   390,  844, 'slide=1&theme=dark'),
     ('intro-2-390-dark',   390,  844, 'slide=2&theme=dark'),
     ('intro-5-390-dark',   390,  844, 'slide=5&theme=dark'),
