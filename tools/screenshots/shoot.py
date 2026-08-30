@@ -53,9 +53,7 @@ SEED = """<script>
   var params = new URLSearchParams(location.search);
   // Theme is set before the seed bails out, so an unseeded page - the first
   // run explainer, which only shows with no habits - can still be shot dark
-  // Explicit, not system: headless Chromium reports a light system, so a shot
-  // asking for dark has to say so rather than hope
-  if (params.get('theme')) localStorage.setItem('themeMode', params.get('theme'));
+  localStorage.setItem('theme', params.get('theme') === 'dark' ? 'dark' : 'light');
   if (!params.get('seed')) return;
   var many = +params.get('many') || 0;
   localStorage.clear();
@@ -86,12 +84,9 @@ SEED = """<script>
     }
     return out;
   })()));
+  localStorage.setItem('theme', params.get('theme') === 'dark' ? 'dark' : 'light');
   // Backdates the last backup, which is the only way to see the reminder
   // banner without waiting a week
-  // Again, because localStorage.clear() above wiped the copy set before the
-  // unseeded early return. Both are load-bearing: the first themes the shots
-  // that seed nothing, this one themes the seeded ones.
-  if (params.get('theme')) localStorage.setItem('themeMode', params.get('theme'));
   var stale = +params.get('stale') || 0;
   if (stale) {
     localStorage.setItem('lastExported', String(Date.now() - stale * 86400000));

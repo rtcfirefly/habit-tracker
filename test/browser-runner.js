@@ -42,7 +42,7 @@
     return;
   }
 
-  const STORAGE_KEYS = ['habits', 'completions', 'counters', 'theme', 'themeMode'];
+  const STORAGE_KEYS = ['habits', 'completions', 'counters', 'theme'];
   const APP_ROOT = new URL('..', location.href).href;
 
   function makeFakeStorage() {

@@ -16,29 +16,6 @@ function runHabitTrackerTests(env) {
   const DAY = 86400000;
   const NOW = 1700000000000;
 
-  section('appearance follows the system unless told otherwise');
-  {
-    ok('system resolves to the system’s dark',
-       ThemeManager.resolve('system', true) === 'dark');
-    ok('and to its light', ThemeManager.resolve('system', false) === 'light');
-    ok('an explicit dark ignores a light system',
-       ThemeManager.resolve('dark', false) === 'dark');
-    ok('an explicit light ignores a dark system',
-       ThemeManager.resolve('light', true) === 'light');
-
-    ok('the cycle returns to system',
-       ThemeManager.nextMode(ThemeManager.nextMode(ThemeManager.nextMode('system'))) === 'system');
-    ok('and passes through light then dark',
-       ThemeManager.nextMode('system') === 'light' && ThemeManager.nextMode('light') === 'dark');
-
-    // The old key was written on every load, so only 'dark' can be told apart
-    // from never having chosen at all
-    ok('an old dark is kept as a real choice', ThemeManager.migrate('dark') === 'dark');
-    ok('an old light was the default, so it follows the system',
-       ThemeManager.migrate('light') === 'system');
-    ok('nothing stored follows the system', ThemeManager.migrate(null) === 'system');
-  }
-
   section('every explainer slide makes one point');
   {
     const slides = Intro.slides;

@@ -21,8 +21,7 @@ const SOURCES = {
   'calendar-view.js': 'CalendarView',
   'habits-view.js': 'HabitsView',
   'habit-manager.js': 'HabitManager',
-  'intro.js': 'Intro',
-  'theme-manager.js': 'ThemeManager'
+  'intro.js': 'Intro'
 };
 
 for (const [file, className] of Object.entries(SOURCES)) {
