@@ -208,6 +208,10 @@ DRIVE = """<script>
   // Clicks something after the slides have run, which is the only way to reach
   // what the guide leaves behind - the spotlight, and whether the gear under
   // it still takes a tap through the dim
+  // The about view lives behind a footer button, so a shot of it has to press
+  // that button rather than pass a state in
+  if (params.get('about')) document.getElementById('about-button').click();
+
   var tap = params.get('tap');
   if (tap) {
     var hit = document.querySelector(tap);
@@ -299,6 +303,8 @@ SHOTS = [
     ('modal-empty-390',    390,  844, 'open=manage&tab=neutral'),
     ('modal-good-900',     900,  900, 'seed=1&open=manage&tab=good'),
     ('modal-good-390-dark', 390, 844, 'seed=1&open=manage&tab=good&theme=dark'),
+    ('about-390',         390,  844, 'seed=1&open=manage&about=1'),
+    ('about-390-dark',    390,  844, 'seed=1&open=manage&about=1&theme=dark'),
     ('modal-rename-390',   390,  844, 'seed=1&open=manage&tab=good&edit=0'),
     ('nudge-390',          390,  844, 'seed=1&stale=9'),
     ('nudge-390-dark',     390,  844, 'seed=1&stale=9&theme=dark'),

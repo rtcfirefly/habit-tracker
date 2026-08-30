@@ -2478,3 +2478,105 @@ input, select, button {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
+/* === ABOUT === */
+.modal-about {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1.2rem 1.2rem 1rem;
+  text-align: center;
+}
+
+/* An author display rule beats the UA's [hidden] one, which this file has been
+   caught by before - and was again here: the about view appeared above a
+   modal body that was told to hide and did not, because .modal-body sets
+   display:flex. Both sides of the swap need saying. */
+.modal-about[hidden],
+.modal-body[hidden] {
+  display: none;
+}
+
+.modal-about:focus {
+  outline: none;
+}
+
+.about-name {
+  margin: 0 0 0.15rem;
+  font-size: 1.15rem;
+}
+
+.about-version {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  color: #7a8087;
+}
+
+.about-line {
+  margin: 0 0 0.7rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #444;
+  text-align: left;
+}
+
+.about-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  color: #2e7d32;
+  text-decoration: none;
+}
+
+.about-link:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.about-link svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.about-back {
+  display: block;
+  margin: 1.1rem auto 0;
+  padding: 0.45rem 1.1rem;
+  border: none;
+  border-radius: 9px;
+  background: #4CAF50;
+  font: inherit;
+  font-size: 0.88rem;
+  color: #fff;
+  cursor: pointer;
+}
+
+.about-back:hover {
+  background: #43a047;
+}
+
+.dark-mode .about-version {
+  color: #a0a6ad;
+}
+
+.dark-mode .about-line {
+  color: #c3c8ce;
+}
+
+.dark-mode .about-link {
+  border-color: #555;
+  color: #7dd888;
+}
+
+.dark-mode .about-link:hover {
+  background: rgba(255, 255, 255, 0.07);
+}

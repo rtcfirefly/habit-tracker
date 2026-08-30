@@ -64,6 +64,33 @@ function closeManageModal() {
   habitManager.close();
 }
 
+// --- about ----------------------------------------------------------------
+// Replaces the dialog's body rather than adding another row to it. The dialog
+// already carries tabs, a list and three settings rows, and this is read once.
+const aboutPanel = document.getElementById('modal-about');
+const modalBody = document.querySelector('.modal-body');
+
+const modalTitle = document.getElementById('manage-modal-title');
+
+function showAbout(show) {
+  aboutPanel.hidden = !show;
+  modalBody.hidden = show;
+  // The dialog is labelled by this heading, so it has to say which of the two
+  // views is actually on screen
+  modalTitle.textContent = show ? 'About' : 'Manage Habits';
+
+  // The panel rather than the Back button: focus has to move into the new view
+  // for a screen reader, and a ring drawn on a control nobody tabbed to reads
+  // as damage
+  (show ? aboutPanel : document.getElementById('about-button')).focus();
+}
+
+document.getElementById('about-button').onclick = () => showAbout(true);
+document.getElementById('about-back').onclick = () => showAbout(false);
+
+// Reopening settings should land on the habits, not wherever it was left
+document.getElementById('manage-habits-button').addEventListener('click', () => showAbout(false));
+
 // --- the weekly backup reminder -------------------------------------------
 // A paused backup cannot resume itself, so the most that can be automated is
 // asking. This appears in the main view rather than in settings, because not
