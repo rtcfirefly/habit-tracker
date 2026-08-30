@@ -106,6 +106,19 @@ if ! printf '%s\n' "${assets[@]}" | grep -qxF "$sheet"; then
   fail=1
 fi
 
+# --- every ?v= anywhere in the source agrees with CACHE_NAME ---------------
+# index.html is not the only file that asks for a versioned url: intro.js
+# references the screenshots it shows. A stale one there is invisible online -
+# it just misses the cache - and breaks the guide offline. Bumping the version
+# and forgetting one file is the exact mistake this catches.
+while read -r file; do
+  while read -r ref; do
+    [ "$ref" = "$cache_version" ] && continue
+    echo "$file asks for ?v=$ref but CACHE_NAME is v$cache_version   (that url is not precached)"
+    fail=1
+  done < <(grep -oE '\?v=[0-9]+\.[0-9]+\.[0-9]+' "$file" | sed 's/?v=//' | sort -u)
+done < <(git ls-files '*.js' '*.html' | grep -v '^test/' | grep -v '^lab/')
+
 [ "$fail" -ne 0 ] && exit 1
 
 echo "check-sw-cache: ok — ${#assets[@]} precached entries at v$cache_version, all present, all referenced urls covered"
