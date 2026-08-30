@@ -16,6 +16,18 @@ function runHabitTrackerTests(env) {
   const DAY = 86400000;
   const NOW = 1700000000000;
 
+  section('counter progress is a clamped whole percent');
+  {
+    ok('nothing done is nothing', DataManager.progressPercent(0, 30) === 0);
+    ok('a third of the way', DataManager.progressPercent(10, 30) === 33);
+    ok('finished is full', DataManager.progressPercent(30, 30) === 100);
+    ok('past a ceiling stays full rather than overflowing the bar',
+       DataManager.progressPercent(5, 3) === 100);
+    ok('a missing goal cannot divide', DataManager.progressPercent(4, 0) === 0);
+    ok('nor an absent one', DataManager.progressPercent(4, undefined) === 0);
+    ok('a negative count reads as nothing', DataManager.progressPercent(-2, 10) === 0);
+  }
+
   section('a drag lands on the row under the finger');
   {
     // Three rows, 40px each, stacked from y=100

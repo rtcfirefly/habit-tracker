@@ -134,11 +134,20 @@ class CalendarView {
         : this.createHabitIndicator(habitName, 'neutral', `${habitName} (deleted)`, true));
     });
 
-    // Counter habits that reached their goal
+    // Counter habits with anything on them, not only the ones that finished.
+    // A day at 29 of 30 used to draw nothing at all, so it looked exactly like
+    // a day at zero; the chip now fills by how far it got.
     habits.forEach(habit => {
-      if (habit.type === 'counter' && this.dataManager.isCounterHabitCompleted(dayKey, habit.name)) {
-        dots.appendChild(this.createHabitIndicator(habit.name, 'counter', habit.name, false));
-      }
+      if (habit.type !== 'counter') return;
+
+      const value = this.dataManager.getCounterValue(dayKey, habit.name);
+      if (value <= 0) return;
+
+      const indicator = this.createHabitIndicator(
+        habit.name, 'counter', `${habit.name}: ${value}/${habit.goal}`, false);
+      indicator.classList.add('filling');
+      indicator.style.setProperty('--pct', `${DataManager.progressPercent(value, habit.goal)}%`);
+      dots.appendChild(indicator);
     });
 
     // Counter habits that were deleted but still have progress recorded

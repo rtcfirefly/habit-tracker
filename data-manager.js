@@ -203,6 +203,20 @@ class DataManager {
     this.setCounterValue(dateKey, habitName, currentValue - 1);
   }
 
+  // How far a counter got, as a whole percent, clamped. Pure and static so the
+  // fill can be tested without a browser - it is CSS that draws it, but this
+  // decides the number.
+  static progressPercent(value, goal) {
+    if (!goal || goal <= 0 || !value || value <= 0) return 0;
+    return Math.min(100, Math.round((value / goal) * 100));
+  }
+
+  counterProgress(dateKey, habitName) {
+    const habit = this.habits.find(h => h.name === habitName);
+    if (!habit) return 0;
+    return DataManager.progressPercent(this.getCounterValue(dateKey, habitName), habit.goal);
+  }
+
   isCounterHabitCompleted(dateKey, habitName) {
     const habit = this.habits.find(h => h.name === habitName);
     if (!habit || habit.type !== 'counter') return false;

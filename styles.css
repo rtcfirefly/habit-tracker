@@ -345,7 +345,10 @@ input, select, button {
   width: 20px;
   height: 20px;
   border: 2px solid;
-  background: none !important;
+  /* colour only, not the shorthand: `background: none !important` also
+     wipes background-image, which is what a progress fill is, and no
+     specificity can win against it */
+  background-color: transparent;
   vertical-align: top;
   box-sizing: border-box;
   align-items: center;
@@ -461,19 +464,19 @@ input, select, button {
 
 /* Light mode emoji backgrounds */
 .habit-emoji.good {
-  background: #a1eea1 !important;
+  background-color: #a1eea1 !important;
 }
 
 .habit-emoji.bad {
-  background: #ffa1a1 !important;
+  background-color: #ffa1a1 !important;
 }
 
 .habit-emoji.neutral {
-  background: #fff5a1 !important;
+  background-color: #fff5a1 !important;
 }
 
 .habit-emoji.counter {
-  background: #a1d1ff !important;
+  background-color: #a1d1ff !important;
 }
 
 /* Light mode - completed with colored backgrounds */
@@ -1439,22 +1442,22 @@ input, select, button {
 }
 
 .dark-mode .habit-emoji.good {
-  background: #a1eea1 !important;
+  background-color: #a1eea1 !important;
   border-color: #66BB6A;
 }
 
 .dark-mode .habit-emoji.bad {
-  background: #ffa1a1 !important;
+  background-color: #ffa1a1 !important;
   border-color: #EF5350;
 }
 
 .dark-mode .habit-emoji.neutral {
-  background: #fff5a1 !important;
+  background-color: #fff5a1 !important;
   border-color: #FFCA28;
 }
 
 .dark-mode .habit-emoji.counter {
-  background: #a1d1ff !important;
+  background-color: #a1d1ff !important;
   border-color: #3b82f6;
 }
 
@@ -2593,3 +2596,53 @@ input, select, button {
 .dark-mode .about-link:hover {
   background: rgba(255, 255, 255, 0.07);
 }
+
+/* === COUNTER PROGRESS FILL === */
+/* One custom property, --pct, set on the element by whoever renders it. The
+   colour is the habit's own type, so a counted habit looks like what it is
+   rather than like a fourth thing.
+   Every rule here names the type class and sets background-image only: the
+   app's own paints are `background` shorthands, which reset background-image
+   to none, so a plainer rule is silently wiped by them. */
+.habit-counter.good,
+.habit-counter.neutral,
+.habit-counter.bad,
+.habit-counter.counter {
+  background-image: linear-gradient(to right, var(--fill) 0 var(--pct, 0%), transparent var(--pct, 0%));
+  background-repeat: no-repeat;
+}
+
+.habit-counter.good    { --fill: rgba(76, 175, 80, 0.38); }
+.habit-counter.neutral { --fill: rgba(184, 134, 11, 0.32); }
+.habit-counter.bad     { --fill: rgba(198, 40, 40, 0.28); }
+.habit-counter.counter { --fill: rgba(26, 115, 232, 0.28); }
+
+/* Dark restates all of it, because .dark-mode .habit-counter.good outranks the
+   rules above and is itself a shorthand. The alphas are higher: the same
+   translucent colour that reads over white disappears over #2b2b2b. */
+.dark-mode .habit-counter.good,
+.dark-mode .habit-counter.neutral,
+.dark-mode .habit-counter.bad,
+.dark-mode .habit-counter.counter {
+  background-image: linear-gradient(to right, var(--fill) 0 var(--pct, 0%), transparent var(--pct, 0%));
+  background-repeat: no-repeat;
+}
+
+.dark-mode .habit-counter.good    { --fill: rgba(76, 175, 80, 0.50); }
+.dark-mode .habit-counter.neutral { --fill: rgba(212, 160, 23, 0.45); }
+.dark-mode .habit-counter.bad     { --fill: rgba(220, 60, 60, 0.42); }
+.dark-mode .habit-counter.counter { --fill: rgba(80, 150, 240, 0.45); }
+
+/* The chip fills bottom to top, like something filling up. Kept light enough
+   that the emoji inside it stays readable at 100%. */
+.habit-emoji.good.filling,
+.habit-emoji.neutral.filling,
+.habit-emoji.bad.filling,
+.habit-emoji.counter.filling {
+  background-image: linear-gradient(to top, var(--chip) 0 var(--pct, 0%), transparent var(--pct, 0%));
+}
+
+.habit-emoji.good.filling    { --chip: rgba(46, 125, 50, 0.5); }
+.habit-emoji.neutral.filling { --chip: rgba(184, 134, 11, 0.5); }
+.habit-emoji.bad.filling     { --chip: rgba(198, 40, 40, 0.45); }
+.habit-emoji.counter.filling { --chip: rgba(26, 115, 232, 0.45); }

@@ -87,7 +87,7 @@ SEED = """<script>
     for (var i = 0; i < 20; i++) {
       var d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
       if (i %% 3 === 0) continue;
-      out[d.toDateString()] = { '💊 Vitamins': 1, '📖 Read pages': 12 };
+      out[d.toDateString()] = { '💊 Vitamins': 1, '📖 Read pages': i %% 4 === 0 ? 30 : 12 };
     }
     return out;
   })()));

@@ -11,7 +11,14 @@ class El {
     this.tagName = (tag || 'div').toUpperCase();
     this.children = [];
     this.attrs = {};
-    this.style = {};
+    // Plain assignment (style.display = 'none') plus the custom-property API,
+    // which the progress fill sets from JS
+    this.style = {
+      _props: {},
+      setProperty(name, value) { this._props[name] = String(value); },
+      getPropertyValue(name) { return this._props[name] || ''; },
+      removeProperty(name) { delete this._props[name]; }
+    };
     this.listeners = {};
     this._text = '';
     this.parentNode = null;

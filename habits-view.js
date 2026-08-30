@@ -68,6 +68,13 @@ class HabitsView {
   createCounterHabit(habit) {
     const wrapper = document.createElement('div');
     wrapper.className = `habit-counter ${habit.type}`;
+
+    // How far the day has got, drawn as a fill across the row by CSS
+    const progress = this.selectedDate
+      ? DataManager.progressPercent(
+          this.dataManager.getCounterValue(this.selectedDate, habit.name), habit.goal)
+      : 0;
+    wrapper.style.setProperty('--pct', `${progress}%`);
     if (!this.selectedDate) {
       wrapper.classList.add('no-date');
     }
@@ -86,7 +93,8 @@ class HabitsView {
     const emoji = EmojiUtils.extractEmoji(habit.name);
     if (emoji) {
       const emojiSpan = document.createElement('span');
-      emojiSpan.className = `habit-emoji ${habit.type}`;
+      emojiSpan.className = `habit-emoji ${habit.type} filling`;
+      emojiSpan.style.setProperty('--pct', `${progress}%`);
       emojiSpan.textContent = emoji;
       emojiSpan.title = habit.name;
       
