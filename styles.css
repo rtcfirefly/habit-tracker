@@ -2029,7 +2029,15 @@ input, select, button {
   background: rgba(255, 255, 255, 0.09);
 }
 
-.dark-mode .intro-chip,
+/* No border-color here. A chip's border is its habit type, and a type does not
+   change colour with the theme - overriding it greyed out the good chip in
+   dark mode while neutral and bad kept theirs, because those two have later
+   rules and good never had one. */
+.dark-mode .intro-chip {
+  background: #3a3a3a;
+  color: #ddd;
+}
+
 .dark-mode .intro-row {
   background: #3a3a3a;
   border-color: #555;
@@ -2091,7 +2099,13 @@ input, select, button {
   gap: 0.45rem;
 }
 
-/* The chip borders carry the habit type, matching the real buttons */
+/* The chip borders carry the habit type, matching the real buttons. Good is
+   stated rather than inherited from the base rule, so all three sit together
+   and none can be picked off by a theme rule again. */
+.intro-chip.good {
+  border-color: #2e7d32;
+}
+
 .intro-chip.neutral {
   border-color: #b8860b;
 }
