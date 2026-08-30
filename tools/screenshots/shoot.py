@@ -309,6 +309,7 @@ SHOTS = [
     ('intro-6-390',       390,  844, 'slide=6'),
     ('intro-1-390-dark',   390,  844, 'slide=1&theme=dark'),
     ('intro-2-390-dark',   390,  844, 'slide=2&theme=dark'),
+    ('intro-5-390-dark',   390,  844, 'slide=5&theme=dark'),
     ('intro-6-390-dark',   390,  844, 'slide=6&theme=dark'),
     ('spotlight-390',      390,  844, 'slide=7'),
     ('spotlight-390-dark', 390,  844, 'slide=7&theme=dark'),

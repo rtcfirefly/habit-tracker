@@ -1748,6 +1748,9 @@ input, select, button {
   align-items: center;
   justify-content: center;
   margin-bottom: 1rem;
+  /* Illustration, not controls. The rename slide contains a real input, and
+     without this a tap on it would raise the phone keyboard over the guide. */
+  pointer-events: none;
 }
 
 /* Screenshots get a ceiling; the drawn art is already its own size */
@@ -2356,4 +2359,46 @@ input, select, button {
 
 .dark-mode .spotlight-skip {
   color: #a0a6ad;
+}
+
+/* === RENAME SLIDE: THE SETTINGS ROW, BEFORE AND AFTER === */
+/* Borrows .manage-item and its children wholesale, so the row on the slide is
+   the row in settings rather than an approximation that drifts from it */
+.intro-art-rename {
+  width: 100%;
+  text-align: left;
+}
+
+.intro-art-rename .manage-item {
+  margin-bottom: 0;
+  cursor: default;
+}
+
+.intro-art-rename .manage-item:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: none;
+}
+
+/* The real field is sized for the dialog; the card is narrower */
+.intro-art-rename .habit-name-edit {
+  min-width: 0;
+  padding: 0.35rem 0.45rem;
+  font-size: 0.9rem;
+}
+
+.intro-down {
+  display: flex;
+  justify-content: center;
+  padding: 0.25rem 0;
+  color: #9aa0a6;
+}
+
+.intro-down svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }

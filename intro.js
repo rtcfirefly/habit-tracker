@@ -22,9 +22,9 @@ const SLIDES = [
     // the app the slide is explaining. Both themes ship because a light
     // screenshot on a dark card looks like a bug.
     artClass: 'is-shot',
-    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.13.0"
+    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.13.1"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">
-          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.13.0"
+          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.13.1"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">`,
     title: 'Tap a day, then tap what you did',
     body: 'Habit buttons stay greyed out until a day is selected.'
@@ -52,9 +52,9 @@ const SLIDES = [
     // The gear, because "in settings" is not much use to someone who has not
     // worked out that the one button in the header is a button
     artClass: 'is-strip',
-    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.13.0"
+    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.13.1"
                alt="The settings button in the top right of the header" width="390" height="64">
-          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.13.0"
+          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.13.1"
                alt="The settings button in the top right of the header" width="390" height="64">`,
     title: 'The gear opens settings',
     body: 'Everything about your habits lives in there.'
@@ -69,13 +69,30 @@ const SLIDES = [
     body: 'The buttons follow this order, so put your daily ones first.'
   },
   {
-    art: `<div class="intro-art-name">
-            <span class="intro-chip good"><span class="intro-chip-emoji good">💧</span> Water</span>
-            <span class="intro-arrow">→</span>
-            <span class="intro-field">Water<span class="intro-caret"></span></span>
+    // The app's own manage-item markup, classes and all, rather than a
+    // drawing of one. The row is what someone is looking at when they need
+    // this, and the point is which part of it takes the tap - so it has to be
+    // the whole row, twice, not a name and a box floating on their own. The
+    // emoji stays in the field because it is part of the name being edited.
+    art: `<div class="intro-art-rename">
+            <div class="manage-item good">
+              <div class="manage-item-content">
+                <div class="drag-handle">⠿</div>
+                <div class="habit-name-display"><span class="habit-emoji good">💧</span> Water</div>
+                <div class="habit-controls"><button class="delete-btn" tabindex="-1">×</button></div>
+              </div>
+            </div>
+            <span class="intro-down">${CHEVRON_DOWN}</span>
+            <div class="manage-item good">
+              <div class="manage-item-content">
+                <div class="drag-handle">⠿</div>
+                <input class="habit-name-edit" value="💧 Water" readonly tabindex="-1" aria-hidden="true">
+                <div class="habit-controls"><button class="delete-btn" tabindex="-1">×</button></div>
+              </div>
+            </div>
           </div>`,
-    title: 'Tap a habit’s name to rename it',
-    body: 'It turns into a text box where it sits.'
+    title: 'In the settings, tap a habit to rename it',
+    body: 'The name becomes a text box where it sits.'
   },
   {
     // The three controls drawn and labelled, rather than a screenshot of the

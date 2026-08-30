@@ -18,31 +18,31 @@
 // request for the next, which is what makes a stale stylesheet against a
 // fresh index.html impossible - the failure that made this necessary.
 // tools/check-sw-cache.sh enforces that they agree.
-const CACHE_NAME = 'habit-tracker-v1.13.0';
+const CACHE_NAME = 'habit-tracker-v1.13.1';
 
 const ASSETS = [
   './',
   './index.html',
-  './styles.css?v=1.13.0',
+  './styles.css?v=1.13.1',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
   './icon-maskable-512.png',
-  './emoji-utils.js?v=1.13.0',
-  './data-manager.js?v=1.13.0',
-  './file-backup.js?v=1.13.0',
-  './calendar-view.js?v=1.13.0',
-  './habits-view.js?v=1.13.0',
-  './habit-manager.js?v=1.13.0',
-  './intro.js?v=1.13.0',
+  './emoji-utils.js?v=1.13.1',
+  './data-manager.js?v=1.13.1',
+  './file-backup.js?v=1.13.1',
+  './calendar-view.js?v=1.13.1',
+  './habits-view.js?v=1.13.1',
+  './habit-manager.js?v=1.13.1',
+  './intro.js?v=1.13.1',
   // Slide one of the explainer, in both themes
-  './example-month.png?v=1.13.0',
-  './example-month-dark.png?v=1.13.0',
-  './example-gear.png?v=1.13.0',
-  './example-gear-dark.png?v=1.13.0',
-  './theme-manager.js?v=1.13.0',
-  './import-export-manager.js?v=1.13.0',
-  './script.js?v=1.13.0'
+  './example-month.png?v=1.13.1',
+  './example-month-dark.png?v=1.13.1',
+  './example-gear.png?v=1.13.1',
+  './example-gear-dark.png?v=1.13.1',
+  './theme-manager.js?v=1.13.1',
+  './import-export-manager.js?v=1.13.1',
+  './script.js?v=1.13.1'
 ];
 
 self.addEventListener('install', event => {
