@@ -149,42 +149,6 @@ DRIVE = """<script>
     var tabs = document.querySelectorAll('.habit-tab');
     if (tabs[order.indexOf(tab)]) tabs[order.indexOf(tab)].click();
   }
-  // Reports the rendered size of a selector back through the DOM, so before and
-  // after can be compared with real numbers instead of eyeballed
-  var measure = params.get('measure');
-  if (measure) {
-    var found = document.querySelectorAll(measure);
-    var el = found[0];
-    document.body.setAttribute('data-measured', JSON.stringify({
-      selector: measure,
-      viewport: window.innerWidth,
-      iconVar: getComputedStyle(document.querySelector('.calendar')).getPropertyValue('--habit-icon-size').trim(),
-      count: found.length,
-      top: el ? +el.getBoundingClientRect().top.toFixed(1) : null,
-      clientH: el ? el.clientHeight : null,
-      scrollH: el ? el.scrollHeight : null,
-      scrollable: el ? el.scrollHeight > el.clientHeight + 1 : null,
-      width: el ? +el.getBoundingClientRect().width.toFixed(1) : null,
-      fontSize: el ? getComputedStyle(el).fontSize : null,
-      box: el ? (function (c) {
-        return c.boxSizing + ' w:' + c.width + ' h:' + c.height +
-               ' pad:' + c.padding + ' border:' + c.borderTopWidth;
-      })(getComputedStyle(el)) : null,
-      rect: el ? [+el.getBoundingClientRect().left.toFixed(1),
-                  +el.getBoundingClientRect().right.toFixed(1),
-                  +el.getBoundingClientRect().top.toFixed(1),
-                  +el.getBoundingClientRect().bottom.toFixed(1)] : null
-    }));
-  }
-
-  // Tapping a selected day again opens its sheet, so a shot of the sheet
-  // selects twice
-  if (params.get('sheet')) {
-    var target = [].slice.call(document.querySelectorAll('.day:not(.other-month)'))
-      .filter(function (d) { return d.firstChild && d.firstChild.textContent === params.get('sheet'); })[0];
-    if (target) { target.click(); target.click(); }
-  }
-
   // Selects a specific day, so a shot can show the selected day and today as
   // two different cells
   var select = params.get('select');
@@ -255,12 +219,56 @@ DRIVE = """<script>
     }
   }
 
+  // The day hint fires once, on the first tap of a counter, so a shot of it
+  // taps one. After select=, because a counter button is disabled until a day
+  // is chosen - run before it, this clicked a dead button.
+  if (params.get('bump')) {
+    var counter = document.querySelector('.habit-counter');
+    if (counter) counter.click();
+  }
+
   // What holds focus decides whether a phone raises its keyboard
   if (params.get('focus')) {
     var a = document.activeElement;
     document.body.setAttribute('data-focus', a
       ? a.tagName.toLowerCase() + (a.className ? '.' + String(a.className).split(' ')[0] : '')
       : 'none');
+  }
+
+  // Reports the rendered size of a selector back through the DOM, so before and
+  // after can be compared with real numbers instead of eyeballed
+  var measure = params.get('measure');
+  if (measure) {
+    var found = document.querySelectorAll(measure);
+    var el = found[0];
+    document.body.setAttribute('data-measured', JSON.stringify({
+      selector: measure,
+      viewport: window.innerWidth,
+      iconVar: getComputedStyle(document.querySelector('.calendar')).getPropertyValue('--habit-icon-size').trim(),
+      count: found.length,
+      top: el ? +el.getBoundingClientRect().top.toFixed(1) : null,
+      clientH: el ? el.clientHeight : null,
+      scrollH: el ? el.scrollHeight : null,
+      scrollable: el ? el.scrollHeight > el.clientHeight + 1 : null,
+      width: el ? +el.getBoundingClientRect().width.toFixed(1) : null,
+      fontSize: el ? getComputedStyle(el).fontSize : null,
+      box: el ? (function (c) {
+        return c.boxSizing + ' w:' + c.width + ' h:' + c.height +
+               ' pad:' + c.padding + ' border:' + c.borderTopWidth;
+      })(getComputedStyle(el)) : null,
+      rect: el ? [+el.getBoundingClientRect().left.toFixed(1),
+                  +el.getBoundingClientRect().right.toFixed(1),
+                  +el.getBoundingClientRect().top.toFixed(1),
+                  +el.getBoundingClientRect().bottom.toFixed(1)] : null
+    }));
+  }
+
+  // Tapping a selected day again opens its sheet, so a shot of the sheet
+  // selects twice
+  if (params.get('sheet')) {
+    var target = [].slice.call(document.querySelectorAll('.day:not(.other-month)'))
+      .filter(function (d) { return d.firstChild && d.firstChild.textContent === params.get('sheet'); })[0];
+    if (target) { target.click(); target.click(); }
   }
 
   if (params.get('add')) {
@@ -319,6 +327,8 @@ SHOTS = [
     ('about-replay',      390,  844, 'seed=1&open=manage&about=1&replay=1'),
     ('day-sheet-390',     390,  844, 'seed=1&sheet=11'),
     ('day-sheet-390-dark', 390, 844, 'seed=1&sheet=11&theme=dark'),
+    ('day-hint-390',      390,  844, 'seed=1&select=11&bump=1'),
+    ('day-hint-390-dark', 390,  844, 'seed=1&select=11&bump=1&theme=dark'),
     ('modal-rename-390',   390,  844, 'seed=1&open=manage&tab=good&edit=0'),
     ('nudge-390',          390,  844, 'seed=1&stale=9'),
     ('nudge-390-dark',     390,  844, 'seed=1&stale=9&theme=dark'),

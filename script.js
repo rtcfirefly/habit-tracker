@@ -75,6 +75,26 @@ daySheet.onChanged = () => {
 
 calendarView.onDayReopened = (dateKey) => daySheet.open(dateKey);
 
+// Tapping a day twice to edit it is the one thing here nothing announces, and
+// a counter that only goes up is the moment it starts mattering: the first
+// time someone adds one, they are shown where the other direction lives.
+const DAY_HINT_KEY = 'daySheetHintSeen';
+
+habitsView.onCounterIncremented = () => {
+  if (localStorage.getItem(DAY_HINT_KEY) === '1') return;
+  localStorage.setItem(DAY_HINT_KEY, '1');
+
+  const cell = calendarView.selectedDayElement();
+  if (!cell) return;
+
+  new Spotlight(cell, {
+    text: 'Tap this day again to change or undo anything on it',
+    anchor: document.getElementById('calendar'),
+    placement: 'under-centre',
+    dim: 'is-spotlighting-day'
+  }).show();
+};
+
 // --- about ----------------------------------------------------------------
 // Replaces the dialog's body rather than adding another row to it. The dialog
 // already carries tabs, a list and three settings rows, and this is read once.

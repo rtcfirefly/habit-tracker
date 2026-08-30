@@ -37,9 +37,9 @@ const SLIDES = [
     // the app the slide is explaining. Both themes ship because a light
     // screenshot on a dark card looks like a bug.
     artClass: 'is-shot',
-    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.22.0"
+    art: `<img class="intro-pic intro-pic-light" src="example-month.png?v=1.23.0"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">
-          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.22.0"
+          <img class="intro-pic intro-pic-dark" src="example-month-dark.png?v=1.23.0"
                alt="The calendar with habit icons on most days, above the habit buttons" width="390" height="560">`,
     title: 'Tap a day, then tap what you did',
     body: 'The icons on a day are what you logged against it.'
@@ -67,9 +67,9 @@ const SLIDES = [
     // The gear, because "in settings" is not much use to someone who has not
     // worked out that the one button in the header is a button
     artClass: 'is-strip',
-    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.22.0"
+    art: `<img class="intro-pic intro-pic-light" src="example-gear.png?v=1.23.0"
                alt="The Manage Habits button in the top right of the header" width="390" height="64">
-          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.22.0"
+          <img class="intro-pic intro-pic-dark" src="example-gear-dark.png?v=1.23.0"
                alt="The Manage Habits button in the top right of the header" width="390" height="64">`,
     title: 'The gear opens Manage Habits',
     body: 'Add, rename and reorder your habits from there.'
@@ -262,8 +262,15 @@ class Intro {
 // the reader doing the thing rather than reading about it. The gear is the
 // only way into an empty app, and tapping it once is what teaches it.
 class Spotlight {
-  constructor(target) {
+  // anchor is what the hint hangs off - the header for the gear, the calendar
+  // for a day - and placement decides which way it points. Both default to the
+  // gear's arrangement, which was the only one when this was written.
+  constructor(target, { text, anchor, placement = 'under-right', dim = 'is-spotlighting' } = {}) {
     this.target = target;
+    this.text = text || 'Tap the gear to add your first habit';
+    this.anchor = anchor || (target && target.parentNode);
+    this.placement = placement;
+    this.dim = dim;
     this.root = null;
     this.hint = null;
   }
@@ -280,11 +287,11 @@ class Spotlight {
     // read at whatever width the window happens to be at the time - fine in a
     // browser, wrong in every screenshot, and wrong again on a rotate.
     this.hint = document.createElement('div');
-    this.hint.className = 'spotlight-hint';
+    this.hint.className = `spotlight-hint is-${this.placement}`;
     this.hint.innerHTML = `
-      <p class="spotlight-text">Tap the gear to add your first habit</p>
+      <p class="spotlight-text">${this.text}</p>
       <button class="spotlight-skip" id="spotlight-skip">Not now</button>`;
-    this.target.parentNode.appendChild(this.hint);
+    this.anchor.appendChild(this.hint);
 
     this.hint.querySelector('#spotlight-skip').onclick = () => this.hide();
 
@@ -299,7 +306,7 @@ class Spotlight {
     });
 
     this.target.classList.add('is-spotlit');
-    document.body.classList.add('is-spotlighting');
+    document.body.classList.add(this.dim);
   }
 
   pulse() {
@@ -313,7 +320,7 @@ class Spotlight {
   hide() {
     if (!this.root) return;
     this.target.classList.remove('is-spotlit', 'is-pulsing');
-    document.body.classList.remove('is-spotlighting');
+    document.body.classList.remove(this.dim);
     this.target.removeEventListener('click', this.onTargetClick);
     document.removeEventListener('keydown', this.onKeydown);
     this.hint.remove();

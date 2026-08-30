@@ -57,6 +57,8 @@ class CalendarView {
     if (dayKey === this.selectedDate) {
       dayDiv.classList.add('selected');
     }
+    // Read back by anything that needs to find a particular day's cell again
+    dayDiv.dataset.dayKey = dayKey;
 
     this.addHabitDots(dayDiv, dayKey);
     this.addDayAccessibility(dayDiv, day, dayKey);
@@ -93,6 +95,12 @@ class CalendarView {
     if (tabStop) {
       tabStop.tabIndex = 0;
     }
+  }
+
+  // The cell for whichever day is selected, for anything that needs to point
+  // at it. Rebuilt on every render, so it is looked up rather than held.
+  selectedDayElement() {
+    return this.dayElements.find(el => el.dataset && el.dataset.dayKey === this.selectedDate) || null;
   }
 
   focusDay(index) {

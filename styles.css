@@ -2802,3 +2802,47 @@ input, select, button {
 
 .dark-mode .day-sheet-step.minus { color: #ef9a9a; }
 .dark-mode .day-sheet-step.plus  { color: #a5d6a7; }
+
+/* === SPOTLIGHT ON A DAY === */
+/* The calendar is the anchor, so the hint can hang under the grid */
+.calendar {
+  position: relative;
+}
+
+/* Opacity on a parent takes its children with it, so the day spotlight cannot
+   dim .calendar as a whole the way the gear one does - it dims every day
+   except the lit one instead */
+.is-spotlighting-day .app-header h1,
+.is-spotlighting-day .backup-nudge,
+.is-spotlighting-day .calendar-header,
+.is-spotlighting-day .weekdays,
+.is-spotlighting-day .habits-list,
+.is-spotlighting-day .day:not(.is-spotlit) {
+  opacity: 0.32;
+  filter: grayscale(0.5);
+}
+
+.day.is-spotlit {
+  position: relative;
+  z-index: 160;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.45);
+}
+
+.dark-mode .day.is-spotlit {
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.16);
+}
+
+/* Centred under whatever it points at, with no tail: a day can sit anywhere
+   across the width of the grid, so a fixed arrow offset would miss */
+.spotlight-hint.is-under-centre {
+  top: 100%;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  margin-top: 0.9rem;
+  text-align: center;
+}
+
+.spotlight-hint.is-under-centre::before {
+  display: none;
+}
