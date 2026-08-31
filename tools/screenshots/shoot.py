@@ -152,7 +152,11 @@ DRIVE = """<script>
 
   var tab = params.get('tab');
   if (tab) {
-    var order = ['good', 'bad', 'neutral'];
+    // The order the tabs are rendered in, which is not the order they are
+    // declared in: good and bad sit at opposite ends with neutral between.
+    // Getting this wrong silently selected the wrong tab - a review of the Bad
+    // habits spent three attempts looking at the Neutral ones.
+    var order = ['good', 'neutral', 'bad'];
     var tabs = document.querySelectorAll('.habit-tab');
     if (tabs[order.indexOf(tab)]) tabs[order.indexOf(tab)].click();
   }
