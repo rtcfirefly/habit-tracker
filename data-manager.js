@@ -73,8 +73,29 @@ class DataManager {
     return true;
   }
 
+  // A name that some deleted habit's history is still filed under. Both stores
+  // are keyed by name and keep deleted habits' records on purpose, so renaming
+  // onto one used to merge two habits' pasts and overwrite whichever record
+  // the rename landed on - a count lost with no message and no way back.
+  hasHistoryNamed(name) {
+    for (const dateKey in this.completions) {
+      if (this.completions[dateKey].includes(name)) return true;
+    }
+    for (const dateKey in this.counters) {
+      if (Object.prototype.hasOwnProperty.call(this.counters[dateKey], name)) return true;
+    }
+    return false;
+  }
+
+  // Whether this name is free to rename onto: not another habit's, and not one
+  // some deleted habit's history still answers to
+  nameIsFree(name, index) {
+    if (this.hasHabitNamed(name, index)) return false;
+    return !(this.habits[index] && this.habits[index].name !== name && this.hasHistoryNamed(name));
+  }
+
   updateHabit(index, name, type, goal = null, counted = null) {
-    if (this.habits[index] && !this.hasHabitNamed(name, index)) {
+    if (this.habits[index] && this.nameIsFree(name, index)) {
       const oldName = this.habits[index].name;
       const newName = name;
       
@@ -115,10 +136,15 @@ class DataManager {
     for (const dateKey in this.completions) {
       const completedHabits = this.completions[dateKey];
       const index = completedHabits.indexOf(oldName);
-      
+
       if (index !== -1) {
-        // Replace old name with new name
-        completedHabits[index] = newName;
+        // Replace, unless the day already lists the new name - a day naming one
+        // habit twice reads as done after one tap of undo
+        if (completedHabits.includes(newName)) {
+          completedHabits.splice(index, 1);
+        } else {
+          completedHabits[index] = newName;
+        }
       }
     }
   }
@@ -199,7 +225,7 @@ class DataManager {
     const dateCounters = this.counters[dateKey] || {};
 
     return Object.keys(dateCounters).filter(habitName =>
-      !activeHabitNames.has(habitName) && dateCounters[habitName] > 0
+      !activeHabitNames.has(habitName) && Number.isFinite(dateCounters[habitName]) && dateCounters[habitName] > 0
     );
   }
 
@@ -211,7 +237,11 @@ class DataManager {
 
   setCounterValue(dateKey, habitName, value) {
     if (!this.counters[dateKey]) {
-      this.counters[dateKey] = {};
+      // Null-prototype: a habit named __proto__ wrote to the prototype setter
+      // instead of the bucket, so its counts vanished silently - and only on
+      // days whose bucket was made here rather than parsed from storage, so
+      // the same habit behaved differently from one day to the next
+      this.counters[dateKey] = Object.create(null);
     }
     this.counters[dateKey][habitName] = Math.max(0, value);
     this.saveData();

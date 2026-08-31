@@ -289,7 +289,10 @@ class HabitManager {
       choice.textContent = text;
       choice.setAttribute('aria-pressed', String(counted === on));
       choice.onclick = () => {
-        this.dataManager.updateHabit(index, habit.name, habit.type, on ? (habit.goal || 1) : null, on);
+        // No goal invented here. Switching counting on used to write goal 1,
+        // which made the very first tap "done" for someone who turned counting
+        // on precisely because they wanted to count rather than tick.
+        this.dataManager.updateHabit(index, habit.name, habit.type, null, on);
         redraw();
       };
       seg.appendChild(choice);

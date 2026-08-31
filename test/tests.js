@@ -128,6 +128,59 @@ function runHabitTrackerTests(env) {
        after.map(m => m.childElementCount).join(','));
   }
 
+  section('a rename cannot swallow a deleted habit’s history');
+  {
+    const dm = fresh();
+    const day = 'Mon Aug 10 2026';
+
+    dm.addHabit('🅰️ Alpha', 'good', 3, true);
+    dm.setCounterValue(day, '🅰️ Alpha', 3);
+    // Beta is gone from the list, but both stores keep its past on purpose
+    dm.addHabit('🅱️ Beta', 'good', 99, true);
+    dm.setCounterValue(day, '🅱️ Beta', 99);
+    dm.toggleHabitCompletion(day, '🅱️ Beta');
+    dm.deleteHabit(1);
+
+    ok('the deleted habit’s count is still on file',
+       dm.getCounterValue(day, '🅱️ Beta') === 99);
+
+    const renamed = dm.updateHabit(0, '🅱️ Beta', 'good');
+    ok('renaming onto it is refused', renamed === false,
+       'it used to succeed and overwrite the 99 with the 3');
+    ok('so the deleted habit keeps its count', dm.getCounterValue(day, '🅱️ Beta') === 99);
+    ok('and the renamed one keeps its own', dm.getCounterValue(day, '🅰️ Alpha') === 3);
+    ok('and the name did not change', dm.getHabits()[0].name === '🅰️ Alpha');
+
+    // A name nothing has ever answered to is still free
+    ok('an unused name is allowed', dm.updateHabit(0, '🅾️ Omega', 'good') === true);
+  }
+
+  section('a habit named __proto__ still counts');
+  {
+    const dm = fresh();
+    const day = 'Tue Aug 11 2026';
+    dm.addHabit('__proto__', 'neutral', null, true);
+    dm.setCounterValue(day, '__proto__', 2);
+    ok('the count is recorded rather than swallowed by the prototype',
+       dm.getCounterValue(day, '__proto__') === 2,
+       String(dm.getCounterValue(day, '__proto__')));
+    dm.incrementCounter(day, '__proto__');
+    ok('and it goes up', dm.getCounterValue(day, '__proto__') === 3);
+  }
+
+  section('switching counting on does not invent a goal');
+  {
+    const dm = fresh();
+    dm.addHabit('🏃 Run', 'good');
+    dm.updateHabit(0, '🏃 Run', 'good', null, true);
+    const habit = dm.getHabits()[0];
+    ok('it counts', DataManager.isCounted(habit) === true);
+    ok('but has nothing to reach yet', DataManager.hasTarget(habit) === false,
+       'a goal of 1 made the first tap finish it');
+    ok('so one tap is counting, not done',
+       DataManager.countState(habit, 1) === 'counting');
+  }
+
   section('the retired counter type migrates to the one that asserts nothing');
   {
     const migrated = DataManager.migrate([

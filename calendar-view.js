@@ -141,7 +141,13 @@ class CalendarView {
     // Per day, not per habit: the count replaces the tick only on days it
     // actually has one. Hiding the tick wherever the habit is counted blanked
     // every day recorded before the switch, which is most of its history.
+    // Deleted habits keep their history and are drawn from the orphan list
+    // below, which has the same claim on the day as a count does
+    const orphaned = new Set(this.dataManager.getOrphanedCounterHabitsForDate(dayKey));
+
     const supersededByCount = (habitName) => {
+      if (orphaned.has(habitName)) return true;
+
       const habit = habits.find(h => h.name === habitName);
       return DataManager.isCounted(habit) &&
              this.dataManager.getCounterValue(dayKey, habitName) > 0;
