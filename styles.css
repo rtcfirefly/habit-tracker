@@ -2835,18 +2835,12 @@ input, select, button {
   outline: none;
 }
 
-.habit-screen-back {
-  padding: 0.35rem 0;
-  border: none;
-  background: none;
-  font: inherit;
-  font-size: 0.85rem;
-  color: #1a56c4;
-  cursor: pointer;
-}
-
 .habit-screen-field {
   margin-top: 0.9rem;
+}
+
+.habit-screen-field:first-child {
+  margin-top: 0;
 }
 
 .habit-screen-label {
@@ -2938,17 +2932,6 @@ input, select, button {
   color: #7a8087;
 }
 
-/* The sentence is the specification: it names the number and what reaching it
-   means, so nobody has to remember what "goal" does on a bad habit */
-.habit-screen-says {
-  margin: 0.6rem 0 0;
-  padding: 0.5rem 0.6rem;
-  border-radius: 8px;
-  background: #f2f6f2;
-  font-size: 0.82rem;
-  color: #43604a;
-}
-
 .habit-screen-delete {
   margin-top: 1.4rem;
   padding: 0.4rem 0;
@@ -2999,11 +2982,6 @@ input, select, button {
 
 .dark-mode .habit-screen-step {
   border-color: #555;
-}
-
-.dark-mode .habit-screen-says {
-  background: #22301f;
-  color: #b8d6bd;
 }
 
 .dark-mode .habit-count-note,

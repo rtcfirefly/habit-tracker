@@ -87,7 +87,12 @@ class HabitManager {
 
       this.renderForm();
       this.notifyHabitsChanged();
-      this.focusAddField();
+
+      // Straight into the new habit rather than back to an empty field. Naming
+      // it is the first half of making it; whether it counts, and to what, is
+      // the other half, and it was two taps away in a list that had just grown
+      // by one.
+      this.openHabitScreen(this.dataManager.getHabits().length - 1);
     };
 
     nameInput.oninput = () => {
@@ -196,7 +201,6 @@ class HabitManager {
     const draw = () => {
       const current = this.dataManager.getHabits()[index];
       this.clearElement(screen);
-      screen.appendChild(this.screenBack(close));
       screen.appendChild(this.screenName(current, index));
       screen.appendChild(this.screenCounting(current, index, draw));
       screen.appendChild(this.screenDelete(current, index, close));
@@ -227,14 +231,6 @@ class HabitManager {
       return;
     }
     this.close();
-  }
-
-  screenBack(close) {
-    const back = document.createElement('button');
-    back.className = 'habit-screen-back';
-    back.textContent = '‹ Back';
-    back.onclick = close;
-    return back;
   }
 
   screenName(habit, index) {
@@ -303,22 +299,11 @@ class HabitManager {
 
     field.appendChild(seg);
 
-    if (counted) {
-      field.appendChild(DataManager.direction(habit.type) === 'tally'
-        ? this.screenTally()
-        : this.screenTarget(habit, index, redraw));
-    } else {
-      field.appendChild(this.screenSays('One tap and it is done.'));
+    if (counted && DataManager.direction(habit.type) !== 'tally') {
+      field.appendChild(this.screenTarget(habit, index, redraw));
     }
 
     return field;
-  }
-
-  // Neutral counts and does not finish. There is nothing to reach, so there is
-  // no number to set - which is the whole reason neutral needs no choice
-  // between a goal and a limit.
-  screenTally() {
-    return this.screenSays('Counts up. There is nothing to reach.');
   }
 
   screenTarget(habit, index, redraw) {
@@ -366,17 +351,7 @@ class HabitManager {
     stepper.appendChild(unit);
 
     wrap.appendChild(stepper);
-    wrap.appendChild(this.screenSays(DataManager.direction(habit.type) === 'limit'
-      ? `Fine until you pass ${goal}.`
-      : `Done when you reach ${goal}.`));
     return wrap;
-  }
-
-  screenSays(text) {
-    const says = document.createElement('p');
-    says.className = 'habit-screen-says';
-    says.textContent = text;
-    return says;
   }
 
   screenDelete(habit, index, close) {

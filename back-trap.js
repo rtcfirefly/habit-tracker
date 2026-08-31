@@ -21,6 +21,17 @@ class BackTrap {
       window.addEventListener('popstate', BackTrap.onPop);
     }
     BackTrap.layers.push(close);
+
+    // A panel closing and another opening in the same tick - closing settings
+    // to show the guide, say - leaves an entry owed and needs one pushed. They
+    // cancel: reuse the outgoing panel's entry rather than pushing a new one
+    // and then unwinding it a microtask later, which popped the entry the new
+    // panel had just pushed and shut it the instant it opened.
+    if (BackTrap.owed > 0) {
+      BackTrap.owed -= 1;
+      return;
+    }
+
     history.pushState({ overlay: BackTrap.layers.length }, '');
   }
 
