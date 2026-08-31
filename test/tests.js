@@ -514,6 +514,24 @@ function runHabitTrackerTests(env) {
     BackTrap.flush();
     ok('closing both at once gives both entries back, in one unwind',
        history.entries.length === 0, String(history.entries.length));
+
+    // Closing ONE of two panels by hand. The unwind that gives its entry back
+    // is a real popstate, and with the dialog still open the trap is still
+    // listening - so it used to answer its own pop by closing the dialog too.
+    manager.open();
+    manager.openHabitScreen(0);
+    manager.dismiss();
+    BackTrap.flush();
+    ok('backing out of a habit screen leaves the dialog standing',
+       modal.style.display !== 'none',
+       'the trap answered its own unwind and closed the dialog underneath');
+    ok('and the dialog keeps exactly one entry', history.entries.length === 1,
+       String(history.entries.length));
+
+    // The dialog is still usable afterwards: back closes it, once
+    window.fireBack();
+    ok('back then closes the dialog and nothing else', modal.style.display === 'none');
+    ok('with the stack empty', history.entries.length === 0, String(history.entries.length));
   }
 
   section('one habit screen at a time, and the dialog takes it with it');

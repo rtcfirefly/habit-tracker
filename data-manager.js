@@ -373,7 +373,11 @@ class DataManager {
         }
       }
 
-      this.habits = importedData.habits;
+      // Through the same migration a load goes through. Without it a restored
+      // backup written before counting became a property sat in memory as a
+      // retired type until the next reload: missing from the settings list,
+      // drawing nothing on the calendar, and recording a tick when tapped.
+      this.habits = DataManager.migrate(importedData.habits);
       this.completions = importedData.completions;
       this.counters = counters;
       this.saveData();

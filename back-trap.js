@@ -45,6 +45,7 @@ class BackTrap {
     BackTrap.layers.splice(at, 1);
     if (!BackTrap.layers.length) {
       window.removeEventListener('popstate', BackTrap.onPop);
+      BackTrap.ignore = 0;
     }
 
     // Not while handling a pop: the browser has already taken that entry
@@ -67,19 +68,35 @@ class BackTrap {
     const owed = BackTrap.owed;
     BackTrap.owed = 0;
     BackTrap.scheduled = false;
-    if (owed > 0) history.go(-owed);
+    if (owed <= 0) return;
+
+    // go() fires a real popstate, indistinguishable from a back press. With a
+    // panel still open the handler is still attached, so our own unwinding
+    // would close the panel underneath - shutting a habit's screen took the
+    // whole dialog with it. A browser fires one popstate per go(), however
+    // many entries it covers, so exactly one is skipped.
+    if (BackTrap.layers.length) BackTrap.ignore += 1;
+    history.go(-owed);
   }
 }
 
 BackTrap.layers = [];
+BackTrap.ignore = 0;
 BackTrap.owed = 0;
 BackTrap.scheduled = false;
 BackTrap.popping = false;
 
 BackTrap.onPop = () => {
+  // Ours, not the user's: this pop was asked for by flush()
+  if (BackTrap.ignore > 0) {
+    BackTrap.ignore -= 1;
+    return;
+  }
+
   const close = BackTrap.layers.pop();
   if (!BackTrap.layers.length) {
     window.removeEventListener('popstate', BackTrap.onPop);
+    BackTrap.ignore = 0;
   }
 
   // The panel's own close() will call remove(), which must not ask the browser

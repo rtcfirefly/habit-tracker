@@ -137,15 +137,14 @@ globalThis.history = {
   state: null,
   pushState(state) { this.entries.push(state); this.state = state; },
   back() { this.go(-1); },
-  // Each step back is a pop the page hears about, which is what the browser
-  // does and what the trap's bookkeeping is counted against
+  // A browser fires ONE popstate for go(-n), however many entries it covers.
+  // Firing one per entry made the stub disagree with every real browser, and
+  // hid a bug where an unwind of our own closed the panel underneath.
   go(delta) {
-    for (let step = 0; step < Math.abs(delta); step++) {
-      if (!this.entries.length) break;
-      this.entries.pop();
-      this.state = this.entries[this.entries.length - 1] || null;
-      (globalThis.window.listeners.popstate || []).slice().forEach(fn => fn());
-    }
+    const steps = Math.min(Math.abs(delta), this.entries.length);
+    for (let step = 0; step < steps; step++) this.entries.pop();
+    this.state = this.entries[this.entries.length - 1] || null;
+    if (steps) (globalThis.window.listeners.popstate || []).slice().forEach(fn => fn());
   }
 };
 
