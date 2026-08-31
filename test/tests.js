@@ -544,7 +544,9 @@ function runHabitTrackerTests(env) {
     manager.openHabitScreen(0);
     ok('a screen opens', modal.querySelectorAll('.habit-screen').length === 1);
     ok('the list is put away while it is up', body.hidden === true);
-    ok('and the heading says which habit', heading.textContent === 'Water');
+    ok('the heading is left saying what the dialog is',
+       heading.textContent === 'Manage Habits',
+       'it used to become the habit name, directly above a field holding it');
 
     // Tapping a second name used to append a second screen under the first
     manager.openHabitScreen(1);
@@ -566,7 +568,7 @@ function runHabitTrackerTests(env) {
     ok('closing the dialog takes the screen with it',
        modal.querySelectorAll('.habit-screen').length === 0);
     ok('and gives the list back', body.hidden === false);
-    ok('and puts the heading back', heading.textContent === 'Manage Habits');
+    ok('and the heading never moved', heading.textContent === 'Manage Habits');
   }
 
   // Only a real browser gives boxes dimensions, so this is the one thing the

@@ -2932,17 +2932,6 @@ input, select, button {
   color: #7a8087;
 }
 
-.habit-screen-delete {
-  margin-top: 1.4rem;
-  padding: 0.4rem 0;
-  border: none;
-  background: none;
-  font: inherit;
-  font-size: 0.88rem;
-  color: #c62828;
-  cursor: pointer;
-}
-
 /* What counting does, as text on the row */
 .habit-count-note {
   flex: none;

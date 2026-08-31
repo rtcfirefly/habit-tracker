@@ -171,8 +171,6 @@ class HabitManager {
     this.closeHabitScreen();
 
     const body = this.modalElement.querySelector('.modal-body');
-    const title = this.modalElement.querySelector('#manage-modal-title');
-    const previousTitle = title.textContent;
 
     const screen = document.createElement('div');
     screen.className = 'habit-screen';
@@ -185,7 +183,6 @@ class HabitManager {
     const close = () => {
       screen.remove();
       body.hidden = false;
-      title.textContent = previousTitle;
       this.habitScreen = null;
       BackTrap.remove(backClose);
       this.renderForm();
@@ -203,13 +200,14 @@ class HabitManager {
       this.clearElement(screen);
       screen.appendChild(this.screenName(current, index));
       screen.appendChild(this.screenCounting(current, index, draw));
-      screen.appendChild(this.screenDelete(current, index, close));
     };
 
     // No kind control: which tab you came from already said it, and a habit
     // that is in the wrong one is moved by dragging it, not by a second way of
-    // saying the same thing
-    title.textContent = EmojiUtils.removeEmoji(habit.name) || habit.name;
+    // saying the same thing.
+    //
+    // The dialog's heading is left alone. It used to become the habit's name,
+    // directly above a field containing the habit's name.
     body.hidden = true;
     this.modalElement.querySelector('.modal-content').appendChild(screen);
     draw();
@@ -352,19 +350,6 @@ class HabitManager {
 
     wrap.appendChild(stepper);
     return wrap;
-  }
-
-  screenDelete(habit, index, close) {
-    const remove = document.createElement('button');
-    remove.className = 'habit-screen-delete';
-    remove.textContent = 'Delete habit';
-    remove.onclick = () => {
-      if (confirm(`Delete "${habit.name}"?`)) {
-        this.dataManager.deleteHabit(index);
-        close();
-      }
-    };
-    return remove;
   }
 
   createDragHandle() {
