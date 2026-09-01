@@ -1391,11 +1391,13 @@ input, select, button {
   color: #ef9a9a;
 }
 
+/* No weight of its own: a counted habit's name is the same name as any other
+   habit's, and the 500 here made every counted pill sit heavier than the plain
+   pill beside it for no reason the reader could act on. */
 .counter-name {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-weight: 500;
 }
 
 .counter-controls {
