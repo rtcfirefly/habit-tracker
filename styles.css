@@ -488,7 +488,10 @@ input, select, button {
   background-color: #a1d1ff !important;
 }
 
-/* Light mode - completed with colored backgrounds */
+/* Light mode - completed. lightgreen and lightpink lift off white by 1.42 and
+   1.65; lightgoldenrodyellow managed 1.07, which is why neutral read as barely
+   marked at all. #EEDD7A puts it at 1.38, level with its siblings rather than
+   ahead of them. */
 .habit-button.good.completed {
   background: lightgreen;
   border-color: green;
@@ -500,7 +503,7 @@ input, select, button {
 }
 
 .habit-button.neutral.completed {
-  background: lightgoldenrodyellow;
+  background: #EEDD7A;
   border-color: goldenrod;
 }
 
@@ -1469,7 +1472,7 @@ input, select, button {
 }
 
 .habit-counter.neutral.completed {
-  background: lightgoldenrodyellow;
+  background: #EEDD7A;
   border-color: goldenrod;
   color: black;
 }
@@ -3379,7 +3382,7 @@ input, select, button {
    how many. */
 .habit-counter.counting.good    { background: lightgreen; }
 .habit-counter.counting.bad     { background: lightpink; }
-.habit-counter.counting.neutral { background: lightgoldenrodyellow; }
+.habit-counter.counting.neutral { background: #EEDD7A; }
 
 /* Counting stays muted on purpose: it is the rung between empty and done, and
    reads against the filled pill at 3.3:1 or better. It sits close to the empty
@@ -3392,7 +3395,7 @@ input, select, button {
    ones that clear AA */
 .look-ruled .habit-counter.counting.good    { background: #DFF3E1; }
 .look-ruled .habit-counter.counting.bad     { background: #FBE3E1; }
-.look-ruled .habit-counter.counting.neutral { background: #FAF1D8; }
+.look-ruled .habit-counter.counting.neutral { background: #F5E9BE; }
 
 .dark-mode.look-ruled .habit-counter.counting.good    { background: #37543A; color: #E8E8E8; }
 .dark-mode.look-ruled .habit-counter.counting.bad     { background: #6A3331; color: #E8E8E8; }
