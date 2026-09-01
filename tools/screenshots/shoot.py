@@ -353,7 +353,8 @@ DRIVE = """<script>
       paint: Array.prototype.slice.call(found, 0, 12).map(function (m) {
         var c = getComputedStyle(m);
         return m.className + ' | bg:' + c.backgroundColor + ' fg:' + c.color +
-               ' border:' + c.borderTopColor + ' opacity:' + c.opacity;
+               ' border:' + c.borderTopColor + ' opacity:' + c.opacity +
+               ' weight:' + c.fontWeight;
       }),
       iconVar: getComputedStyle(document.querySelector('.calendar')).getPropertyValue('--habit-icon-size').trim(),
       count: found.length,
