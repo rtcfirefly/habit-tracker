@@ -215,10 +215,17 @@ DRIVE = """<script>
   // the shot has to press it rather than assume it worked
   if (params.get('replay')) document.getElementById('about-guide').click();
 
+  // Comma separated and pressed in order, the same as screen=. Reproducing a
+  // bug that only shows after a switch needs two presses - complete a habit,
+  // then hit the theme toggle - and one press could not express that. Note
+  // the comma is a separator here, not the selector-list comma ring= passes
+  // straight through.
   var tap = params.get('tap');
   if (tap) {
-    var hit = document.querySelector(tap);
-    if (hit) hit.click();
+    tap.split(',').forEach(function (one) {
+      var hit = document.querySelector(one);
+      if (hit) hit.click();
+    });
   }
 
   // Rings elements so a shot used as a callout points at what it describes.
@@ -339,6 +346,15 @@ DRIVE = """<script>
     document.body.setAttribute('data-measured', JSON.stringify({
       selector: measure,
       viewport: window.innerWidth,
+      // What each match is actually painted, which is the only way to tell
+      // which rule won. Reading the cascade by eye got the answer wrong once:
+      // two rules of equal specificity, and the later file wins, not the one
+      // that looks more specific.
+      paint: Array.prototype.slice.call(found, 0, 12).map(function (m) {
+        var c = getComputedStyle(m);
+        return m.className + ' | bg:' + c.backgroundColor + ' fg:' + c.color +
+               ' border:' + c.borderTopColor + ' opacity:' + c.opacity;
+      }),
       iconVar: getComputedStyle(document.querySelector('.calendar')).getPropertyValue('--habit-icon-size').trim(),
       count: found.length,
       top: el ? +el.getBoundingClientRect().top.toFixed(1) : null,
