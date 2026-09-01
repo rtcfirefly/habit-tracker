@@ -365,19 +365,19 @@ input, select, button {
 }
 
 .habit-emoji.good {
-  border-color: #4CAF50;
+  border-color: var(--type-good);
 }
 
 .habit-emoji.bad {
-  border-color: #F44336;
+  border-color: var(--type-bad);
 }
 
 .habit-emoji.neutral {
-  border-color: #FFC107;
+  border-color: var(--type-neutral);
 }
 
 .habit-emoji.counter {
-  border-color: #2196F3;
+  border-color: var(--type-counter);
 }
 
 .good {
@@ -449,8 +449,8 @@ input, select, button {
 
 /* === LIGHT MODE HABIT BUTTONS === */
 .habit-button {
-  background: white;
-  color: black;
+  background: var(--pill-ground);
+  color: var(--pill-ink);
   border-color: black;
 }
 
@@ -473,19 +473,19 @@ input, select, button {
 
 /* Light mode emoji backgrounds */
 .habit-emoji.good {
-  background-color: #a1eea1 !important;
+  background-color: var(--ring-good) !important;
 }
 
 .habit-emoji.bad {
-  background-color: #ffa1a1 !important;
+  background-color: var(--ring-bad) !important;
 }
 
 .habit-emoji.neutral {
-  background-color: #fff5a1 !important;
+  background-color: var(--ring-neutral) !important;
 }
 
 .habit-emoji.counter {
-  background-color: #a1d1ff !important;
+  background-color: var(--ring-counter) !important;
 }
 
 /* Light mode - completed. lightgreen and lightpink lift off white by 1.42 and
@@ -493,17 +493,17 @@ input, select, button {
    marked at all. #EEDD7A puts it at 1.38, level with its siblings rather than
    ahead of them. */
 .habit-button.good.completed {
-  background: lightgreen;
+  background: var(--done-good);
   border-color: var(--type-good);
 }
 
 .habit-button.bad.completed {
-  background: lightpink;
+  background: var(--done-bad);
   border-color: var(--type-bad);
 }
 
 .habit-button.neutral.completed {
-  background: #EEDD7A;
+  background: var(--done-neutral);
   border-color: var(--type-neutral);
 }
 
@@ -1201,29 +1201,115 @@ input, select, button {
 }
 
 /* === THE TYPE PALETTE ===
-   One declaration per theme, referenced by both looks. It used to be two sets:
-   cards carried CSS named colours that had never been measured and ruled
-   carried a considered set, so the two drifted every time either was touched.
-   Against the white pill, cards read 5.14 / 4.00 / 2.24 - neutral barely half
-   its siblings - while ruled read 5.13 / 5.62 / 5.00. Ruled's numbers won, so
-   ruled's colours became the palette and the per-look overrides went away.
-   A look is a structure - border weight, plates, fills - not a hue. */
+   Every colour that means "this is a good / bad / neutral habit", declared
+   once per theme and referenced everywhere else. Both looks read it, because a
+   look is a structure - border weight, plates, fills - not a hue.
+
+   It reached five independent sets before this: the pill borders, the
+   completed fills, the counting fills, the calendar rings and the day sheet
+   rows, each written out at a different time. They disagreed for months
+   unnoticed, and one was a CSS named colour sitting at 2.24:1 against white
+   where its siblings managed 5. tools/check-palette.sh fails the build if a
+   literal creeps back into a rule that paints a habit by its type. */
 :root {
+  /* the accent: a pill's border, and the ring around a calendar emoji */
   --type-good: #2E7D32;
   --type-bad: #C62828;
   --type-neutral: #96660A;
+  --type-counter: #2196F3;
+
+  /* a pill at rest */
+  --pill-ground: #FFFFFF;
+  --pill-ink: #000000;
+
+  /* done */
+  --done-good: #90EE90;
+  --done-bad: #FFB6C1;
+  --done-neutral: #EEDD7A;
+  --done-counter: #E3F2FD;
+  --done-ink: #000000;
+
+  /* counted, but not finished - the rung between the other two */
+  --count-good: #DFF3E1;
+  --count-bad: #FBE3E1;
+  --count-neutral: #F5E9BE;
+  --count-ink: #000000;
+
+  /* the circle behind an emoji in the month grid */
+  --ring-good: #A1EEA1;
+  --ring-bad: #FFA1A1;
+  --ring-neutral: #FFF5A1;
+  --ring-counter: #A1D1FF;
+
+  /* the number's plate: an overlay, so it states which way it moves */
+  --tile-good: rgba(76, 175, 80, 0.14);
+  --tile-bad: rgba(244, 67, 54, 0.14);
+  --tile-neutral: rgba(218, 165, 32, 0.14);
+  --tile-good-done: rgba(46, 125, 50, 0.34);
+  --tile-bad-done: rgba(198, 40, 40, 0.34);
+  --tile-neutral-done: rgba(150, 110, 20, 0.34);
+  --tile-bad-over: rgba(198, 40, 40, 0.34);
+
+  /* the bar that fills across as a count climbs. The counter pill and the day
+     sheet row draw the same bar and had the same four alphas written out
+     twice, once each. */
+  --progress-good: rgba(76, 175, 80, 0.38);
+  --progress-bad: rgba(198, 40, 40, 0.28);
+  --progress-neutral: rgba(184, 134, 11, 0.32);
+  --progress-counter: rgba(26, 115, 232, 0.28);
+  --rowcount-good: rgba(76, 175, 80, 0.16);
+  --rowcount-bad: rgba(198, 40, 40, 0.14);
+  --rowcount-neutral: rgba(184, 134, 11, 0.16);
 }
 
 .dark-mode {
   --type-good: #81C995;
   --type-bad: #F28B82;
   --type-neutral: #E0B44A;
+  --type-counter: #3B82F6;
+
+  --pill-ground: #2A2A2A;
+  --pill-ink: #DDDDDD;
+
+  --done-good: #468149;
+  --done-bad: #C94643;
+  --done-neutral: #8C6F16;
+  --done-counter: #1E3A8A;
+  --done-ink: #FFFFFF;
+
+  --count-good: #37543A;
+  --count-bad: #6A3331;
+  --count-neutral: #584A20;
+  --count-ink: #E8E8E8;
+
+  /* the pale rings read on either ground, so they do not change */
+  --ring-good: #A1EEA1;
+  --ring-bad: #FFA1A1;
+  --ring-neutral: #FFF5A1;
+  --ring-counter: #A1D1FF;
+
+  --tile-good: rgba(102, 187, 106, 0.16);
+  --tile-bad: rgba(239, 83, 80, 0.16);
+  --tile-neutral: rgba(255, 202, 40, 0.16);
+  /* over a filled pill the plate darkens instead of lightening */
+  --tile-good-done: rgba(6, 18, 8, 0.34);
+  --tile-bad-done: rgba(30, 8, 7, 0.34);
+  --tile-neutral-done: rgba(28, 20, 0, 0.34);
+  --tile-bad-over: rgba(242, 139, 130, 0.34);
+
+  --progress-good: rgba(76, 175, 80, 0.50);
+  --progress-bad: rgba(220, 60, 60, 0.42);
+  --progress-neutral: rgba(212, 160, 23, 0.45);
+  --progress-counter: rgba(80, 150, 240, 0.45);
+  --rowcount-good: rgba(76, 175, 80, 0.28);
+  --rowcount-bad: rgba(220, 60, 60, 0.26);
+  --rowcount-neutral: rgba(212, 160, 23, 0.26);
 }
 
 /* === DARK MODE HABIT BUTTONS === */
 .dark-mode .habit-button {
-  background: #2A2A2A;
-  color: #ddd;
+  background: var(--pill-ground);
+  color: var(--pill-ink);
   border-color: #666;
 }
 
@@ -1233,21 +1319,21 @@ input, select, button {
 
 /* Dark mode - uncompleted with category borders */
 .dark-mode .habit-button.good {
-  background: #2A2A2A;
+  background: var(--pill-ground);
   border-color: var(--type-good);
-  color: #ddd;
+  color: var(--pill-ink);
 }
 
 .dark-mode .habit-button.bad {
-  background: #2A2A2A;
+  background: var(--pill-ground);
   border-color: var(--type-bad);
-  color: #ddd;
+  color: var(--pill-ink);
 }
 
 .dark-mode .habit-button.neutral {
-  background: #2A2A2A;
+  background: var(--pill-ground);
   border-color: var(--type-neutral);
-  color: #ddd;
+  color: var(--pill-ink);
 }
 
 /* Dark mode - completed.
@@ -1260,21 +1346,21 @@ input, select, button {
    4.15. The border keeps the brighter accent so the two states still share a
    family line. */
 .dark-mode .habit-button.good.completed {
-  background: #468149;
+  background: var(--done-good);
   border-color: var(--type-good);
-  color: #FFFFFF;
+  color: var(--done-ink);
 }
 
 .dark-mode .habit-button.bad.completed {
-  background: #C94643;
+  background: var(--done-bad);
   border-color: var(--type-bad);
-  color: #FFFFFF;
+  color: var(--done-ink);
 }
 
 .dark-mode .habit-button.neutral.completed {
-  background: #8C6F16;
+  background: var(--done-neutral);
   border-color: var(--type-neutral);
-  color: #FFFFFF;
+  color: var(--done-ink);
 }
 
 /* === COUNTER HABITS - BASE STYLES === */
@@ -1346,26 +1432,26 @@ input, select, button {
 /* The tile wears the habit's own colour rather than a neutral grey, which read
    as a dead zone. Deeper once the pill is filled: at 14% a tint is lost
    against a completed pill's own colour, which is the seam it exists to draw. */
-.habit-counter.good    { --tile: rgba(76, 175, 80, 0.14); }
-.habit-counter.bad     { --tile: rgba(244, 67, 54, 0.14); }
-.habit-counter.neutral { --tile: rgba(218, 165, 32, 0.14); }
+.habit-counter.good    { --tile: var(--tile-good); }
+.habit-counter.bad     { --tile: var(--tile-bad); }
+.habit-counter.neutral { --tile: var(--tile-neutral); }
 
-.habit-counter.good.completed    { --tile: rgba(46, 125, 50, 0.34); }
+.habit-counter.good.completed    { --tile: var(--tile-good-done); }
 .habit-counter.bad.completed,
-.habit-counter.bad.over-limit    { --tile: rgba(198, 40, 40, 0.34); }
-.habit-counter.neutral.completed { --tile: rgba(150, 110, 20, 0.34); }
+.habit-counter.bad.over-limit    { --tile: var(--tile-bad-done); }
+.habit-counter.neutral.completed { --tile: var(--tile-neutral-done); }
 
-.dark-mode .habit-counter.good    { --tile: rgba(102, 187, 106, 0.16); }
-.dark-mode .habit-counter.bad     { --tile: rgba(239, 83, 80, 0.16); }
-.dark-mode .habit-counter.neutral { --tile: rgba(255, 202, 40, 0.16); }
+.dark-mode .habit-counter.good    { --tile: var(--tile-good); }
+.dark-mode .habit-counter.bad     { --tile: var(--tile-bad); }
+.dark-mode .habit-counter.neutral { --tile: var(--tile-neutral); }
 
 /* Once the pill is filled the tile has to darken rather than lighten: a pale
    tint over a bright ground is the seam disappearing again. Over-limit keeps
    the pale one, because a limit is never done and its ground stays grey. */
-.dark-mode .habit-counter.good.completed    { --tile: rgba(6, 18, 8, 0.34); }
-.dark-mode .habit-counter.bad.completed     { --tile: rgba(30, 8, 7, 0.34); }
-.dark-mode .habit-counter.neutral.completed { --tile: rgba(28, 20, 0, 0.34); }
-.dark-mode .habit-counter.bad.over-limit    { --tile: rgba(242, 139, 130, 0.34); }
+.dark-mode .habit-counter.good.completed    { --tile: var(--tile-good-done); }
+.dark-mode .habit-counter.bad.completed     { --tile: var(--tile-bad-done); }
+.dark-mode .habit-counter.neutral.completed { --tile: var(--tile-neutral-done); }
+.dark-mode .habit-counter.bad.over-limit    { --tile: var(--tile-bad-over); }
 
 .counter-add:disabled,
 .counter-value:disabled {
@@ -1451,58 +1537,58 @@ input, select, button {
 
 /* === LIGHT MODE COUNTER HABITS === */
 .habit-counter {
-  background: white;
-  color: black;
+  background: var(--pill-ground);
+  color: var(--pill-ink);
 }
 
 /* Light mode - uncompleted with category borders */
 .habit-counter.good {
-  background: white;
+  background: var(--pill-ground);
   border-color: var(--type-good);
-  color: black;
+  color: var(--pill-ink);
 }
 
 .habit-counter.bad {
-  background: white;
+  background: var(--pill-ground);
   border-color: var(--type-bad);
-  color: black;
+  color: var(--pill-ink);
 }
 
 .habit-counter.neutral {
-  background: white;
+  background: var(--pill-ground);
   border-color: var(--type-neutral);
-  color: black;
+  color: var(--pill-ink);
 }
 
 .habit-counter.counter {
-  background: white;
-  border-color: #2196F3;
-  color: black;
+  background: var(--pill-ground);
+  border-color: var(--type-counter);
+  color: var(--pill-ink);
 }
 
 /* Light mode - completed with colored backgrounds */
 .habit-counter.good.completed {
-  background: lightgreen;
+  background: var(--done-good);
   border-color: var(--type-good);
-  color: black;
+  color: var(--done-ink);
 }
 
 .habit-counter.bad.completed {
-  background: lightpink;
+  background: var(--done-bad);
   border-color: var(--type-bad);
-  color: black;
+  color: var(--done-ink);
 }
 
 .habit-counter.neutral.completed {
-  background: #EEDD7A;
+  background: var(--done-neutral);
   border-color: var(--type-neutral);
-  color: black;
+  color: var(--done-ink);
 }
 
 .habit-counter.counter.completed {
-  background: #e3f2fd;
-  border-color: #2196F3;
-  color: black;
+  background: var(--done-counter);
+  border-color: var(--type-counter);
+  color: var(--done-ink);
 }
 
 /* Light mode counter buttons */
@@ -1528,58 +1614,58 @@ input, select, button {
 
 /* === DARK MODE COUNTER HABITS === */
 .dark-mode .habit-counter {
-  background: #2A2A2A;
-  color: #ddd;
+  background: var(--pill-ground);
+  color: var(--pill-ink);
 }
 
 /* Dark mode - uncompleted with category borders */
 .dark-mode .habit-counter.good {
-  background: #2A2A2A;
+  background: var(--pill-ground);
   border-color: var(--type-good);
-  color: #ddd;
+  color: var(--pill-ink);
 }
 
 .dark-mode .habit-counter.bad {
-  background: #2A2A2A;
+  background: var(--pill-ground);
   border-color: var(--type-bad);
-  color: #ddd;
+  color: var(--pill-ink);
 }
 
 .dark-mode .habit-counter.neutral {
-  background: #2A2A2A;
+  background: var(--pill-ground);
   border-color: var(--type-neutral);
-  color: #ddd;
+  color: var(--pill-ink);
 }
 
 .dark-mode .habit-counter.counter {
-  background: #2A2A2A;
-  border-color: #3b82f6;
-  color: #ddd;
+  background: var(--pill-ground);
+  border-color: var(--type-counter);
+  color: var(--pill-ink);
 }
 
 /* Dark mode - completed. Same pair as the plain pill above. */
 .dark-mode .habit-counter.good.completed {
-  background: #468149;
+  background: var(--done-good);
   border-color: var(--type-good);
-  color: #FFFFFF;
+  color: var(--done-ink);
 }
 
 .dark-mode .habit-counter.bad.completed {
-  background: #C94643;
+  background: var(--done-bad);
   border-color: var(--type-bad);
-  color: #FFFFFF;
+  color: var(--done-ink);
 }
 
 .dark-mode .habit-counter.neutral.completed {
-  background: #8C6F16;
+  background: var(--done-neutral);
   border-color: var(--type-neutral);
-  color: #FFFFFF;
+  color: var(--done-ink);
 }
 
 .dark-mode .habit-counter.counter.completed {
-  background: #1e3a8a;
-  border-color: #3b82f6;
-  color: #dbeafe;
+  background: var(--done-counter);
+  border-color: var(--type-counter);
+  color: var(--done-ink);
 }
 
 /* Dark mode counter buttons */
@@ -1608,23 +1694,23 @@ input, select, button {
 }
 
 .dark-mode .habit-emoji.good {
-  background-color: #a1eea1 !important;
-  border-color: #66BB6A;
+  background-color: var(--ring-good) !important;
+  border-color: var(--type-good);
 }
 
 .dark-mode .habit-emoji.bad {
-  background-color: #ffa1a1 !important;
-  border-color: #EF5350;
+  background-color: var(--ring-bad) !important;
+  border-color: var(--type-bad);
 }
 
 .dark-mode .habit-emoji.neutral {
-  background-color: #fff5a1 !important;
-  border-color: #FFCA28;
+  background-color: var(--ring-neutral) !important;
+  border-color: var(--type-neutral);
 }
 
 .dark-mode .habit-emoji.counter {
-  background-color: #a1d1ff !important;
-  border-color: #3b82f6;
+  background-color: var(--ring-counter) !important;
+  border-color: var(--type-counter);
 }
 
 .dark-mode .good {
@@ -2733,14 +2819,15 @@ input, select, button {
   background-repeat: no-repeat;
 }
 
-.habit-counter.good    { --fill: rgba(76, 175, 80, 0.38); }
-.habit-counter.neutral { --fill: rgba(184, 134, 11, 0.32); }
-.habit-counter.bad     { --fill: rgba(198, 40, 40, 0.28); }
-.habit-counter.counter { --fill: rgba(26, 115, 232, 0.28); }
+.habit-counter.good    { --fill: var(--progress-good); }
+.habit-counter.neutral { --fill: var(--progress-neutral); }
+.habit-counter.bad     { --fill: var(--progress-bad); }
+.habit-counter.counter { --fill: var(--progress-counter); }
 
-/* Dark restates all of it, because .dark-mode .habit-counter.good outranks the
-   rules above and is itself a shorthand. The alphas are higher: the same
-   translucent colour that reads over white disappears over #2b2b2b. */
+/* Dark restates the gradient, because .dark-mode .habit-counter.good outranks
+   the rules above and is itself a shorthand. It no longer restates the colour:
+   the alphas are higher over a dark ground, but that difference lives in the
+   palette now, not here. */
 .dark-mode .habit-counter.good .counter-add,
 .dark-mode .habit-counter.neutral .counter-add,
 .dark-mode .habit-counter.bad .counter-add {
@@ -2748,10 +2835,7 @@ input, select, button {
   background-repeat: no-repeat;
 }
 
-.dark-mode .habit-counter.good    { --fill: rgba(76, 175, 80, 0.50); }
-.dark-mode .habit-counter.neutral { --fill: rgba(212, 160, 23, 0.45); }
-.dark-mode .habit-counter.bad     { --fill: rgba(220, 60, 60, 0.42); }
-.dark-mode .habit-counter.counter { --fill: rgba(80, 150, 240, 0.45); }
+
 
 /* The chip fills bottom to top, like something filling up. Kept light enough
    that the emoji inside it stays readable at 100%. */
@@ -2832,15 +2916,12 @@ input, select, button {
   background-repeat: no-repeat;
 }
 
-.day-sheet-row.is-good    { border-left-color: #4CAF50; --fill: rgba(76, 175, 80, 0.38); }
-.day-sheet-row.is-bad     { border-left-color: #F44336; --fill: rgba(198, 40, 40, 0.28); }
-.day-sheet-row.is-neutral { border-left-color: #b8860b; --fill: rgba(184, 134, 11, 0.32); }
-.day-sheet-row.is-counter { border-left-color: #1a73e8; --fill: rgba(26, 115, 232, 0.28); }
+.day-sheet-row.is-good    { border-left-color: var(--type-good); --fill: var(--progress-good); }
+.day-sheet-row.is-bad     { border-left-color: var(--type-bad); --fill: var(--progress-bad); }
+.day-sheet-row.is-neutral { border-left-color: var(--type-neutral); --fill: var(--progress-neutral); }
+.day-sheet-row.is-counter { border-left-color: var(--type-counter); --fill: var(--progress-counter); }
 
-.dark-mode .day-sheet-row.is-good    { --fill: rgba(76, 175, 80, 0.50); }
-.dark-mode .day-sheet-row.is-bad     { --fill: rgba(220, 60, 60, 0.42); }
-.dark-mode .day-sheet-row.is-neutral { --fill: rgba(212, 160, 23, 0.45); }
-.dark-mode .day-sheet-row.is-counter { --fill: rgba(80, 150, 240, 0.45); }
+
 
 /* A plain habit's row is the control, so it has to look like one */
 .day-sheet-row.is-toggle {
@@ -3391,26 +3472,26 @@ input, select, button {
    counted and finished were the same colour and the ladder had two rungs
    instead of three. Ruled already had the paler middle step; both looks share
    it now. */
-.habit-counter.counting.good    { background: #DFF3E1; }
-.habit-counter.counting.bad     { background: #FBE3E1; }
-.habit-counter.counting.neutral { background: #F5E9BE; }
+.habit-counter.counting.good    { background: var(--count-good); }
+.habit-counter.counting.bad     { background: var(--count-bad); }
+.habit-counter.counting.neutral { background: var(--count-neutral); }
 
 /* Counting stays muted on purpose: it is the rung between empty and done, and
    reads against the filled pill at 3.3:1 or better. It sits close to the empty
    grey, which is fine - a counting pill is the only one showing a number. */
-.dark-mode .habit-counter.counting.good    { background: #37543A; color: #E8E8E8; }
-.dark-mode .habit-counter.counting.bad     { background: #6A3331; color: #E8E8E8; }
-.dark-mode .habit-counter.counting.neutral { background: #584A20; color: #E8E8E8; }
+.dark-mode .habit-counter.counting.good    { background: var(--count-good); color: #E8E8E8; }
+.dark-mode .habit-counter.counting.bad     { background: var(--count-bad); color: #E8E8E8; }
+.dark-mode .habit-counter.counting.neutral { background: var(--count-neutral); color: #E8E8E8; }
 
 
 
 
 
 /* And the same row in the day sheet, so one habit does not read two ways */
-.day-sheet-row.counting.is-good    { background: rgba(76, 175, 80, 0.16); }
-.day-sheet-row.counting.is-bad     { background: rgba(198, 40, 40, 0.14); }
-.day-sheet-row.counting.is-neutral { background: rgba(184, 134, 11, 0.16); }
+.day-sheet-row.counting.is-good    { background: var(--rowcount-good); }
+.day-sheet-row.counting.is-bad     { background: var(--rowcount-bad); }
+.day-sheet-row.counting.is-neutral { background: var(--rowcount-neutral); }
 
-.dark-mode .day-sheet-row.counting.is-good    { background: rgba(76, 175, 80, 0.28); }
-.dark-mode .day-sheet-row.counting.is-bad     { background: rgba(220, 60, 60, 0.26); }
-.dark-mode .day-sheet-row.counting.is-neutral { background: rgba(212, 160, 23, 0.26); }
+.dark-mode .day-sheet-row.counting.is-good    { background: var(--rowcount-good); }
+.dark-mode .day-sheet-row.counting.is-bad     { background: var(--rowcount-bad); }
+.dark-mode .day-sheet-row.counting.is-neutral { background: var(--rowcount-neutral); }
