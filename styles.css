@@ -285,8 +285,17 @@ input, select, button {
   outline-offset: 2px;
 }
 
+/* Not opacity: it fades the number and the cell's ground together, so the
+   contrast between them collapses whatever they started as - 2.64:1 in light,
+   2.91:1 in dark. An explicit recessed face and an explicit grey instead. */
 .day.other-month {
-  opacity: 0.4;
+  background: #EFEFEF;
+  color: #61666D;
+}
+
+.dark-mode .day.other-month {
+  background: #252525;
+  color: #8E939A;
 }
 
 .day.today {
@@ -1220,21 +1229,21 @@ input, select, button {
 
 /* Dark mode - completed with colored backgrounds */
 .dark-mode .habit-button.good.completed {
-  background: #4CAF50;
+  background: #334C34;
   border-color: #66BB6A;
-  color: #fff;
+  color: #E8E8E8;
 }
 
 .dark-mode .habit-button.bad.completed {
-  background: #F44336;
+  background: #582C2B;
   border-color: #EF5350;
-  color: #fff;
+  color: #E8E8E8;
 }
 
 .dark-mode .habit-button.neutral.completed {
-  background: #FF9800;
+  background: #584A20;
   border-color: #FFCA28;
-  color: #fff;
+  color: #E8E8E8;
 }
 
 /* === COUNTER HABITS - BASE STYLES === */
@@ -1514,21 +1523,21 @@ input, select, button {
 
 /* Dark mode - completed with colored backgrounds */
 .dark-mode .habit-counter.good.completed {
-  background: #4CAF50;
+  background: #334C34;
   border-color: #66BB6A;
-  color: #fff;
+  color: #E8E8E8;
 }
 
 .dark-mode .habit-counter.bad.completed {
-  background: #F44336;
+  background: #582C2B;
   border-color: #EF5350;
-  color: #fff;
+  color: #E8E8E8;
 }
 
 .dark-mode .habit-counter.neutral.completed {
-  background: #FF9800;
+  background: #584A20;
   border-color: #FFCA28;
-  color: #fff;
+  color: #E8E8E8;
 }
 
 .dark-mode .habit-counter.counter.completed {
@@ -1720,10 +1729,12 @@ input, select, button {
   color: #777;
 }
 
+/* 3.49:1 for white here, on the control that deletes a habit - the state you
+   most want legible */
 .dark-mode .delete-btn:hover,
 .dark-mode .delete-btn:focus-visible {
   background: #EF5350;
-  color: #fff;
+  color: #2B0F0D;
 }
 
 .dark-mode .modal-content {
@@ -2124,9 +2135,11 @@ input, select, button {
 }
 
 /* After the border rule above, or the finish button keeps a stray outline */
+/* Dark ink on the green rather than white: white on #4CAF50 is 2.78:1, the
+   same failure the completed pills had, on the one button that ends the guide */
 .dark-mode .intro-step.is-done {
   border: none;
-  color: #fff;
+  color: #0B1F10;
 }
 
 .dark-mode .intro-close {
@@ -3301,7 +3314,6 @@ input, select, button {
    Measured against the wash these sit on, not against the page - the first
    attempt used #6E737A, which is 4.08:1 over #ededed and still fails. */
 .look-ruled .day.other-month {
-  opacity: 1;
   background: var(--sheet-wash);
   color: #61666D;
 }
@@ -3331,27 +3343,6 @@ input, select, button {
 .dark-mode.look-ruled .habit-button.neutral,
 .dark-mode.look-ruled .habit-counter.neutral { border-color: #E0B44A; }
 
-/* A completed pill in dark is white on the type colour, which measures 2.16:1
-   on neutral and fails AA. The tint puts the label back on the body's own
-   colour: 7.1:1 and 7.7:1. */
-.dark-mode.look-ruled .habit-button.good.completed,
-.dark-mode.look-ruled .habit-counter.good.completed {
-  background: #334C34;
-  color: #E8E8E8;
-}
-
-.dark-mode.look-ruled .habit-button.bad.completed,
-.dark-mode.look-ruled .habit-counter.bad.completed {
-  background: #582C2B;
-  color: #E8E8E8;
-}
-
-.dark-mode.look-ruled .habit-button.neutral.completed,
-.dark-mode.look-ruled .habit-counter.neutral.completed {
-  background: #584A20;
-  color: #E8E8E8;
-}
-
 /* The settings list: a row, not a plate. The tab above it already says which
    kind these are, so the row does not repeat it. */
 .look-ruled .manage-item {
@@ -3379,9 +3370,9 @@ input, select, button {
 .habit-counter.counting.bad     { background: lightpink; }
 .habit-counter.counting.neutral { background: lightgoldenrodyellow; }
 
-.dark-mode .habit-counter.counting.good    { background: #4CAF50; color: #fff; }
-.dark-mode .habit-counter.counting.bad     { background: #F44336; color: #fff; }
-.dark-mode .habit-counter.counting.neutral { background: #FF9800; color: #fff; }
+.dark-mode .habit-counter.counting.good    { background: #334C34; color: #E8E8E8; }
+.dark-mode .habit-counter.counting.bad     { background: #582C2B; color: #E8E8E8; }
+.dark-mode .habit-counter.counting.neutral { background: #584A20; color: #E8E8E8; }
 
 /* The ruled look keeps its own quieter grounds, and its dark tints are the
    ones that clear AA */
