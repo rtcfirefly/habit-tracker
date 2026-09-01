@@ -1199,59 +1199,59 @@ input, select, button {
 
 /* === DARK MODE HABIT BUTTONS === */
 .dark-mode .habit-button {
-  background: #3a3a3a;
+  background: #2A2A2A;
   color: #ddd;
   border-color: #666;
 }
 
 .dark-mode .habit-button:hover {
-  background: #4a4a4a;
+  background: #343434;
 }
 
 /* Dark mode - uncompleted with category borders */
 .dark-mode .habit-button.good {
-  background: #3a3a3a;
+  background: #2A2A2A;
   border-color: #66BB6A;
   color: #ddd;
 }
 
 .dark-mode .habit-button.bad {
-  background: #3a3a3a;
+  background: #2A2A2A;
   border-color: #EF5350;
   color: #ddd;
 }
 
 .dark-mode .habit-button.neutral {
-  background: #3a3a3a;
+  background: #2A2A2A;
   border-color: #FFCA28;
   color: #ddd;
 }
 
 /* Dark mode - completed.
-   Light mode says "done" with hue: a white plate becomes a tinted one, and the
-   ink stays black. Dark mode has no white plate to tint, so it fills the pill
-   with its own border colour and darkens the ink to match - the same move,
-   pointed the other way.
-   Fixing the ink by muting the ground instead cost 4.09:1 between done and not
-   done and gave back 1.20:1, and for a bad habit 1.02:1, which is no
-   difference at all. Both numbers matter: the ground has to carry the state
-   and the ink has to be readable on it. Muting served only the second. */
+   Both grounds move. Not-done came down to #2A2A2A and done came up to meet
+   it, which is the only way this works: with done left muted, no amount of
+   darkening reaches 3:1 - against pure black those grounds top out at 2.22,
+   1.81 and 2.42. The gap had to be opened from both ends.
+   Done then sits mid-dark, which is exactly the range where neither black nor
+   white ink is comfortable. White wins it at 4.67 and #E8E8E8 does not, at
+   4.15. The border keeps the brighter accent so the two states still share a
+   family line. */
 .dark-mode .habit-button.good.completed {
-  background: #66BB6A;
+  background: #468149;
   border-color: #66BB6A;
-  color: #0B1F10;
+  color: #FFFFFF;
 }
 
 .dark-mode .habit-button.bad.completed {
-  background: #EF5350;
+  background: #C94643;
   border-color: #EF5350;
-  color: #2B0F0D;
+  color: #FFFFFF;
 }
 
 .dark-mode .habit-button.neutral.completed {
-  background: #FFCA28;
+  background: #8C6F16;
   border-color: #FFCA28;
-  color: #3A2600;
+  color: #FFFFFF;
 }
 
 /* === COUNTER HABITS - BASE STYLES === */
@@ -1339,9 +1339,9 @@ input, select, button {
 /* Once the pill is filled the tile has to darken rather than lighten: a pale
    tint over a bright ground is the seam disappearing again. Over-limit keeps
    the pale one, because a limit is never done and its ground stays grey. */
-.dark-mode .habit-counter.good.completed    { --tile: rgba(11, 31, 16, 0.30); }
-.dark-mode .habit-counter.bad.completed     { --tile: rgba(43, 15, 13, 0.30); }
-.dark-mode .habit-counter.neutral.completed { --tile: rgba(58, 38, 0, 0.30); }
+.dark-mode .habit-counter.good.completed    { --tile: rgba(6, 18, 8, 0.34); }
+.dark-mode .habit-counter.bad.completed     { --tile: rgba(30, 8, 7, 0.34); }
+.dark-mode .habit-counter.neutral.completed { --tile: rgba(28, 20, 0, 0.34); }
 .dark-mode .habit-counter.bad.over-limit    { --tile: rgba(242, 139, 130, 0.34); }
 
 .counter-add:disabled,
@@ -1503,52 +1503,52 @@ input, select, button {
 
 /* === DARK MODE COUNTER HABITS === */
 .dark-mode .habit-counter {
-  background: #3a3a3a;
+  background: #2A2A2A;
   color: #ddd;
 }
 
 /* Dark mode - uncompleted with category borders */
 .dark-mode .habit-counter.good {
-  background: #3a3a3a;
+  background: #2A2A2A;
   border-color: #66BB6A;
   color: #ddd;
 }
 
 .dark-mode .habit-counter.bad {
-  background: #3a3a3a;
+  background: #2A2A2A;
   border-color: #EF5350;
   color: #ddd;
 }
 
 .dark-mode .habit-counter.neutral {
-  background: #3a3a3a;
+  background: #2A2A2A;
   border-color: #FFCA28;
   color: #ddd;
 }
 
 .dark-mode .habit-counter.counter {
-  background: #3a3a3a;
+  background: #2A2A2A;
   border-color: #3b82f6;
   color: #ddd;
 }
 
-/* Dark mode - completed. Filled, like the plain pill above. */
+/* Dark mode - completed. Same pair as the plain pill above. */
 .dark-mode .habit-counter.good.completed {
-  background: #66BB6A;
+  background: #468149;
   border-color: #66BB6A;
-  color: #0B1F10;
+  color: #FFFFFF;
 }
 
 .dark-mode .habit-counter.bad.completed {
-  background: #EF5350;
+  background: #C94643;
   border-color: #EF5350;
-  color: #2B0F0D;
+  color: #FFFFFF;
 }
 
 .dark-mode .habit-counter.neutral.completed {
-  background: #FFCA28;
+  background: #8C6F16;
   border-color: #FFCA28;
-  color: #3A2600;
+  color: #FFFFFF;
 }
 
 .dark-mode .habit-counter.counter.completed {
@@ -3384,8 +3384,8 @@ input, select, button {
 /* Counting stays muted on purpose: it is the rung between empty and done, and
    reads against the filled pill at 3.3:1 or better. It sits close to the empty
    grey, which is fine - a counting pill is the only one showing a number. */
-.dark-mode .habit-counter.counting.good    { background: #334C34; color: #E8E8E8; }
-.dark-mode .habit-counter.counting.bad     { background: #582C2B; color: #E8E8E8; }
+.dark-mode .habit-counter.counting.good    { background: #37543A; color: #E8E8E8; }
+.dark-mode .habit-counter.counting.bad     { background: #6A3331; color: #E8E8E8; }
 .dark-mode .habit-counter.counting.neutral { background: #584A20; color: #E8E8E8; }
 
 /* The ruled look keeps its own quieter grounds, and its dark tints are the
@@ -3394,8 +3394,8 @@ input, select, button {
 .look-ruled .habit-counter.counting.bad     { background: #FBE3E1; }
 .look-ruled .habit-counter.counting.neutral { background: #FAF1D8; }
 
-.dark-mode.look-ruled .habit-counter.counting.good    { background: #334C34; color: #E8E8E8; }
-.dark-mode.look-ruled .habit-counter.counting.bad     { background: #582C2B; color: #E8E8E8; }
+.dark-mode.look-ruled .habit-counter.counting.good    { background: #37543A; color: #E8E8E8; }
+.dark-mode.look-ruled .habit-counter.counting.bad     { background: #6A3331; color: #E8E8E8; }
 .dark-mode.look-ruled .habit-counter.counting.neutral { background: #584A20; color: #E8E8E8; }
 
 /* And the same row in the day sheet, so one habit does not read two ways */
