@@ -153,11 +153,28 @@ class DaySheet {
       this.changed();
     };
 
-    const count = document.createElement('span');
+    // The number is the same control it is on the main screen: tap it and type.
+    // The steppers stay - a day you are correcting is usually one or two out,
+    // and typing to fix that would be more work than the mistake.
+    const count = document.createElement('button');
     count.className = 'day-sheet-count';
-    count.textContent = DataManager.hasTarget(habit)
-      ? (DataManager.direction(habit.type) === 'limit' ? `${value} of ${habit.goal}` : `${value}/${habit.goal}`)
-      : `${value}`;
+    count.textContent = `${value}`;
+
+    if (DataManager.hasTarget(habit)) {
+      const target = document.createElement('span');
+      target.className = 'day-sheet-goal';
+      // "5 of 3" was read as a typo by someone seeing it for the first time.
+      // The pill says 5/3, and one number should not be written two ways.
+      target.textContent = `/${habit.goal}`;
+      count.appendChild(target);
+    }
+
+    const said = DataManager.hasTarget(habit)
+      ? `${value} of ${DataManager.direction(habit.type) === 'limit' ? 'a limit of' : 'a goal of'} ${habit.goal}`
+      : `counted ${value}`;
+    count.title = `${habit.name}: ${said} — tap to type it`;
+    count.setAttribute('aria-label', count.title);
+    count.onclick = () => this.editCount(row, count, habit, value);
 
     const plus = document.createElement('button');
     plus.className = 'day-sheet-step plus';
@@ -172,6 +189,49 @@ class DaySheet {
     row.appendChild(count);
     row.appendChild(plus);
     return row;
+  }
+
+  // Typing the number, with whatever numeric keyboard the phone has - the same
+  // control as the pill on the main screen, so one number is not two different
+  // things depending on which screen you are looking at.
+  editCount(row, count, habit, value) {
+    const field = document.createElement('input');
+    field.className = 'day-sheet-entry';
+    field.type = 'text';
+    field.inputMode = 'numeric';
+    field.value = String(value);
+    field.setAttribute('aria-label', `${habit.name} count`);
+
+    // Blur fires again after a commit re-renders the row, and the second run
+    // put back what the first had just replaced
+    let closed = false;
+    const finish = (commit) => {
+      if (closed) return;
+      closed = true;
+
+      const typed = parseInt(field.value, 10);
+      if (commit && Number.isFinite(typed) && typed >= 0 && typed !== value) {
+        this.dataManager.setCounterValue(this.dateKey, habit.name, typed);
+        this.changed();
+        return;
+      }
+      this.render();
+    };
+
+    field.onkeydown = (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        finish(true);
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        finish(false);
+      }
+    };
+    field.onblur = () => finish(true);
+
+    row.replaceChild(field, count);
+    field.focus();
+    field.select();
   }
 
   // The sheet redraws itself and tells the app to redraw behind it, so the

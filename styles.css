@@ -2830,12 +2830,57 @@ input, select, button {
   cursor: default;
 }
 
+/* A button now, not a label: tap it and type the number. Sized so a single
+   digit still clears a comfortable target. */
 .day-sheet-count {
   flex: none;
-  min-width: 3rem;
-  text-align: center;
+  min-width: 3.2rem;
+  padding: 0.35rem 0.3rem;
+  border: none;
+  border-radius: 8px;
+  background: rgba(15, 20, 30, 0.07);
+  font: inherit;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+  color: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.day-sheet-count:hover {
+  background: rgba(15, 20, 30, 0.12);
+}
+
+.day-sheet-goal {
+  font-weight: 400;
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+
+.day-sheet-entry {
+  flex: none;
+  width: 3.2rem;
+  min-width: 0;
+  padding: 0.3rem 0.2rem;
+  border: 2px solid #1a73e8;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.dark-mode .day-sheet-count {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.dark-mode .day-sheet-count:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.dark-mode .day-sheet-entry {
+  background: #2b2b2b;
+  color: #eee;
 }
 
 .day-sheet-done {
