@@ -350,7 +350,7 @@ DRIVE = """<script>
       // which rule won. Reading the cascade by eye got the answer wrong once:
       // two rules of equal specificity, and the later file wins, not the one
       // that looks more specific.
-      paint: Array.prototype.slice.call(found, 0, 12).map(function (m) {
+      paint: Array.prototype.slice.call(found, 0, 80).map(function (m) {
         var c = getComputedStyle(m);
         return m.className + ' | bg:' + c.backgroundColor + ' fg:' + c.color +
                ' border:' + c.borderTopColor + ' opacity:' + c.opacity +
