@@ -3297,11 +3297,13 @@ input, select, button {
 }
 
 /* An explicit grey rather than opacity, which fades the cell's ground as well
-   as its number and lands under 3:1 */
+   as its number: flattened, that is 2.64:1 in light and 2.91:1 in dark.
+   Measured against the wash these sit on, not against the page - the first
+   attempt used #6E737A, which is 4.08:1 over #ededed and still fails. */
 .look-ruled .day.other-month {
   opacity: 1;
   background: var(--sheet-wash);
-  color: #6E737A;
+  color: #61666D;
 }
 
 .dark-mode.look-ruled .day.other-month {
