@@ -3180,3 +3180,190 @@ input, select, button {
   background: rgba(255, 255, 255, 0.09);
   color: #eee;
 }
+
+/* === THE LOOK SETTING === */
+.look-row {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 1rem;
+  border-top: 1px solid #e0e0e0;
+  font-size: 0.82rem;
+}
+
+.look-icon {
+  flex: none;
+  display: inline-flex;
+  color: #6b7280;
+}
+
+.look-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.look-label {
+  flex: 1;
+  min-width: 0;
+  color: #5c6169;
+}
+
+.look-choices {
+  flex: none;
+  display: inline-flex;
+  border: 1px solid #d8dbdf;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.look-choice {
+  padding: 0.3rem 0.7rem;
+  border: none;
+  background: #fff;
+  font: inherit;
+  font-size: 0.78rem;
+  color: #5c6169;
+  cursor: pointer;
+}
+
+/* Both halves named, so the one you are not on still reads as a choice */
+.look-choice.on {
+  background: #e8f2ff;
+  color: #1a56c4;
+  font-weight: 600;
+}
+
+.dark-mode .look-row { border-top-color: #555; }
+.dark-mode .look-icon, .dark-mode .look-label { color: #a0a6ad; }
+.dark-mode .look-choices { border-color: #555; }
+.dark-mode .look-choice { background: #3a3a3a; color: #eee; }
+.dark-mode .look-choice.on { background: #24425e; color: #90caf9; }
+
+/* === THE RULED LOOK === */
+/* Plates off. The month becomes one sheet rather than 42 cards floating on
+   grey, the pills state their type once instead of three times, and the
+   settings list is ruled rows. Everything here is scoped to .look-ruled, so
+   the cards look is untouched by all of it. */
+.look-ruled {
+  --sheet-rule: #E1E4E8;
+  --sheet-wash: rgba(20, 24, 30, 0.035);
+}
+
+.dark-mode.look-ruled {
+  --sheet-rule: #34383E;
+  --sheet-wash: rgba(255, 255, 255, 0.045);
+}
+
+.look-ruled .calendar {
+  gap: 0;
+  border-top: 1px solid var(--sheet-rule);
+  border-left: 1px solid var(--sheet-rule);
+}
+
+/* The transparent border stays: it is what lets a selected day recolour
+   without the box resizing. The rules are drawn inside it instead. */
+.look-ruled .day {
+  background: transparent;
+  border-radius: 0;
+  box-shadow: inset -1px -1px 0 0 var(--sheet-rule);
+}
+
+.look-ruled .day:hover {
+  background: var(--sheet-wash);
+}
+
+/* Today is a circled date rather than a filled plate — a filled plate on a
+   ruled sheet is a card by another name. Shape rather than colour, because on
+   this sheet blue already means selected. */
+.look-ruled .day.today {
+  background-color: transparent;
+}
+
+.look-ruled .day.today .day-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin: 0 auto;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+}
+
+/* An explicit grey rather than opacity, which fades the cell's ground as well
+   as its number and lands under 3:1 */
+.look-ruled .day.other-month {
+  opacity: 1;
+  background: var(--sheet-wash);
+  color: #6E737A;
+}
+
+.dark-mode.look-ruled .day.other-month {
+  color: #8E939A;
+}
+
+/* One statement of type, not three: the border thins to a hairline and the
+   fill alone says done */
+.look-ruled .habit-button,
+.look-ruled .habit-counter {
+  border-width: 1px;
+}
+
+.look-ruled .habit-button.good,
+.look-ruled .habit-counter.good    { border-color: #2E7D32; }
+.look-ruled .habit-button.bad,
+.look-ruled .habit-counter.bad     { border-color: #C62828; }
+.look-ruled .habit-button.neutral,
+.look-ruled .habit-counter.neutral { border-color: #96660A; }
+
+.dark-mode.look-ruled .habit-button.good,
+.dark-mode.look-ruled .habit-counter.good    { border-color: #81C995; }
+.dark-mode.look-ruled .habit-button.bad,
+.dark-mode.look-ruled .habit-counter.bad     { border-color: #F28B82; }
+.dark-mode.look-ruled .habit-button.neutral,
+.dark-mode.look-ruled .habit-counter.neutral { border-color: #E0B44A; }
+
+/* A completed pill in dark is white on the type colour, which measures 2.16:1
+   on neutral and fails AA. The tint puts the label back on the body's own
+   colour: 7.1:1 and 7.7:1. */
+.dark-mode.look-ruled .habit-button.good.completed,
+.dark-mode.look-ruled .habit-counter.good.completed {
+  background: #334C34;
+  color: #E8E8E8;
+}
+
+.dark-mode.look-ruled .habit-button.bad.completed,
+.dark-mode.look-ruled .habit-counter.bad.completed {
+  background: #582C2B;
+  color: #E8E8E8;
+}
+
+.dark-mode.look-ruled .habit-button.neutral.completed,
+.dark-mode.look-ruled .habit-counter.neutral.completed {
+  background: #584A20;
+  color: #E8E8E8;
+}
+
+/* The settings list: a row, not a plate. The tab above it already says which
+   kind these are, so the row does not repeat it. */
+.look-ruled .manage-item {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--sheet-rule);
+  border-radius: 0;
+  box-shadow: none;
+  margin-bottom: 0;
+  padding: 0.6rem 0.35rem;
+}
+
+.look-ruled .manage-item:hover {
+  box-shadow: none;
+  transform: none;
+  background: var(--sheet-wash);
+}

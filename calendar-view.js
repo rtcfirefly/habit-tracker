@@ -44,6 +44,7 @@ class CalendarView {
     const dayKey = day.toDateString();
 
     const dateText = document.createElement('div');
+    dateText.className = 'day-number';
     dateText.textContent = day.getDate();
     dayDiv.appendChild(dateText);
 

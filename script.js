@@ -98,6 +98,16 @@ habitsView.onCounterIncremented = () => {
   }).show();
 };
 
+// --- how the app is drawn -------------------------------------------------
+const lookManager = new LookManager(document.getElementById('look-row'));
+lookManager.wire();
+// The calendar reserves its icon area from measured widths, so a change of
+// look has to redraw rather than merely restyle
+lookManager.onChanged = () => {
+  calendarView.render();
+  habitsView.render();
+};
+
 // --- about ----------------------------------------------------------------
 // Replaces the dialog's body rather than adding another row to it. The dialog
 // already carries tabs, a list and three settings rows, and this is read once.

@@ -194,6 +194,24 @@ function runHabitTrackerTests(env) {
     ok('everything else is left alone', migrated[1].type === 'good' && !migrated[1].counted);
   }
 
+  section('the look is a separate choice from light and dark');
+  {
+    resetStorage();
+    ok('cards by default, because that is what is already on screen',
+       LookManager.load() === 'cards');
+
+    localStorage.setItem('look', 'ruled');
+    ok('a stored look is honoured', LookManager.load() === 'ruled');
+
+    localStorage.setItem('look', 'chartreuse');
+    ok('and nonsense falls back rather than styling nothing',
+       LookManager.load() === 'cards');
+
+    ok('both looks are offered', LookManager.looks.join(',') === 'cards,ruled');
+    ok('and only those two', LookManager.isLook('ruled') === true &&
+       LookManager.isLook('sepia') === false);
+  }
+
   section('every explainer slide makes one point');
   {
     const slides = Intro.slides;
