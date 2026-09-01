@@ -253,7 +253,13 @@ DRIVE = """<script>
   if (params.get('bump')) {
     // .habit-counter is the wrapper now, not the button - clicking it does
     // nothing. The half that adds one is .counter-add.
-    var counter = document.querySelector('.counter-add');
+    // bump=1 taps the first counted habit; bump=<name> taps that one, so a shot
+    // can put a count on a particular habit rather than whichever is first
+    var want = params.get('bump');
+    var adds = [].slice.call(document.querySelectorAll('.counter-add'));
+    var counter = want === '1'
+      ? adds[0]
+      : adds.filter(function (a) { return a.textContent.indexOf(want) !== -1; })[0];
     if (counter) counter.click();
   }
 

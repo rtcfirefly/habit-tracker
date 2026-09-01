@@ -3369,3 +3369,35 @@ input, select, button {
   transform: none;
   background: var(--sheet-wash);
 }
+
+/* === A TALLY THAT HAS BEEN COUNTED === */
+/* No target means no proportion to fill toward, so the fill gradient has
+   nothing to say and the pill came out looking untouched. Counted at all, it
+   takes the same ground a completed one does - the number beside it carries
+   how many. */
+.habit-counter.counting.good    { background: lightgreen; }
+.habit-counter.counting.bad     { background: lightpink; }
+.habit-counter.counting.neutral { background: lightgoldenrodyellow; }
+
+.dark-mode .habit-counter.counting.good    { background: #4CAF50; color: #fff; }
+.dark-mode .habit-counter.counting.bad     { background: #F44336; color: #fff; }
+.dark-mode .habit-counter.counting.neutral { background: #FF9800; color: #fff; }
+
+/* The ruled look keeps its own quieter grounds, and its dark tints are the
+   ones that clear AA */
+.look-ruled .habit-counter.counting.good    { background: #DFF3E1; }
+.look-ruled .habit-counter.counting.bad     { background: #FBE3E1; }
+.look-ruled .habit-counter.counting.neutral { background: #FAF1D8; }
+
+.dark-mode.look-ruled .habit-counter.counting.good    { background: #334C34; color: #E8E8E8; }
+.dark-mode.look-ruled .habit-counter.counting.bad     { background: #582C2B; color: #E8E8E8; }
+.dark-mode.look-ruled .habit-counter.counting.neutral { background: #584A20; color: #E8E8E8; }
+
+/* And the same row in the day sheet, so one habit does not read two ways */
+.day-sheet-row.counting.is-good    { background: rgba(76, 175, 80, 0.16); }
+.day-sheet-row.counting.is-bad     { background: rgba(198, 40, 40, 0.14); }
+.day-sheet-row.counting.is-neutral { background: rgba(184, 134, 11, 0.16); }
+
+.dark-mode .day-sheet-row.counting.is-good    { background: rgba(76, 175, 80, 0.28); }
+.dark-mode .day-sheet-row.counting.is-bad     { background: rgba(220, 60, 60, 0.26); }
+.dark-mode .day-sheet-row.counting.is-neutral { background: rgba(212, 160, 23, 0.26); }

@@ -93,6 +93,10 @@ class HabitsView {
 
     if (state === 'done') pill.classList.add('completed');
     if (state === 'over') pill.classList.add('over-limit');
+    // A tally has no target, so there is no proportion to fill toward - but a
+    // habit you have counted three times is not a habit you have not touched,
+    // and an empty pill said it was
+    if (state === 'counting') pill.classList.add('counting');
     if (DataManager.hasTarget(habit)) pill.classList.add('has-target');
 
     const add = document.createElement('button');

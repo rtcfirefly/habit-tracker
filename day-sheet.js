@@ -141,7 +141,11 @@ class DaySheet {
     const row = this.row(habit, DataManager.hasTarget(habit)
       ? DataManager.progressPercent(value, habit.goal)
       : 0);
-    if (DataManager.countState(habit, value) === 'over') row.classList.add('over-limit');
+    const state = DataManager.countState(habit, value);
+    if (state === 'over') row.classList.add('over-limit');
+    // Same as the pill: a tally with something on it is filled, because there
+    // is no percentage that could say so
+    if (state === 'counting') row.classList.add('counting');
 
     const minus = document.createElement('button');
     minus.className = 'day-sheet-step minus';
