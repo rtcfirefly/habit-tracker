@@ -460,15 +460,15 @@ input, select, button {
 
 /* Light mode - uncompleted with category borders */
 .habit-button.good {
-  border-color: green;
+  border-color: var(--type-good);
 }
 
 .habit-button.bad {
-  border-color: red;
+  border-color: var(--type-bad);
 }
 
 .habit-button.neutral {
-  border-color: goldenrod;
+  border-color: var(--type-neutral);
 }
 
 /* Light mode emoji backgrounds */
@@ -494,17 +494,17 @@ input, select, button {
    ahead of them. */
 .habit-button.good.completed {
   background: lightgreen;
-  border-color: green;
+  border-color: var(--type-good);
 }
 
 .habit-button.bad.completed {
   background: lightpink;
-  border-color: red;
+  border-color: var(--type-bad);
 }
 
 .habit-button.neutral.completed {
   background: #EEDD7A;
-  border-color: goldenrod;
+  border-color: var(--type-neutral);
 }
 
 /* === MODAL STYLES === */
@@ -1200,6 +1200,26 @@ input, select, button {
   outline-color: #66aaff;
 }
 
+/* === THE TYPE PALETTE ===
+   One declaration per theme, referenced by both looks. It used to be two sets:
+   cards carried CSS named colours that had never been measured and ruled
+   carried a considered set, so the two drifted every time either was touched.
+   Against the white pill, cards read 5.14 / 4.00 / 2.24 - neutral barely half
+   its siblings - while ruled read 5.13 / 5.62 / 5.00. Ruled's numbers won, so
+   ruled's colours became the palette and the per-look overrides went away.
+   A look is a structure - border weight, plates, fills - not a hue. */
+:root {
+  --type-good: #2E7D32;
+  --type-bad: #C62828;
+  --type-neutral: #96660A;
+}
+
+.dark-mode {
+  --type-good: #81C995;
+  --type-bad: #F28B82;
+  --type-neutral: #E0B44A;
+}
+
 /* === DARK MODE HABIT BUTTONS === */
 .dark-mode .habit-button {
   background: #2A2A2A;
@@ -1214,19 +1234,19 @@ input, select, button {
 /* Dark mode - uncompleted with category borders */
 .dark-mode .habit-button.good {
   background: #2A2A2A;
-  border-color: #66BB6A;
+  border-color: var(--type-good);
   color: #ddd;
 }
 
 .dark-mode .habit-button.bad {
   background: #2A2A2A;
-  border-color: #EF5350;
+  border-color: var(--type-bad);
   color: #ddd;
 }
 
 .dark-mode .habit-button.neutral {
   background: #2A2A2A;
-  border-color: #FFCA28;
+  border-color: var(--type-neutral);
   color: #ddd;
 }
 
@@ -1241,19 +1261,19 @@ input, select, button {
    family line. */
 .dark-mode .habit-button.good.completed {
   background: #468149;
-  border-color: #66BB6A;
+  border-color: var(--type-good);
   color: #FFFFFF;
 }
 
 .dark-mode .habit-button.bad.completed {
   background: #C94643;
-  border-color: #EF5350;
+  border-color: var(--type-bad);
   color: #FFFFFF;
 }
 
 .dark-mode .habit-button.neutral.completed {
   background: #8C6F16;
-  border-color: #FFCA28;
+  border-color: var(--type-neutral);
   color: #FFFFFF;
 }
 
@@ -1438,19 +1458,19 @@ input, select, button {
 /* Light mode - uncompleted with category borders */
 .habit-counter.good {
   background: white;
-  border-color: green;
+  border-color: var(--type-good);
   color: black;
 }
 
 .habit-counter.bad {
   background: white;
-  border-color: red;
+  border-color: var(--type-bad);
   color: black;
 }
 
 .habit-counter.neutral {
   background: white;
-  border-color: goldenrod;
+  border-color: var(--type-neutral);
   color: black;
 }
 
@@ -1463,19 +1483,19 @@ input, select, button {
 /* Light mode - completed with colored backgrounds */
 .habit-counter.good.completed {
   background: lightgreen;
-  border-color: green;
+  border-color: var(--type-good);
   color: black;
 }
 
 .habit-counter.bad.completed {
   background: lightpink;
-  border-color: red;
+  border-color: var(--type-bad);
   color: black;
 }
 
 .habit-counter.neutral.completed {
   background: #EEDD7A;
-  border-color: goldenrod;
+  border-color: var(--type-neutral);
   color: black;
 }
 
@@ -1515,19 +1535,19 @@ input, select, button {
 /* Dark mode - uncompleted with category borders */
 .dark-mode .habit-counter.good {
   background: #2A2A2A;
-  border-color: #66BB6A;
+  border-color: var(--type-good);
   color: #ddd;
 }
 
 .dark-mode .habit-counter.bad {
   background: #2A2A2A;
-  border-color: #EF5350;
+  border-color: var(--type-bad);
   color: #ddd;
 }
 
 .dark-mode .habit-counter.neutral {
   background: #2A2A2A;
-  border-color: #FFCA28;
+  border-color: var(--type-neutral);
   color: #ddd;
 }
 
@@ -1540,19 +1560,19 @@ input, select, button {
 /* Dark mode - completed. Same pair as the plain pill above. */
 .dark-mode .habit-counter.good.completed {
   background: #468149;
-  border-color: #66BB6A;
+  border-color: var(--type-good);
   color: #FFFFFF;
 }
 
 .dark-mode .habit-counter.bad.completed {
   background: #C94643;
-  border-color: #EF5350;
+  border-color: var(--type-bad);
   color: #FFFFFF;
 }
 
 .dark-mode .habit-counter.neutral.completed {
   background: #8C6F16;
-  border-color: #FFCA28;
+  border-color: var(--type-neutral);
   color: #FFFFFF;
 }
 
@@ -3345,19 +3365,6 @@ input, select, button {
   border-width: 1px;
 }
 
-.look-ruled .habit-button.good,
-.look-ruled .habit-counter.good    { border-color: #2E7D32; }
-.look-ruled .habit-button.bad,
-.look-ruled .habit-counter.bad     { border-color: #C62828; }
-.look-ruled .habit-button.neutral,
-.look-ruled .habit-counter.neutral { border-color: #96660A; }
-
-.dark-mode.look-ruled .habit-button.good,
-.dark-mode.look-ruled .habit-counter.good    { border-color: #81C995; }
-.dark-mode.look-ruled .habit-button.bad,
-.dark-mode.look-ruled .habit-counter.bad     { border-color: #F28B82; }
-.dark-mode.look-ruled .habit-button.neutral,
-.dark-mode.look-ruled .habit-counter.neutral { border-color: #E0B44A; }
 
 /* The settings list: a row, not a plate. The tab above it already says which
    kind these are, so the row does not repeat it. */
@@ -3379,12 +3386,14 @@ input, select, button {
 
 /* === A TALLY THAT HAS BEEN COUNTED === */
 /* No target means no proportion to fill toward, so the fill gradient has
-   nothing to say and the pill came out looking untouched. Counted at all, it
-   takes the same ground a completed one does - the number beside it carries
-   how many. */
-.habit-counter.counting.good    { background: lightgreen; }
-.habit-counter.counting.bad     { background: lightpink; }
-.habit-counter.counting.neutral { background: #EEDD7A; }
+   nothing to say and the pill came out looking untouched.
+   In cards this used to take the identical ground a completed one does, so
+   counted and finished were the same colour and the ladder had two rungs
+   instead of three. Ruled already had the paler middle step; both looks share
+   it now. */
+.habit-counter.counting.good    { background: #DFF3E1; }
+.habit-counter.counting.bad     { background: #FBE3E1; }
+.habit-counter.counting.neutral { background: #F5E9BE; }
 
 /* Counting stays muted on purpose: it is the rung between empty and done, and
    reads against the filled pill at 3.3:1 or better. It sits close to the empty
@@ -3393,15 +3402,9 @@ input, select, button {
 .dark-mode .habit-counter.counting.bad     { background: #6A3331; color: #E8E8E8; }
 .dark-mode .habit-counter.counting.neutral { background: #584A20; color: #E8E8E8; }
 
-/* The ruled look keeps its own quieter grounds, and its dark tints are the
-   ones that clear AA */
-.look-ruled .habit-counter.counting.good    { background: #DFF3E1; }
-.look-ruled .habit-counter.counting.bad     { background: #FBE3E1; }
-.look-ruled .habit-counter.counting.neutral { background: #F5E9BE; }
 
-.dark-mode.look-ruled .habit-counter.counting.good    { background: #37543A; color: #E8E8E8; }
-.dark-mode.look-ruled .habit-counter.counting.bad     { background: #6A3331; color: #E8E8E8; }
-.dark-mode.look-ruled .habit-counter.counting.neutral { background: #584A20; color: #E8E8E8; }
+
+
 
 /* And the same row in the day sheet, so one habit does not read two ways */
 .day-sheet-row.counting.is-good    { background: rgba(76, 175, 80, 0.16); }
