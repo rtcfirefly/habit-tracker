@@ -106,6 +106,9 @@ SEED = """<script>
     localStorage.setItem('lastExported', String(Date.now() - stale * 86400000));
   }
   if (params.get('remindoff')) localStorage.setItem('backupRemindersOff', '1');
+  // The day-sheet hint fires once, on the first counter tap, and dims the whole
+  // page - which contaminates any shot that taps a counter for another reason
+  if (params.get('nohint')) localStorage.setItem('daySheetHintSeen', '1');
   // Stands in for a browser without the File System Access API - Firefox,
   // Firefox Focus, iOS Safari. That path renders differently and had never
   // been shot, which is how a hole in the backup slide reached a phone.
@@ -246,7 +249,9 @@ DRIVE = """<script>
   // taps one. After select=, because a counter button is disabled until a day
   // is chosen - run before it, this clicked a dead button.
   if (params.get('bump')) {
-    var counter = document.querySelector('.habit-counter');
+    // .habit-counter is the wrapper now, not the button - clicking it does
+    // nothing. The half that adds one is .counter-add.
+    var counter = document.querySelector('.counter-add');
     if (counter) counter.click();
   }
 

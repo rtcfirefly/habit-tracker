@@ -70,26 +70,35 @@ class HabitsView {
   // lives in the day sheet, reached by tapping the day again. A pair of small
   // round buttons on every counter row was most of the width of the row and
   // the only place in the app where a habit was not just a button.
+  // A counted habit is two controls in one pill: tap the left half to add one,
+  // tap the number to type it. Thirty pages was thirty taps otherwise, and the
+  // only way down was a separate sheet.
+  //
+  // A wrapper holding two sibling buttons, not a button inside a button - the
+  // parser hoists a nested button straight out of its parent. The wrapper keeps
+  // the pill's border and radius; the left half keeps the padding, so it still
+  // sets the height and the pill does not grow.
   createCounterHabit(habit) {
-    const button = document.createElement('button');
-    button.className = `habit-counter ${habit.type}`;
-    button.disabled = !this.selectedDate;
+    const pill = document.createElement('div');
+    pill.className = `habit-counter ${habit.type}`;
 
     const value = this.selectedDate
       ? this.dataManager.getCounterValue(this.selectedDate, habit.name)
       : 0;
-    // A tally has nothing to fill toward, so it does not fill
     const state = DataManager.countState(habit, value);
+    // A tally has nothing to fill toward, so it does not fill
     const progress = DataManager.hasTarget(habit)
       ? DataManager.progressPercent(value, habit.goal)
       : 0;
-    button.style.setProperty('--pct', `${progress}%`);
 
-    if (state === 'done') button.classList.add('completed');
-    if (state === 'over') button.classList.add('over-limit');
+    if (state === 'done') pill.classList.add('completed');
+    if (state === 'over') pill.classList.add('over-limit');
+    if (DataManager.hasTarget(habit)) pill.classList.add('has-target');
 
-    const nameSpan = document.createElement('span');
-    nameSpan.className = 'counter-name';
+    const add = document.createElement('button');
+    add.className = 'counter-add';
+    add.disabled = !this.selectedDate;
+    add.style.setProperty('--pct', `${progress}%`);
 
     const emoji = EmojiUtils.extractEmoji(habit.name);
     if (emoji) {
@@ -97,43 +106,31 @@ class HabitsView {
       emojiSpan.className = `habit-emoji ${habit.type} filling`;
       emojiSpan.style.setProperty('--pct', `${progress}%`);
       emojiSpan.textContent = emoji;
-      nameSpan.appendChild(emojiSpan);
+      add.appendChild(emojiSpan);
 
       const rest = EmojiUtils.removeEmoji(habit.name);
       if (rest) {
-        nameSpan.appendChild(document.createTextNode(' ' + rest));
+        const label = document.createElement('span');
+        label.className = 'counter-name';
+        label.textContent = rest;
+        add.appendChild(label);
       }
     } else {
-      nameSpan.textContent = habit.name;
+      const label = document.createElement('span');
+      label.className = 'counter-name';
+      label.textContent = habit.name;
+      add.appendChild(label);
     }
-
-    const count = document.createElement('span');
-    count.className = 'counter-value';
-    count.textContent = `${value}`;
-
-    // Just the two numbers. Which way they mean is already on the button: a
-    // limit belongs to a bad habit, which is red, and going past one turns the
-    // number red and rings the button. Spelling "of max 3" out here cost more
-    // width than the whole name on a 320px phone.
-    if (DataManager.hasTarget(habit)) {
-      const target = document.createElement('span');
-      target.className = 'counter-goal';
-      target.textContent = `/${habit.goal}`;
-      count.appendChild(target);
-    }
-
-    button.appendChild(nameSpan);
-    button.appendChild(count);
 
     const said = DataManager.hasTarget(habit)
       ? (DataManager.direction(habit.type) === 'limit'
           ? `${value} of a limit of ${habit.goal}`
           : `${value} of a goal of ${habit.goal}`)
       : `counted ${value}`;
-    button.title = `${habit.name}: ${said} — tap to add one`;
-    button.setAttribute('aria-label', button.title);
+    add.title = `${habit.name}: ${said} — tap to add one`;
+    add.setAttribute('aria-label', add.title);
 
-    button.addEventListener('click', () => {
+    add.addEventListener('click', () => {
       if (!this.selectedDate) return;
       this.dataManager.incrementCounter(this.selectedDate, habit.name);
       if (this.onHabitToggled) this.onHabitToggled();
@@ -141,7 +138,72 @@ class HabitsView {
       this.render();
     });
 
-    return button;
+    const count = document.createElement('button');
+    count.className = 'counter-value';
+    count.disabled = !this.selectedDate;
+    count.textContent = `${value}`;
+
+    // The word is not repeated here. Which way the number means is already on
+    // the pill: a limit belongs to a bad habit, which is red, and going past
+    // one turns the number red and rings the pill.
+    if (DataManager.hasTarget(habit)) {
+      const target = document.createElement('span');
+      target.className = 'counter-goal';
+      target.textContent = `/${habit.goal}`;
+      count.appendChild(target);
+    }
+
+    count.title = `${habit.name}: ${said} — tap to type it`;
+    count.setAttribute('aria-label', count.title);
+    count.addEventListener('click', () => this.editCount(pill, count, habit, value));
+
+    pill.appendChild(add);
+    pill.appendChild(count);
+    return pill;
+  }
+
+  // Typing the number, using whatever numeric keyboard the phone has. This is
+  // also the only way down: there is no minus, because a number you can type
+  // is a number you can lower.
+  editCount(pill, count, habit, value) {
+    if (!this.selectedDate) return;
+
+    const field = document.createElement('input');
+    field.className = 'counter-entry';
+    field.type = 'text';
+    field.inputMode = 'numeric';
+    field.value = String(value);
+    field.setAttribute('aria-label', `${habit.name} count`);
+
+    // Both ways out run once: blur fires after a commit re-render as well, and
+    // the second run put back what the first had just replaced
+    let closed = false;
+    const finish = (commit) => {
+      if (closed) return;
+      closed = true;
+
+      const typed = parseInt(field.value, 10);
+      if (commit && Number.isFinite(typed) && typed >= 0 && typed !== value) {
+        this.dataManager.setCounterValue(this.selectedDate, habit.name, typed);
+        if (this.onHabitToggled) this.onHabitToggled();
+      }
+      this.render();
+    };
+
+    field.onkeydown = (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        finish(true);
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        finish(false);
+      }
+    };
+    field.onblur = () => finish(true);
+
+    pill.replaceChild(field, count);
+    field.focus();
+    field.select();
   }
 
   render() {

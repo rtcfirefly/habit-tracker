@@ -1238,28 +1238,117 @@ input, select, button {
 }
 
 /* === COUNTER HABITS - BASE STYLES === */
-/* Sized like every other habit button, because it is one. It used to reserve
-   180px and push its number to the far edge with space-between, which came
-   from the days when it held a minus, a value and a plus. It holds a name and
-   a number now, so it takes the room those need and no more. */
+/* Two controls in one pill: tap the left half to add one, tap the number to
+   type it. The wrapper carries the border and the radius; it is not a button
+   itself, because a button cannot contain another one - the parser hoists the
+   inner one out. */
 .habit-counter {
-  padding: 0.5rem 0.8rem;
   border: 2px solid;
   border-radius: 8px;
   min-width: 80px;
-  transition: background 0.2s, transform 0.2s;
+  overflow: hidden;
   display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font: inherit;
+  align-items: stretch;
   font-size: 0.95rem;
-  cursor: pointer;
   text-align: left;
 }
 
-.habit-counter:disabled {
+/* The padding lives here, so the left half still sets the pill's height and
+   the pill is exactly as tall as it was before it was split */
+.counter-add {
+  padding: 0.5rem 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.09s ease-out, filter 0.09s ease-out;
+}
+
+/* Only the half that was pressed moves. The number is a separate control and
+   pretending otherwise is what made people tap it expecting to add one. */
+.counter-add:active:not(:disabled) {
+  transform: translateY(1px);
+  filter: brightness(0.93);
+}
+
+.counter-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* No vertical padding: the height comes from the left half, so the number
+   cannot make the pill taller. min-width keeps a bare tally's single digit
+   clear of the 24px target floor. */
+.counter-value {
+  align-self: stretch;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  padding: 0 0.55rem;
+  min-width: 32px;
+  border: none;
+  font: inherit;
+  font-weight: bold;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  color: inherit;
+  cursor: pointer;
+  background-color: var(--tile, rgba(15, 20, 30, 0.09));
+}
+
+/* The tile wears the habit's own colour rather than a neutral grey, which read
+   as a dead zone. Deeper once the pill is filled: at 14% a tint is lost
+   against a completed pill's own colour, which is the seam it exists to draw. */
+.habit-counter.good    { --tile: rgba(76, 175, 80, 0.14); }
+.habit-counter.bad     { --tile: rgba(244, 67, 54, 0.14); }
+.habit-counter.neutral { --tile: rgba(218, 165, 32, 0.14); }
+
+.habit-counter.good.completed    { --tile: rgba(46, 125, 50, 0.34); }
+.habit-counter.bad.completed,
+.habit-counter.bad.over-limit    { --tile: rgba(198, 40, 40, 0.34); }
+.habit-counter.neutral.completed { --tile: rgba(150, 110, 20, 0.34); }
+
+.dark-mode .habit-counter.good    { --tile: rgba(102, 187, 106, 0.16); }
+.dark-mode .habit-counter.bad     { --tile: rgba(239, 83, 80, 0.16); }
+.dark-mode .habit-counter.neutral { --tile: rgba(255, 202, 40, 0.16); }
+
+.dark-mode .habit-counter.good.completed    { --tile: rgba(129, 201, 149, 0.34); }
+.dark-mode .habit-counter.bad.completed,
+.dark-mode .habit-counter.bad.over-limit    { --tile: rgba(242, 139, 130, 0.34); }
+.dark-mode .habit-counter.neutral.completed { --tile: rgba(224, 180, 74, 0.34); }
+
+.counter-add:disabled,
+.counter-value:disabled {
   opacity: 0.45;
   cursor: default;
+}
+
+/* Typing the number. Sized to the tile so the pill does not jump open. */
+.counter-entry {
+  align-self: stretch;
+  width: 3.6rem;
+  min-width: 0;
+  margin: 3px;
+  padding: 0 0.3rem;
+  border: 2px solid #1a73e8;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: bold;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.dark-mode .counter-entry {
+  background: #2b2b2b;
+  color: #eee;
 }
 
 /* The denominator is context, not the number you are reading */
@@ -2585,10 +2674,12 @@ input, select, button {
    Every rule here names the type class and sets background-image only: the
    app's own paints are `background` shorthands, which reset background-image
    to none, so a plainer rule is silently wiped by them. */
-.habit-counter.good,
-.habit-counter.neutral,
-.habit-counter.bad,
-.habit-counter.counter {
+/* The fill lives in the left half and stops at the seam: it is feedback for
+   the tap that produced it, and that tap is the left half's. Run across the
+   whole pill it cut the number in half at four fifths of a large goal. */
+.habit-counter.good .counter-add,
+.habit-counter.neutral .counter-add,
+.habit-counter.bad .counter-add {
   background-image: linear-gradient(to right, var(--fill) 0 var(--pct, 0%), transparent var(--pct, 0%));
   background-repeat: no-repeat;
 }
@@ -2601,10 +2692,9 @@ input, select, button {
 /* Dark restates all of it, because .dark-mode .habit-counter.good outranks the
    rules above and is itself a shorthand. The alphas are higher: the same
    translucent colour that reads over white disappears over #2b2b2b. */
-.dark-mode .habit-counter.good,
-.dark-mode .habit-counter.neutral,
-.dark-mode .habit-counter.bad,
-.dark-mode .habit-counter.counter {
+.dark-mode .habit-counter.good .counter-add,
+.dark-mode .habit-counter.neutral .counter-add,
+.dark-mode .habit-counter.bad .counter-add {
   background-image: linear-gradient(to right, var(--fill) 0 var(--pct, 0%), transparent var(--pct, 0%));
   background-repeat: no-repeat;
 }
