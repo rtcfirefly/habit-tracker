@@ -879,6 +879,10 @@ input, select, button {
 
 .habit-name-display {
   flex: 1;
+  /* an input when it is being edited, so it inherits nothing by accident */
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
   min-width: 0;
   font-weight: 500;
   cursor: pointer;
@@ -3086,123 +3090,64 @@ input, select, button {
   display: none;
 }
 
-/* === ONE HABIT, ON ITS OWN === */
-/* Replaces the dialog body, like the About view. Not a second dialog: two
-   dialogs means two focus traps and two Escape handlers fighting. */
-.habit-screen {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  padding: 0.9rem 1rem 1.1rem;
+/* The count, on the row.
+   Text at rest and an input only while it is being edited, so a list of habits
+   reads as a list rather than a column of boxes. The two states are the same
+   width and the same place: the input must not shift the row under a thumb
+   already coming down on it. */
+.habit-count-cell {
+  flex: none;
+  width: 46px;
+  min-height: 30px;
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-family: inherit;
+  color: inherit;
+  padding: 0.28rem 0.2rem;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  cursor: text;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.habit-screen:focus {
+.habit-count-cell.is-toggle { cursor: pointer; }
+
+/* Not counting. An empty cell reads as something failing to render, so the
+   state has a mark of its own - and that faint dash is the only thing on the
+   row saying a number can go here at all. */
+.habit-count-cell.empty {
+  color: #b9bcc0;
+  font-weight: 400;
+}
+
+.habit-count-cell:hover { background: rgba(0, 0, 0, 0.04); }
+.habit-count-cell:focus-visible {
+  outline: 2px solid var(--type-good);
+  outline-offset: 1px;
+}
+
+/* Being edited: the box appears, and only then */
+input.habit-count-cell,
+input.habit-name-display {
+  border-color: var(--type-good);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.12);
   outline: none;
 }
 
-.habit-screen-field {
-  margin-top: 0.9rem;
-}
-
-.habit-screen-field:first-child {
-  margin-top: 0;
-}
-
-.habit-screen-label {
-  display: block;
-  margin-bottom: 0.3rem;
-  font-size: 0.72rem;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: #7a8087;
-}
-
-.habit-screen-input {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0.55rem 0.65rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font: inherit;
-  font-size: 0.95rem;
-}
-
-.habit-screen-seg {
-  display: inline-flex;
-  border: 1px solid #d8dbdf;
-  border-radius: 9px;
-  overflow: hidden;
-}
-
-.habit-screen-choice {
-  padding: 0.4rem 0.9rem;
-  border: none;
-  background: #fff;
-  font: inherit;
-  font-size: 0.85rem;
-  color: #5c6169;
-  cursor: pointer;
-}
-
-/* The chosen half is named, not merely lit: an unlabelled off state reads as
-   absence rather than as a choice someone made */
-.habit-screen-choice.on {
-  background: #e8f2ff;
-  color: #1a56c4;
-  font-weight: 600;
-}
-
-.habit-screen-stepper {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  margin-top: 0.7rem;
-  font-size: 0.95rem;
-}
-
-.habit-screen-word {
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: #7a8087;
-}
-
-.habit-screen-step {
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  border: 1.5px solid #cfd4d9;
-  border-radius: 50%;
-  background: none;
-  font: inherit;
-  font-size: 1.05rem;
-  line-height: 1;
-  color: inherit;
-  cursor: pointer;
-}
-
-.habit-screen-step:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.habit-screen-stepper b {
-  min-width: 2rem;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-}
-
-.habit-screen-unit {
-  font-size: 0.85rem;
-  color: #7a8087;
-}
-
-/* What counting does, as text on the row */
-.habit-count-note {
-  flex: none;
-  font-size: 0.78rem;
-  color: #7a8087;
-  white-space: nowrap;
+.dark-mode .habit-count-cell.empty { color: #6f7479; }
+.dark-mode .habit-count-cell:hover { background: rgba(255, 255, 255, 0.06); }
+.dark-mode input.habit-count-cell,
+.dark-mode input.habit-name-display {
+  background: #262626;
+  color: #eee;
+  border-color: var(--type-good);
+  box-shadow: 0 0 0 3px rgba(129, 201, 149, 0.16);
 }
 
 /* Past a limit. The fill runs out at the limit, so without a mark of its own
@@ -3216,33 +3161,6 @@ input, select, button {
 .habit-emoji.over-limit {
   border-color: #c62828;
   box-shadow: 0 0 0 2px rgba(198, 40, 40, 0.35);
-}
-
-.dark-mode .habit-screen-input,
-.dark-mode .habit-screen-choice {
-  background: #3a3a3a;
-  border-color: #555;
-  color: #eee;
-}
-
-.dark-mode .habit-screen-choice.on {
-  background: #24425e;
-  color: #90caf9;
-}
-
-.dark-mode .habit-screen-seg {
-  border-color: #555;
-}
-
-.dark-mode .habit-screen-step {
-  border-color: #555;
-}
-
-.dark-mode .habit-count-note,
-.dark-mode .habit-screen-label,
-.dark-mode .habit-screen-unit,
-.dark-mode .habit-screen-word {
-  color: #a0a6ad;
 }
 
 /* The counted chip on the kinds slide */

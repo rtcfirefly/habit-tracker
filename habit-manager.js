@@ -18,7 +18,6 @@ class HabitManager {
     this.dragStartIndex = null;
     this.onHabitsChanged = null;
     // Set while one habit's screen is up; calling it puts the list back
-    this.habitScreen = null;
     this.activeTab = 'good';
     
     this.previouslyFocused = null;
@@ -88,11 +87,14 @@ class HabitManager {
       this.renderForm();
       this.notifyHabitsChanged();
 
-      // Straight into the new habit rather than back to an empty field. Naming
-      // it is the first half of making it; whether it counts, and to what, is
-      // the other half, and it was two taps away in a list that had just grown
-      // by one.
-      this.openHabitScreen(this.dataManager.getHabits().length - 1);
+      // Naming it is the first half of making it; whether it counts, and to
+      // what, is the other half. That used to be a screen this opened for you.
+      // The row is the screen now, so the new row's count takes the cursor -
+      // the one thing still unsaid about the habit.
+      const rows = this.formElement.querySelectorAll('.manage-item');
+      const last = rows[rows.length - 1];
+      const cell = last && last.querySelector('.habit-count-cell');
+      if (cell && cell.onclick) cell.onclick();
     };
 
     nameInput.oninput = () => {
@@ -134,10 +136,12 @@ class HabitManager {
     
     const dragHandle = this.createDragHandle();
     const nameDisplay = this.createNameDisplay(habit, index);
+    const countCell = this.createCountCell(habit, index);
     const controls = this.createHabitControls(habit, index);
     
     content.appendChild(dragHandle);
     content.appendChild(nameDisplay);
+    content.appendChild(countCell);
     content.appendChild(controls);
     
     wrapper.appendChild(content);
@@ -147,213 +151,137 @@ class HabitManager {
     return wrapper;
   }
 
-  // "goal 30" / "max 3" / "counting" - or nothing at all when the habit is a
-  // plain one tap. Short enough to sit on a row beside a name at 320px.
-  static countSummary(habit) {
-    if (!DataManager.isCounted(habit)) return '';
-    if (!DataManager.hasTarget(habit)) return 'counting';
-    return DataManager.direction(habit.type) === 'limit'
-      ? `max ${habit.goal}`
-      : `goal ${habit.goal}`;
-  }
-
-  // One habit, on its own. It replaces the dialog's body the way the About view
-  // does rather than opening a second dialog over the first: two dialogs means
-  // two focus traps and two Escape handlers, and the one underneath wins the
-  // key while the one on top holds the eye.
-  openHabitScreen(index) {
-    const habit = this.dataManager.getHabits()[index];
-    if (!habit) return;
-
-    // One at a time. Tapping a second name used to append a second screen
-    // under the first, and closing one of them put the list back while the
-    // other was still on screen.
-    this.closeHabitScreen();
-
-    const body = this.modalElement.querySelector('.modal-body');
-
-    const screen = document.createElement('div');
-    screen.className = 'habit-screen';
-    screen.tabIndex = -1;
-
-    // Held on the manager rather than in a closure, so closing the dialog can
-    // tear it down too - shutting the dialog with a screen open left the
-    // screen in the DOM and the list hidden behind it, and the next open
-    // showed the leftovers.
-    const close = () => {
-      screen.remove();
-      body.hidden = false;
-      this.habitScreen = null;
-      BackTrap.remove(backClose);
-      this.renderForm();
-      this.notifyHabitsChanged();
-      const dialog = this.modalElement.querySelector('.modal-content');
-      if (dialog) dialog.focus();
-    };
-    this.habitScreen = close;
-
-    const backClose = () => this.closeHabitScreen();
-    BackTrap.push(backClose);
-
-    const draw = () => {
-      const current = this.dataManager.getHabits()[index];
-      this.clearElement(screen);
-      screen.appendChild(this.screenName(current, index));
-      screen.appendChild(this.screenCounting(current, index, draw));
-    };
-
-    // No kind control: which tab you came from already said it, and a habit
-    // that is in the wrong one is moved by dragging it, not by a second way of
-    // saying the same thing.
-    //
-    // The dialog's heading is left alone. It used to become the habit's name,
-    // directly above a field containing the habit's name.
-    body.hidden = true;
-    this.modalElement.querySelector('.modal-content').appendChild(screen);
-    draw();
-    screen.focus();
-  }
-
-  closeHabitScreen() {
-    if (this.habitScreen) this.habitScreen();
-  }
-
-  // Back out one layer. A habit's screen is a place inside the dialog, so
-  // every way of saying "leave" - the X, the backdrop, Escape - puts you back
-  // in the list first and closes the dialog only from there. Dropping
-  // straight to the calendar from inside a habit loses the place you were in
-  // and gives no way back to it except starting again.
+  // Back out one layer. The dialog is the only layer now: a habit is edited
+  // where it sits, so there is nothing inside it to leave first.
   dismiss() {
-    if (this.habitScreen) {
-      this.closeHabitScreen();
-      return;
-    }
     this.close();
   }
 
-  screenName(habit, index) {
-    const field = document.createElement('div');
-    field.className = 'habit-screen-field';
+  // Text until you touch it.
+  //
+  // The row is the editor. Tapping a name or a count swaps that one element
+  // for an input of the same size in the same place, so nothing moves under a
+  // thumb already on its way down, and the list at rest stays a list rather
+  // than a column of boxes.
+  //
+  // Enter commits and Escape reverts. Blur commits too, because tapping
+  // elsewhere is what people do, and throwing away what they typed for it is
+  // indefensible.
+  static editInPlace(span, { numeric, commit }) {
+    span.tabIndex = 0;
 
-    const label = document.createElement('label');
-    label.className = 'habit-screen-label';
-    label.textContent = 'Name';
-    label.htmlFor = 'habit-screen-name';
-
-    const input = document.createElement('input');
-    input.className = 'habit-screen-input';
-    input.id = 'habit-screen-name';
-    input.value = habit.name;
-
-    const save = () => {
-      const name = input.value.trim();
-      if (!name || name === habit.name) {
-        input.value = habit.name;
-        return;
+    const open = () => {
+      const input = document.createElement('input');
+      input.className = span.className.replace(' empty', '') + ' editing';
+      input.value = span.dataset.raw || '';
+      if (numeric) {
+        // The numeric keypad, not the number spinner: type="number" brings
+        // arrows nobody wants on a row this narrow and refuses to be styled.
+        input.type = 'text';
+        input.inputMode = 'numeric';
       }
-      if (!this.dataManager.updateHabit(index, name, habit.type)) {
-        input.value = habit.name;
-      }
+      span.replaceWith(input);
+      if (input.focus) input.focus();
+      if (input.select) input.select();
+
+      let done = false;
+      const finish = (save) => {
+        if (done) return;
+        done = true;
+        const typed = input.value.trim();
+        // The span goes back before commit(), because commit() re-renders the
+        // list and would otherwise be reading a DOM with a stray input in it
+        input.replaceWith(span);
+        if (save) commit(typed);
+      };
+      input.onblur = () => finish(true);
+      input.onkeydown = (event) => {
+        if (event.key === 'Enter') { event.preventDefault(); finish(true); }
+        if (event.key === 'Escape') { event.preventDefault(); finish(false); }
+      };
     };
 
-    input.onblur = save;
-    input.onkeydown = (event) => {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        input.blur();
-      }
+    span.onclick = open;
+    span.onkeydown = (event) => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(); }
     };
-
-    field.appendChild(label);
-    field.appendChild(input);
-    return field;
+    return span;
   }
 
-  screenCounting(habit, index, redraw) {
-    const field = document.createElement('div');
-    field.className = 'habit-screen-field';
+  // The number is the switch.
+  //
+  // A figure in the cell means the habit counts to that figure. An empty cell
+  // means it does not count at all, drawn as a faint dash because an empty box
+  // on a row reads as a rendering fault rather than as a state. There is no
+  // second control, which is the point: the screen this replaced carried an
+  // Once/Counts segment and a stepper, two controls saying what one number
+  // says by being there or not.
+  //
+  // Clearing it is not destructive. updateHabit keeps the goal it was last
+  // given and only stops the counting, so a number cleared by a stray
+  // backspace is still there when counting is turned back on.
+  createCountCell(habit, index) {
+    const cell = document.createElement('span');
+    cell.className = 'habit-count-cell';
 
-    const label = document.createElement('label');
-    label.className = 'habit-screen-label';
-    label.textContent = 'Counting';
-    field.appendChild(label);
+    const after = () => {
+      this.renderForm();
+      this.notifyHabitsChanged();
+    };
 
-    const counted = DataManager.isCounted(habit);
-    const seg = document.createElement('div');
-    seg.className = 'habit-screen-seg';
-    seg.setAttribute('role', 'group');
+    // A neutral habit tallies and is never finished - direction() says tally
+    // and hasTarget() refuses it - so it has no figure to hold. Its cell keeps
+    // the column's width and place and carries a tick instead. One column with
+    // two mechanics is the honest cost of putting this on a single line.
+    if (DataManager.direction(habit.type) === 'tally') {
+      const on = DataManager.isCounted(habit);
+      cell.classList.add('is-toggle');
+      if (!on) cell.classList.add('empty');
+      cell.textContent = on ? '✓' : '–';
+      cell.title = on ? 'Counts. Tap to stop counting.' : 'Does not count. Tap to count.';
+      cell.setAttribute('role', 'button');
+      cell.setAttribute('aria-pressed', String(on));
+      cell.setAttribute('aria-label', `${habit.name}: counting`);
+      cell.tabIndex = 0;
 
-    [['Once', false], ['Counts', true]].forEach(([text, on]) => {
-      const choice = document.createElement('button');
-      choice.className = 'habit-screen-choice' + (counted === on ? ' on' : '');
-      choice.textContent = text;
-      choice.setAttribute('aria-pressed', String(counted === on));
-      choice.onclick = () => {
-        // No goal invented here. Switching counting on used to write goal 1,
-        // which made the very first tap "done" for someone who turned counting
-        // on precisely because they wanted to count rather than tick.
-        this.dataManager.updateHabit(index, habit.name, habit.type, null, on);
-        redraw();
+      const flip = () => {
+        this.dataManager.updateHabit(index, habit.name, habit.type, null, !on);
+        after();
       };
-      seg.appendChild(choice);
-    });
-
-    field.appendChild(seg);
-
-    if (counted && DataManager.direction(habit.type) !== 'tally') {
-      field.appendChild(this.screenTarget(habit, index, redraw));
+      cell.onclick = flip;
+      cell.onkeydown = (event) => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); flip(); }
+      };
+      return cell;
     }
 
-    return field;
+    const target = DataManager.hasTarget(habit) ? String(habit.goal) : '';
+    cell.dataset.raw = target;
+    cell.textContent = target || '–';
+    if (!target) cell.classList.add('empty');
+
+    // A goal of 3 and a limit of 3 are the same three characters on the row,
+    // and only the tab you are on tells them apart. The label says which.
+    const word = TARGET_WORD[habit.type] || 'Goal';
+    cell.setAttribute('aria-label', target
+      ? `${habit.name}: ${word.toLowerCase()} ${target}`
+      : `${habit.name}: no ${word.toLowerCase()}, does not count`);
+    cell.title = `${word} — leave it empty for a single tap`;
+
+    return HabitManager.editInPlace(cell, {
+      numeric: true,
+      commit: (text) => {
+        const digits = text.replace(/[^0-9]/g, '');
+        const next = Number(digits);
+        // Empty, and a zero typed to mean empty, both mean it stops counting
+        const counts = digits !== '' && next > 0;
+        this.dataManager.updateHabit(index, habit.name, habit.type,
+                                     counts ? next : null, counts);
+        after();
+      }
+    });
   }
 
-  screenTarget(habit, index, redraw) {
-    const wrap = document.createElement('div');
-
-    const word = TARGET_WORD[habit.type];
-    const goal = Number(habit.goal) > 0 ? Number(habit.goal) : 1;
-
-    const stepper = document.createElement('div');
-    stepper.className = 'habit-screen-stepper';
-
-    const set = (next) => {
-      this.dataManager.updateHabit(index, habit.name, habit.type, Math.max(1, next), true);
-      redraw();
-    };
-
-    const minus = document.createElement('button');
-    minus.className = 'habit-screen-step';
-    minus.textContent = '−';
-    minus.title = `One less than the ${word.toLowerCase()}`;
-    minus.disabled = goal <= 1;
-    minus.onclick = () => set(goal - 1);
-
-    const value = document.createElement('b');
-    value.textContent = String(goal);
-
-    const plus = document.createElement('button');
-    plus.className = 'habit-screen-step';
-    plus.textContent = '+';
-    plus.title = `One more than the ${word.toLowerCase()}`;
-    plus.onclick = () => set(goal + 1);
-
-    const unit = document.createElement('span');
-    unit.className = 'habit-screen-unit';
-    unit.textContent = 'a day';
-
-    const heading = document.createElement('span');
-    heading.className = 'habit-screen-word';
-    heading.textContent = word;
-
-    stepper.appendChild(heading);
-    stepper.appendChild(minus);
-    stepper.appendChild(value);
-    stepper.appendChild(plus);
-    stepper.appendChild(unit);
-
-    wrap.appendChild(stepper);
-    return wrap;
-  }
 
   createDragHandle() {
     const dragHandle = document.createElement('div');
@@ -397,25 +325,26 @@ class HabitManager {
       display.textContent = habit.name;
     }
     
-    display.onclick = () => this.openHabitScreen(index);
-    
-    return display;
+    display.dataset.raw = habit.name;
+
+    return HabitManager.editInPlace(display, {
+      numeric: false,
+      commit: (name) => {
+        if (!name || name === habit.name) return;
+        // A name already taken is refused by updateHabit and the row simply
+        // redraws with the old one, rather than announcing it: the list is
+        // right there and the habit it clashes with is visible in it
+        if (this.dataManager.updateHabit(index, name, habit.type)) {
+          this.renderForm();
+          this.notifyHabitsChanged();
+        }
+      }
+    });
   }
 
   createHabitControls(habit, index) {
     const controls = document.createElement('div');
     controls.className = 'habit-controls';
-    
-    // What counting this habit does, as text rather than a control. The row
-    // stays a row; the screen behind the name is where it is changed.
-    const summary = HabitManager.countSummary(habit);
-    if (summary) {
-      const note = document.createElement('span');
-      note.className = 'habit-count-note';
-      note.textContent = summary;
-      controls.appendChild(note);
-    }
-
     
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'delete-btn';
@@ -732,7 +661,6 @@ class HabitManager {
   }
 
   close() {
-    this.closeHabitScreen();
     this.modalElement.style.display = 'none';
     BackTrap.remove(this.backClose);
 
