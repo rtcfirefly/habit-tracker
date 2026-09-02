@@ -215,19 +215,6 @@ DRIVE = """<script>
   // the shot has to press it rather than assume it worked
   if (params.get('replay')) document.getElementById('about-guide').click();
 
-  // Comma separated and pressed in order, the same as screen=. Reproducing a
-  // bug that only shows after a switch needs two presses - complete a habit,
-  // then hit the theme toggle - and one press could not express that. Note
-  // the comma is a separator here, not the selector-list comma ring= passes
-  // straight through.
-  var tap = params.get('tap');
-  if (tap) {
-    tap.split(',').forEach(function (one) {
-      var hit = document.querySelector(one);
-      if (hit) hit.click();
-    });
-  }
-
   // Rings elements so a shot used as a callout points at what it describes.
   //
   // Done with layout, not measured coordinates. A fixed position box computed
@@ -337,6 +324,23 @@ DRIVE = """<script>
   var presses = +params.get('back') || 0;
   for (var press = 0; press < presses; press++) {
     window.dispatchEvent(new PopStateEvent('popstate', { state: history.state }));
+  }
+
+  // Last, after every step that opens a panel. It used to sit above sheet=,
+  // so tapping something inside the day sheet pressed a page that did not have
+  // one open yet and quietly did nothing - the same ordering bug measure= had.
+  //
+  // Comma separated and pressed in order, the same as screen=. Reproducing a
+  // bug that only shows after a switch needs two presses - complete a habit,
+  // then hit the theme toggle - and one press could not express that. Note
+  // the comma is a separator here, not the selector-list comma ring= passes
+  // straight through.
+  var tap = params.get('tap');
+  if (tap) {
+    tap.split(',').forEach(function (one) {
+      var hit = document.querySelector(one);
+      if (hit) hit.click();
+    });
   }
 
   var measure = params.get('measure');
