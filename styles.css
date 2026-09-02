@@ -1219,12 +1219,16 @@ input, select, button {
   /* the accent: a pill's border, and the ring around a calendar emoji */
   --type-good: #2E7D32;
   --type-bad: #C62828;
-  /* Gold, not brown. #96660A is fully saturated but dark, and a dark low-value
-     amber ringed by the pale yellow it sits on reads violet - the eye tints it
-     with the surround's complement. Lighter fixes it, and there is room:
-     every use of this token is a border, so the bar is 3:1 for a UI edge, not
-     the 4.5 a label would need. This clears it at 4.00 against white. */
-  --type-neutral: #B07200;
+  /* Yellow rather than gold, chosen by eye from a rendered set.
+     Two things about it, both deliberate. It is 2.50:1 against the white day
+     cell, under the 3:1 an interface edge is asked for - the disc and the
+     glyph identify a neutral habit too, so the ring is not carrying that
+     alone. And on a counted habit the disc is not this token's pale yellow at
+     all but rgba(184,134,11,.5) composited over it, #DCBE56, which leaves the
+     ring at 1.38 against what it actually encircles. Lightening the chip is
+     the lever if that edge ever needs to come back; deepening it moves the
+     disc toward the ring and makes it worse. */
+  --type-neutral: #C79F00;
   --type-counter: #2196F3;
 
   /* a pill at rest */
