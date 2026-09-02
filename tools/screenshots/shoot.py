@@ -50,6 +50,19 @@ STILL = """<style>
 }
 </style>"""
 
+# Injected after the stylesheet, so a shot can try a colour without the repo
+# being edited for it. Comparing four candidates used to mean four edits, four
+# runs and four reverts, and the revert is the step that gets forgotten.
+OVERRIDE = """<script>
+(function () {
+  var css = new URLSearchParams(location.search).get('css');
+  if (!css) return;
+  var tag = document.createElement('style');
+  tag.textContent = css;
+  document.head.appendChild(tag);
+})();
+</script>"""
+
 SEED = """<script>
 (function () {
   var params = new URLSearchParams(location.search);
@@ -450,7 +463,7 @@ def build_site():
 
     path = os.path.join(SITE, 'index.html')
     html = open(path, encoding='utf-8').read()
-    html = html.replace('</head>', STILL + '\n' + seed + '\n</head>', 1)
+    html = html.replace('</head>', STILL + '\n' + seed + '\n' + OVERRIDE + '\n</head>', 1)
     html = html.replace('</body>', DRIVE + '\n</body>', 1)
     open(path, 'w', encoding='utf-8').write(html)
 
