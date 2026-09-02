@@ -535,14 +535,10 @@ function runHabitTrackerTests(env) {
     const modal = fixture('div');
     const content = fixture('div');
     content.classList.add('modal-content');
-    const heading = fixture('h2');
-    heading.setAttribute('id', 'manage-modal-title');
-    heading.textContent = 'Manage Habits';
     const body = fixture('div');
     body.classList.add('modal-body');
     const form = fixture('div');
     body.appendChild(form);
-    content.appendChild(heading);
     content.appendChild(body);
     modal.appendChild(content);
 
@@ -552,12 +548,16 @@ function runHabitTrackerTests(env) {
     manager.open();
     ok('opening the dialog puts one entry on the stack', history.entries.length === 1);
 
-    manager.openHabitScreen(0);
+    // A second panel, pushed directly. The habit screen used to be this, and
+    // deleting it must not delete the coverage: what is being tested is that
+    // BackTrap gives one entry per panel and unwinds them one at a time.
+    let panelOpen = true;
+    const panel = () => { panelOpen = false; BackTrap.remove(panel); };
+    BackTrap.push(panel);
     ok('the panel on top adds one of its own', history.entries.length === 2);
 
     window.fireBack();
-    ok('back closes the habit screen first',
-       modal.querySelectorAll('.habit-screen').length === 0 && body.hidden === false);
+    ok('back closes the panel first', panelOpen === false);
     ok('the dialog is still open behind it', modal.style.display !== 'none');
     ok('and the dialog’s own entry is still on the stack, for the next press',
        history.entries.length === 1,
@@ -576,11 +576,14 @@ function runHabitTrackerTests(env) {
     BackTrap.flush();
     ok('closing by hand takes it off', history.entries.length === 0);
 
-    // Closing the dialog with a screen open unwinds two entries, which has to
-    // be one go(-2) rather than two back() calls a browser may fold into one
+    // Two panels torn down at once has to be one go(-2) rather than two back()
+    // calls a browser may fold into one
     manager.open();
-    manager.openHabitScreen(0);
+    let second = true;
+    const other = () => { second = false; BackTrap.remove(other); };
+    BackTrap.push(other);
     ok('two panels, two entries', history.entries.length === 2);
+    other();
     manager.close();
     BackTrap.flush();
     ok('closing both at once gives both entries back, in one unwind',
@@ -590,74 +593,106 @@ function runHabitTrackerTests(env) {
     // is a real popstate, and with the dialog still open the trap is still
     // listening - so it used to answer its own pop by closing the dialog too.
     manager.open();
-    manager.openHabitScreen(0);
-    manager.dismiss();
+    let third = true;
+    const inner = () => { third = false; BackTrap.remove(inner); };
+    BackTrap.push(inner);
+    inner();
     BackTrap.flush();
-    ok('backing out of a habit screen leaves the dialog standing',
+    ok('backing out of a panel leaves the dialog standing',
        modal.style.display !== 'none',
        'the trap answered its own unwind and closed the dialog underneath');
     ok('and the dialog keeps exactly one entry', history.entries.length === 1,
        String(history.entries.length));
 
-    // The dialog is still usable afterwards: back closes it, once
     window.fireBack();
     ok('back then closes the dialog and nothing else', modal.style.display === 'none');
     ok('with the stack empty', history.entries.length === 0, String(history.entries.length));
   }
 
-  section('one habit screen at a time, and the dialog takes it with it');
+  section('the row is the editor: name and count, edited where they sit');
   {
     const dm = fresh();
     dm.addHabit('💧 Water', 'good');
     dm.addHabit('📖 Read', 'good', 30, true);
+    dm.addHabit('☕ Coffees', 'neutral', null, true);
 
-    // The dialog's own shape, since the screen swaps the body out and puts the
-    // habit's name in the heading
     const modal = fixture('div');
     const content = fixture('div');
     content.classList.add('modal-content');
-    const heading = fixture('h2');
-    heading.setAttribute('id', 'manage-modal-title');
-    heading.textContent = 'Manage Habits';
     const body = fixture('div');
     body.classList.add('modal-body');
     const form = fixture('div');
     body.appendChild(form);
-    content.appendChild(heading);
     content.appendChild(body);
     modal.appendChild(content);
 
     const manager = new HabitManager(modal, form, dm);
     manager.renderForm();
 
-    manager.openHabitScreen(0);
-    ok('a screen opens', modal.querySelectorAll('.habit-screen').length === 1);
-    ok('the list is put away while it is up', body.hidden === true);
-    ok('the heading is left saying what the dialog is',
-       heading.textContent === 'Manage Habits',
-       'it used to become the habit name, directly above a field holding it');
+    const cells = () => [...form.querySelectorAll('.habit-count-cell')];
+    const names = () => [...form.querySelectorAll('.habit-name-display')];
 
-    // Tapping a second name used to append a second screen under the first
-    manager.openHabitScreen(1);
-    ok('a second name replaces it rather than stacking',
-       modal.querySelectorAll('.habit-screen').length === 1);
-    ok('the list is still put away', body.hidden === true);
+    ok('every row carries a count cell', cells().length === form.querySelectorAll('.manage-item').length);
+    ok('a habit that does not count shows the dash, not an empty cell',
+       cells()[0].textContent === '–' && cells()[0].classList.contains('empty'));
+    ok('a habit that counts shows its figure bare', cells()[1].textContent === '30');
 
-    // The X and the backdrop both go through dismiss(), which backs out one
-    // layer: from inside a habit that means the list, not the calendar
-    manager.dismiss();
-    ok('dismissing from a screen lands on the list, not outside the dialog',
-       modal.querySelectorAll('.habit-screen').length === 0 && body.hidden === false);
+    // Typing a number is the only way counting gets turned on. There is no
+    // switch, which is the whole design.
+    cells()[0].onclick();
+    const box = form.querySelectorAll('input.habit-count-cell')[0];
+    ok('tapping the cell puts an input in its place', !!box);
+    ok('the input asks for the numeric keypad', box.inputMode === 'numeric');
+    box.value = '8';
+    box.onblur();
+    ok('a typed number turns counting on', DataManager.isCounted(dm.getHabits()[0]));
+    ok('and becomes the target', dm.getHabits()[0].goal === 8);
+    ok('the row goes back to text', form.querySelectorAll('input.habit-count-cell').length === 0);
 
-    manager.openHabitScreen(0);
-    // Closing the dialog outright with a screen open used to leave the screen
-    // in the DOM and the list hidden behind it, so the next open showed the
-    // leftovers of the last visit
-    manager.close();
-    ok('closing the dialog takes the screen with it',
-       modal.querySelectorAll('.habit-screen').length === 0);
-    ok('and gives the list back', body.hidden === false);
-    ok('and the heading never moved', heading.textContent === 'Manage Habits');
+    // Emptying it is the way back off, and must not throw the number away
+    cells()[0].onclick();
+    const clear = form.querySelectorAll('input.habit-count-cell')[0];
+    clear.value = '';
+    clear.onblur();
+    ok('clearing the cell stops it counting', !DataManager.isCounted(dm.getHabits()[0]));
+    ok('but the number it had is kept, so a stray backspace is not destructive',
+       dm.getHabits()[0].goal === 8);
+
+    // Escape reverts rather than commits
+    cells()[1].onclick();
+    const esc = form.querySelectorAll('input.habit-count-cell')[0];
+    esc.value = '99';
+    esc.onkeydown({ key: 'Escape', preventDefault() {} });
+    ok('Escape leaves the habit alone', dm.getHabits()[1].goal === 30);
+
+    // A neutral habit has no figure to hold, so its cell toggles instead
+    const tally = cells()[2];
+    ok('the neutral cell is a toggle, not a field', tally.classList.contains('is-toggle'));
+    ok('and says so to a screen reader', tally.getAttribute('role') === 'button');
+    ok('it shows a tick while counting', tally.textContent === '✓');
+    tally.onclick();
+    ok('tapping it stops the tally', !DataManager.isCounted(dm.getHabits()[2]));
+    ok('and the cell shows the same dash the others use',
+       cells()[2].textContent === '–');
+
+    // The name edits in place, which is what replaced the screen
+    names()[0].onclick();
+    const rename = form.querySelectorAll('input.habit-name-display')[0];
+    ok('tapping a name puts an input in its place', !!rename);
+    ok('it starts with the whole name, emoji and all', rename.value === '💧 Water');
+    rename.value = '💧 Hydrate';
+    rename.onblur();
+    ok('the name is saved', dm.getHabits()[0].name === '💧 Hydrate');
+    ok('and no input is left behind',
+       form.querySelectorAll('input.habit-name-display').length === 0);
+
+    // A clash is refused by the model and the row simply redraws
+    names()[0].onclick();
+    const clash = form.querySelectorAll('input.habit-name-display')[0];
+    clash.value = '📖 Read';
+    clash.onblur();
+    ok('renaming onto a name already taken is refused',
+       dm.getHabits()[0].name === '💧 Hydrate');
   }
 
   // Only a real browser gives boxes dimensions, so this is the one thing the

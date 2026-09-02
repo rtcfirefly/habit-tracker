@@ -87,6 +87,16 @@ class El {
         return this.attrs.id === part.slice(1);
       }
 
+      // An optional tag in front of the classes: "input.habit-count-cell" has
+      // to mean the input and not the span it replaced, and splitting on "."
+      // alone read the tag as a class name that nothing ever has.
+      const tagged = part.match(/^([a-zA-Z][\w-]*)(.*)$/);
+      if (tagged) {
+        if ((this.tagName || '').toLowerCase() !== tagged[1].toLowerCase()) return false;
+        part = tagged[2];
+        if (!part) return true;
+      }
+
       return part.split('.').filter(Boolean).every(c => this.classList.contains(c));
     });
   }
@@ -100,6 +110,17 @@ class El {
       if (at !== -1) kids.splice(at, 1);
       this.parentNode = null;
     }
+  }
+
+  // Swapping one node for another in its parent's children, which is how a
+  // row's rendered text becomes an input and back again
+  replaceWith(node) {
+    if (!this.parentNode) return;
+    const at = this.parentNode.children.indexOf(this);
+    if (at === -1) return;
+    this.parentNode.children.splice(at, 1, node);
+    node.parentNode = this.parentNode;
+    this.parentNode = null;
   }
 
   querySelector(selector) {
