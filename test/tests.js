@@ -609,6 +609,38 @@ function runHabitTrackerTests(env) {
     ok('with the stack empty', history.entries.length === 0, String(history.entries.length));
   }
 
+  section('a tally has nothing to fill toward, so the calendar does not fill it');
+  {
+    const dm = fresh();
+    dm.addHabit('☕ Coffees', 'neutral', null, true);
+    dm.addHabit('📖 Read', 'good', 30, true);
+    const day = new Date(2026, 7, 15).toDateString();
+    dm.setCounterValue(day, '☕ Coffees', 3);
+    dm.setCounterValue(day, '📖 Read', 15);
+
+    const calEl = fixture('div');
+    calEl.className = 'calendar';
+    const cal = new CalendarView(calEl, fixture('h2'), dm);
+    cal.currentDate = new Date(2026, 7, 15);
+    cal.render();
+
+    const icons = list(calEl.querySelectorAll('.habit-emoji'));
+    const tally = icons.filter(i => i.classList.contains('neutral'))[0];
+    const goal  = icons.filter(i => i.classList.contains('good'))[0];
+
+    ok('a counted neutral habit still gets its icon', !!tally);
+    // It used to be filled to 100% on every such day, which is a bar that can
+    // never say anything - and the fill dragged the disc off its own hue
+    ok('but it is not filled', tally && !tally.classList.contains('filling'));
+    ok('and carries no percentage at all',
+       tally && !tally.style.getPropertyValue('--pct'));
+
+    ok('a habit with a real target is still filled', goal && goal.classList.contains('filling'));
+    ok('to the proportion it has reached',
+       goal && goal.style.getPropertyValue('--pct') === '50%',
+       goal && goal.style.getPropertyValue('--pct'));
+  }
+
   section('the row is the editor: name and count, edited where they sit');
   {
     const dm = fresh();

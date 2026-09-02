@@ -182,14 +182,26 @@ class CalendarView {
 
       const indicator = this.createHabitIndicator(
         habit.name, habit.type, `${habit.name}: ${value}${target}`, false);
-      indicator.classList.add('filling');
-      // Over a limit is its own mark rather than a fuller version of under it:
-      // the fill runs out at the limit, so without this, four past a limit of
-      // three looks exactly like three.
-      if (state === 'over') indicator.classList.add('over-limit');
-      indicator.style.setProperty('--pct', DataManager.hasTarget(habit)
-        ? `${DataManager.progressPercent(value, habit.goal)}%`
-        : '100%');
+
+      // Only something with a target has a proportion to draw. A tally has
+      // none - direction() says tally and hasTarget() refuses it - so this
+      // used to fill it to 100% and leave it there, on every counted neutral
+      // habit, for ever. A bar that is always full says nothing, and it was
+      // not free: the fill dragged the disc 11 degrees off its own hue, from
+      // yellow to a gold-brown, which is the only type whose colour moves when
+      // it is counted. It read as dirty next to the green and red, and every
+      // attempt to fix that by adjusting the ring was adjusting the wrong
+      // thing. The pill in habits-view has always passed 0 here; the calendar
+      // was the odd one out.
+      if (DataManager.hasTarget(habit)) {
+        indicator.classList.add('filling');
+        indicator.style.setProperty('--pct',
+          `${DataManager.progressPercent(value, habit.goal)}%`);
+        // Over a limit is its own mark rather than a fuller version of under
+        // it: the fill runs out at the limit, so without this, four past a
+        // limit of three looks exactly like three.
+        if (state === 'over') indicator.classList.add('over-limit');
+      }
       dots.appendChild(indicator);
     });
 

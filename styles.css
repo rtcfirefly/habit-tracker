@@ -1273,6 +1273,12 @@ input, select, button {
   --rowcount-good: rgba(76, 175, 80, 0.16);
   --rowcount-bad: rgba(198, 40, 40, 0.14);
   --rowcount-neutral: rgba(184, 134, 11, 0.16);
+
+  /* the fill inside a calendar emoji, drawn over the ring colours above.
+     No neutral: a tally has nothing to fill toward. */
+  --chip-good: rgba(46, 125, 50, 0.5);
+  --chip-bad: rgba(198, 40, 40, 0.45);
+  --chip-counter: rgba(26, 115, 232, 0.45);
 }
 
 .dark-mode {
@@ -2864,17 +2870,17 @@ input, select, button {
 
 /* The chip fills bottom to top, like something filling up. Kept light enough
    that the emoji inside it stays readable at 100%. */
+/* Neutral is absent on purpose: a tally has no target, so there is no
+   proportion for it to draw. See calendar-view.js. */
 .habit-emoji.good.filling,
-.habit-emoji.neutral.filling,
 .habit-emoji.bad.filling,
 .habit-emoji.counter.filling {
   background-image: linear-gradient(to top, var(--chip) 0 var(--pct, 0%), transparent var(--pct, 0%));
 }
 
-.habit-emoji.good.filling    { --chip: rgba(46, 125, 50, 0.5); }
-.habit-emoji.neutral.filling { --chip: rgba(184, 134, 11, 0.5); }
-.habit-emoji.bad.filling     { --chip: rgba(198, 40, 40, 0.45); }
-.habit-emoji.counter.filling { --chip: rgba(26, 115, 232, 0.45); }
+.habit-emoji.good.filling    { --chip: var(--chip-good); }
+.habit-emoji.bad.filling     { --chip: var(--chip-bad); }
+.habit-emoji.counter.filling { --chip: var(--chip-counter); }
 
 /* === THE DAY SHEET === */
 .day-sheet {

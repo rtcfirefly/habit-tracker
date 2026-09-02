@@ -34,7 +34,7 @@ TYPE = re.compile(r'\.(is-)?(good|bad|neutral|counter)(?![\w-])')
 # Properties that paint. Custom properties count: --tile is a paint by proxy.
 PAINTS = re.compile(r'^\s*(background|background-color|border|border-color|'
                     r'border-(?:top|right|bottom|left)-color|color|'
-                    r'box-shadow|--tile|--fill|--rail)\s*:\s*(.+?);', re.M)
+                    r'box-shadow|--tile|--fill|--rail|--chip)\s*:\s*(.+?);', re.M)
 
 # What a paint is allowed to be when it is not a variable
 ALLOWED = re.compile(r'^(var\(|transparent$|inherit$|currentColor$|none$|0\s|'
