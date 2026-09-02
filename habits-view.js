@@ -205,6 +205,12 @@ class HabitsView {
     };
     field.onblur = () => finish(true);
 
+
+    // Padding and min-width get it close; they do not get it exact, because
+    // the outgoing element's width comes from its content and this one's does
+    // not. Pinned from the box being replaced so the row cannot move at all.
+    const was = count.getBoundingClientRect && count.getBoundingClientRect();
+    if (was && was.width) field.style.width = `${was.width}px`;
     pill.replaceChild(field, count);
     field.focus();
     field.select();

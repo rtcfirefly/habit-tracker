@@ -18,34 +18,34 @@
 // request for the next, which is what makes a stale stylesheet against a
 // fresh index.html impossible - the failure that made this necessary.
 // tools/check-sw-cache.sh enforces that they agree.
-const CACHE_NAME = 'habit-tracker-v2.8.0';
+const CACHE_NAME = 'habit-tracker-v2.8.1';
 
 const ASSETS = [
   './',
   './index.html',
-  './styles.css?v=2.8.0',
+  './styles.css?v=2.8.1',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
   './icon-maskable-512.png',
-  './back-trap.js?v=2.8.0',
-  './emoji-utils.js?v=2.8.0',
-  './data-manager.js?v=2.8.0',
-  './file-backup.js?v=2.8.0',
-  './calendar-view.js?v=2.8.0',
-  './habits-view.js?v=2.8.0',
-  './day-sheet.js?v=2.8.0',
-  './habit-manager.js?v=2.8.0',
-  './intro.js?v=2.8.0',
+  './back-trap.js?v=2.8.1',
+  './emoji-utils.js?v=2.8.1',
+  './data-manager.js?v=2.8.1',
+  './file-backup.js?v=2.8.1',
+  './calendar-view.js?v=2.8.1',
+  './habits-view.js?v=2.8.1',
+  './day-sheet.js?v=2.8.1',
+  './habit-manager.js?v=2.8.1',
+  './intro.js?v=2.8.1',
   // Slide one of the explainer, in both themes
-  './example-month.png?v=2.8.0',
-  './example-month-dark.png?v=2.8.0',
-  './example-gear.png?v=2.8.0',
-  './example-gear-dark.png?v=2.8.0',
-  './look-manager.js?v=2.8.0',
-  './theme-manager.js?v=2.8.0',
-  './import-export-manager.js?v=2.8.0',
-  './script.js?v=2.8.0'
+  './example-month.png?v=2.8.1',
+  './example-month-dark.png?v=2.8.1',
+  './example-gear.png?v=2.8.1',
+  './example-gear-dark.png?v=2.8.1',
+  './look-manager.js?v=2.8.1',
+  './theme-manager.js?v=2.8.1',
+  './import-export-manager.js?v=2.8.1',
+  './script.js?v=2.8.1'
 ];
 
 self.addEventListener('install', event => {
