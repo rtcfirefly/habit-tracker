@@ -2975,7 +2975,12 @@ input, select, button {
   border-color: var(--type-good);
   color: #fff;
 }
+/* The background has to be restated: .dark-mode .keypad-key is two classes and
+   .keypad-done is one, so the grey wins on specificity however far down the
+   file it sits. Setting only the colour left dark green ink on that grey. */
 .dark-mode .keypad-done {
+  background: var(--type-good);
+  border-color: var(--type-good);
   color: #0B1F10;
 }
 
@@ -2986,6 +2991,35 @@ input, select, button {
 
 @media (prefers-reduced-motion: reduce) {
   .keypad, .keypad-key { transition: none; }
+}
+
+/* Everything but the pill being edited goes quiet, the same move the first-run
+   guide makes for the settings gear.
+   The guide dims .habits-list whole; this cannot, because opacity on an
+   ancestor takes its children with it and no child can climb back out of it.
+   So the pills are dimmed one by one and the lit one is skipped. */
+.keypad-open .app-header h1,
+.keypad-open .header-action,
+.keypad-open .backup-nudge,
+.keypad-open .calendar-header,
+.keypad-open .weekdays,
+.keypad-open .calendar,
+.keypad-open .habits-list > :not(.is-lit) {
+  opacity: 0.32;
+  filter: grayscale(0.5);
+}
+
+/* Raised above its neighbours rather than cut out of a dim layer, for the same
+   reason the gear is: a hole punched with a box-shadow cannot take a tap, and
+   the number in here is still being tapped. */
+.habit-counter.is-lit {
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.55), 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+.dark-mode .habit-counter.is-lit {
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.14), 0 6px 20px rgba(0, 0, 0, 0.5);
 }
 
 /* === THE DAY SHEET === */

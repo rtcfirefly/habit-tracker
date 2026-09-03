@@ -25,9 +25,13 @@ const KEYPAD_KEYS = [
 class Keypad {
   // input: the field being edited. over: the element to cover, the calendar by
   // default. onCancel: called if the pad is dismissed rather than committed.
-  static open(input, { over, onCancel } = {}) {
+  static open(input, { over, onCancel, lit } = {}) {
     Keypad.close();
     if (!input) return null;
+
+    // The thing being edited stays lit while everything else goes quiet, the
+    // same way the first-run guide points at the settings gear
+    if (lit) lit.classList.add('is-lit');
 
     // The platform keyboard is suppressed here rather than at every call site,
     // so a field can never be handed to this and still open the other one
@@ -55,7 +59,7 @@ class Keypad {
     document.body.appendChild(pad);
     document.body.classList.add('keypad-open');
 
-    Keypad.current = { pad, input, onCancel, target };
+    Keypad.current = { pad, input, onCancel, target, lit };
 
     // Fixed pixel positions go stale the moment the viewport changes shape -
     // a rotation, or the browser's own chrome sliding away on scroll. Placed
@@ -159,6 +163,7 @@ Keypad.reflow = null;
       Keypad.reflow = null;
     }
     open.pad.remove();
+    if (open.lit) open.lit.classList.remove('is-lit');
     document.body.classList.remove('keypad-open');
   }
 }

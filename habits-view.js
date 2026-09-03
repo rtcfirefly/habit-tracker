@@ -218,7 +218,7 @@ class HabitsView {
     field.select();
     // Our own pad, over the calendar. The system one scrolls the page to keep
     // the field in view, which moves the pill you are editing.
-    Keypad.open(field, { onCancel: () => finish(false) });
+    Keypad.open(field, { lit: pill, onCancel: () => finish(false) });
   }
 
   render() {
