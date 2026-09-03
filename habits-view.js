@@ -186,6 +186,8 @@ class HabitsView {
       if (closed) return;
       closed = true;
 
+      Keypad.close();
+
       const typed = parseInt(field.value, 10);
       if (commit && Number.isFinite(typed) && typed >= 0 && typed !== value) {
         this.dataManager.setCounterValue(this.selectedDate, habit.name, typed);
@@ -214,6 +216,9 @@ class HabitsView {
     pill.replaceChild(field, count);
     field.focus();
     field.select();
+    // Our own pad, over the calendar. The system one scrolls the page to keep
+    // the field in view, which moves the pill you are editing.
+    Keypad.open(field, { onCancel: () => finish(false) });
   }
 
   render() {

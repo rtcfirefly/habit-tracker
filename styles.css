@@ -2898,6 +2898,96 @@ input, select, button {
 .habit-emoji.bad.filling     { --chip: var(--chip-bad); }
 .habit-emoji.counter.filling { --chip: var(--chip-counter); }
 
+/* === THE NUMBER PAD === */
+/* Over the calendar, never along the bottom: the bottom is where the habit
+   pills are, and the pill being edited is the one thing that must stay put and
+   stay visible. See keypad.js. */
+.keypad {
+  position: fixed;
+  z-index: 900;
+  /* The padding is inside the width place() measures, or the pad is 16px wider
+     than the calendar it was told to cover and hangs off the right edge */
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 12px;
+  background: rgba(248, 248, 248, 0.97);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+  /* The pad is a surface to hit, not one to drag: a swipe that starts on it
+     should not scroll the month underneath */
+  touch-action: none;
+}
+
+.dark-mode .keypad {
+  background: rgba(38, 38, 38, 0.97);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+}
+
+.keypad-key {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  background: #fff;
+  color: #111;
+  font: inherit;
+  font-size: 1.35rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  /* Never below the 44px a finger needs, however short the calendar is */
+  min-height: 44px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.keypad-key:active { background: #ececec; }
+
+.dark-mode .keypad-key {
+  background: #3a3a3a;
+  border-color: #555;
+  color: #eee;
+}
+.dark-mode .keypad-key:active { background: #4a4a4a; }
+
+/* Clear and delete are not digits and should not read as one */
+.keypad-clear,
+.keypad-back {
+  font-size: 1.15rem;
+  color: #5c6169;
+  background: #f2f2f2;
+}
+.dark-mode .keypad-clear,
+.dark-mode .keypad-back {
+  background: #333;
+  color: #bfc4cb;
+}
+
+/* Done spans the width under the digits: it is the way out, so it is the
+   easiest thing on the pad to hit */
+.keypad-done {
+  grid-column: 1 / -1;
+  font-size: 1.05rem;
+  font-weight: 600;
+  background: var(--type-good);
+  border-color: var(--type-good);
+  color: #fff;
+}
+.dark-mode .keypad-done {
+  color: #0B1F10;
+}
+
+.keypad-key:focus-visible {
+  outline: 2px solid var(--type-good);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .keypad, .keypad-key { transition: none; }
+}
+
 /* === THE DAY SHEET === */
 .day-sheet {
   position: fixed;

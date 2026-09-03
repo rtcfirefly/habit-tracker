@@ -609,6 +609,31 @@ function runHabitTrackerTests(env) {
     ok('with the stack empty', history.entries.length === 0, String(history.entries.length));
   }
 
+  section('the number pad puts digits where the system keyboard would have');
+  {
+    // Opened with the contents selected, so the first digit replaces. Typing 3
+    // into a field showing 12 should give 3, not 123 - the field was showing
+    // you what it holds, not offering to extend it.
+    ok('the first digit replaces a selected value', Keypad.next('12', '3', true) === '3');
+    ok('the next one appends', Keypad.next('3', '0', false) === '30');
+    ok('delete takes the last digit', Keypad.next('30', 'back', false) === '3');
+    ok('delete on one digit empties it', Keypad.next('3', 'back', false) === '');
+    ok('delete on empty stays empty', Keypad.next('', 'back', false) === '');
+    ok('clear empties whatever was there', Keypad.next('147', 'clear', false) === '');
+    ok('clear on a selected value empties it too', Keypad.next('12', 'clear', true) === '');
+
+    // A count of ten thousand is not a count, and a key that repeats should
+    // not be able to fill the field
+    ok('it stops at four digits', Keypad.next('1234', '5', false) === '1234');
+    ok('but a replace still gets through at the cap',
+       Keypad.next('1234', '5', true) === '5');
+
+    // Zero is a digit here, not a special case: it is how a count is set back
+    // to nothing on a day that had one
+    ok('leading zero is allowed, because 0 is a real answer',
+       Keypad.next('', '0', false) === '0');
+  }
+
   section('a tally has nothing to fill toward, so the calendar does not fill it');
   {
     const dm = fresh();

@@ -16,6 +16,7 @@ const ROOT = path.join(__dirname, '..');
 // evaluated and its class captured rather than imported.
 const SOURCES = {
   'back-trap.js': 'BackTrap',
+  'keypad.js': 'Keypad',
   'emoji-utils.js': 'EmojiUtils',
   'data-manager.js': 'DataManager',
   'file-backup.js': 'FileBackup',

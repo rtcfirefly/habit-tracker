@@ -242,6 +242,7 @@ class DaySheet {
     row.replaceChild(field, count);
     field.focus();
     field.select();
+
   }
 
   // The sheet redraws itself and tells the app to redraw behind it, so the
