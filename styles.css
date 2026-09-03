@@ -3027,19 +3027,15 @@ input, select, button {
   filter: grayscale(0.6);
 }
 
-/* Raised above its neighbours rather than cut out of a dim layer, for the same
-   reason the gear is: a hole punched with a box-shadow cannot take a tap, and
-   the number in here is still being tapped. */
+/* Raised above the scrim rather than cut out of it, for the same reason the
+   gear is: a hole punched with a box-shadow cannot take a tap, and the number
+   in here is still being tapped.
+   No halo. Being the one thing in front of the dark, in full colour, with
+   everything around it grey, is already the whole signal - a ring around it as
+   well was saying it twice. */
 .habit-counter.is-lit {
   position: relative;
-  /* Above the scrim, so it is lit by being in front of the dark rather than by
-     a hole cut in it */
   z-index: 890;
-  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.55), 0 6px 20px rgba(0, 0, 0, 0.18);
-}
-
-.dark-mode .habit-counter.is-lit {
-  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.14), 0 6px 20px rgba(0, 0, 0, 0.5);
 }
 
 /* === THE DAY SHEET === */
