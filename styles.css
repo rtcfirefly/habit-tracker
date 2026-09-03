@@ -2901,20 +2901,21 @@ input, select, button {
 /* === THE NUMBER PAD === */
 /* Over the calendar, never along the bottom: the bottom is where the habit
    pills are, and the pill being edited is the one thing that must stay put and
-   stay visible. See keypad.js. */
+   stay visible. See keypad.js.
+   Drawn as a ruled sheet rather than twelve buttons - the grid is stated once,
+   in hairlines, instead of twelve times in borders and shadows. */
 .keypad {
   position: fixed;
   z-index: 900;
-  /* The padding is inside the width place() measures, or the pad is 16px wider
-     than the calendar it was told to cover and hangs off the right edge */
   box-sizing: border-box;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-auto-rows: 1fr;
-  gap: 6px;
-  padding: 8px;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
   border-radius: 12px;
-  background: rgba(248, 248, 248, 0.97);
+  background: #fff;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
   /* The pad is a surface to hit, not one to drag: a swipe that starts on it
      should not scroll the month underneath */
@@ -2922,20 +2923,22 @@ input, select, button {
 }
 
 .dark-mode .keypad {
-  background: rgba(38, 38, 38, 0.97);
+  background: #242424;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
 }
 
 .keypad-key {
   appearance: none;
   -webkit-appearance: none;
-  border: 1px solid #dcdcdc;
-  border-radius: 10px;
-  background: #fff;
+  border: 0;
+  border-right: 1px solid #ededed;
+  border-bottom: 1px solid #ededed;
+  border-radius: 0;
+  background: transparent;
   color: #111;
   font: inherit;
-  font-size: 1.35rem;
-  font-weight: 500;
+  font-size: 1.45rem;
+  font-weight: 300;
   font-variant-numeric: tabular-nums;
   /* Never below the 44px a finger needs, however short the calendar is */
   min-height: 44px;
@@ -2943,54 +2946,41 @@ input, select, button {
   user-select: none;
 }
 
-.keypad-key:active { background: #ececec; }
+/* The right-hand column has nothing to be ruled off from */
+.keypad-key:nth-child(3n) { border-right: 0; }
 
-.dark-mode .keypad-key {
-  background: #3a3a3a;
-  border-color: #555;
-  color: #eee;
-}
-.dark-mode .keypad-key:active { background: #4a4a4a; }
+.keypad-key:active { background: rgba(0, 0, 0, 0.05); }
 
-/* Clear and delete are not digits and should not read as one */
+.dark-mode .keypad-key { color: #f0f0f0; border-color: #333; }
+.dark-mode .keypad-key:active { background: rgba(255, 255, 255, 0.07); }
+
+/* CLR and DEL are words, so they answer to the 4.5:1 a word needs rather than
+   the 3:1 an icon would. The mock's grey was 2.81 and had to go. */
 .keypad-clear,
 .keypad-back {
-  font-size: 1.15rem;
-  color: #5c6169;
-  background: #f2f2f2;
-}
-.dark-mode .keypad-clear,
-.dark-mode .keypad-back {
-  background: #333;
-  color: #bfc4cb;
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: #6B7078;
 }
 
-/* Done spans the width under the digits: it is the way out, so it is the
-   easiest thing on the pad to hit */
+.dark-mode .keypad-clear,
+.dark-mode .keypad-back { color: #A0A6AD; }
+
+/* Done is the way out, so it spans the width - but as text, not a filled bar.
+   Filled, it was the only saturated thing on screen besides the pill being
+   edited, and the two competed for the eye. */
 .keypad-done {
   grid-column: 1 / -1;
-  font-size: 1.05rem;
+  border: 0;
+  font-size: 1rem;
   font-weight: 600;
-  background: var(--type-good);
-  border-color: var(--type-good);
-  color: #fff;
-}
-/* The background has to be restated: .dark-mode .keypad-key is two classes and
-   .keypad-done is one, so the grey wins on specificity however far down the
-   file it sits. Setting only the colour left dark green ink on that grey. */
-.dark-mode .keypad-done {
-  background: var(--type-good);
-  border-color: var(--type-good);
-  color: #0B1F10;
+  color: var(--type-good);
 }
 
 .keypad-key:focus-visible {
   outline: 2px solid var(--type-good);
-  outline-offset: 2px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .keypad, .keypad-key { transition: none; }
+  outline-offset: -3px;
 }
 
 /* Everything but the pill being edited goes quiet, the same move the first-run

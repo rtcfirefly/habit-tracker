@@ -100,7 +100,9 @@ class Keypad {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'keypad-key' + (name.length > 1 ? ` keypad-${name}` : '');
-    button.textContent = name === 'back' ? '⌫' : name === 'clear' ? 'C' : name;
+    // Words rather than glyphs: the backspace arrow is guessed at, and at this
+    // size a lone C could be anything
+    button.textContent = name === 'back' ? 'DEL' : name === 'clear' ? 'CLR' : name;
     if (name === 'back') button.setAttribute('aria-label', 'Delete');
     if (name === 'clear') button.setAttribute('aria-label', 'Clear');
     button.onclick = () => Keypad.press(input, name);
