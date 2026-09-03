@@ -54,12 +54,19 @@ class Keypad {
     Keypad.hold(done);
     pad.appendChild(done);
 
+    // A real scrim, not just faded elements. Reducing opacity on a light page
+    // washes things out toward white, which reads as "far away" rather than
+    // "put away" - the screen gets paler when what is wanted is darker.
+    const scrim = document.createElement('div');
+    scrim.className = 'keypad-scrim';
+
     const target = over || document.getElementById('calendar');
     Keypad.place(pad, target);
+    document.body.appendChild(scrim);
     document.body.appendChild(pad);
     document.body.classList.add('keypad-open');
 
-    Keypad.current = { pad, input, onCancel, target, lit };
+    Keypad.current = { pad, scrim, input, onCancel, target, lit };
 
     // Fixed pixel positions go stale the moment the viewport changes shape -
     // a rotation, or the browser's own chrome sliding away on scroll. Placed
@@ -163,6 +170,7 @@ Keypad.reflow = null;
       Keypad.reflow = null;
     }
     open.pad.remove();
+    if (open.scrim) open.scrim.remove();
     if (open.lit) open.lit.classList.remove('is-lit');
     document.body.classList.remove('keypad-open');
   }

@@ -2998,6 +2998,25 @@ input, select, button {
    The guide dims .habits-list whole; this cannot, because opacity on an
    ancestor takes its children with it and no child can climb back out of it.
    So the pills are dimmed one by one and the lit one is skipped. */
+/* The darkness comes from the scrim over the page, not from fading the page
+   out. Opacity alone lightens everything toward the ground it sits on, so a
+   light theme got paler rather than quieter. The elements still lose their
+   colour, which is what makes the lit pill the only thing worth looking at,
+   but they keep enough weight to read as put away rather than washed out. */
+.keypad-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 880;
+  /* Dark enough that the month reads as context rather than as content. Past
+     about 0.7 it stops being a dimmed screen and becomes a black one with a
+     pad on it, which loses the sense of where you are. */
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.dark-mode .keypad-scrim {
+  background: rgba(0, 0, 0, 0.6);
+}
+
 .keypad-open .app-header h1,
 .keypad-open .header-action,
 .keypad-open .backup-nudge,
@@ -3005,8 +3024,7 @@ input, select, button {
 .keypad-open .weekdays,
 .keypad-open .calendar,
 .keypad-open .habits-list > :not(.is-lit) {
-  opacity: 0.32;
-  filter: grayscale(0.5);
+  filter: grayscale(0.6);
 }
 
 /* Raised above its neighbours rather than cut out of a dim layer, for the same
@@ -3014,7 +3032,9 @@ input, select, button {
    the number in here is still being tapped. */
 .habit-counter.is-lit {
   position: relative;
-  z-index: 1;
+  /* Above the scrim, so it is lit by being in front of the dark rather than by
+     a hole cut in it */
+  z-index: 890;
   box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.55), 0 6px 20px rgba(0, 0, 0, 0.18);
 }
 
