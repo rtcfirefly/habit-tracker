@@ -3030,12 +3030,21 @@ input, select, button {
 /* Raised above the scrim rather than cut out of it, for the same reason the
    gear is: a hole punched with a box-shadow cannot take a tap, and the number
    in here is still being tapped.
-   No halo. Being the one thing in front of the dark, in full colour, with
-   everything around it grey, is already the whole signal - a ring around it as
-   well was saying it twice. */
+   No ring: being the one thing in front of the dark, in full colour with
+   everything around it grey, is already the whole signal, and a hard white
+   band around it was saying it twice.
+   It does get room to breathe, though. Cut exactly at the border, the lit area
+   ends where the pill ends and the pill looks pressed against the dark. This
+   is a blur with no edge of its own - the page's own colour bleeding a little
+   way into the scrim, so the light falls off rather than stopping. */
 .habit-counter.is-lit {
   position: relative;
   z-index: 890;
+  box-shadow: 0 0 22px 10px rgba(245, 245, 245, 0.55);
+}
+
+.dark-mode .habit-counter.is-lit {
+  box-shadow: 0 0 22px 10px rgba(42, 42, 42, 0.6);
 }
 
 /* === THE DAY SHEET === */
