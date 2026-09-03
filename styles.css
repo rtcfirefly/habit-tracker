@@ -1401,6 +1401,15 @@ input, select, button {
 /* The padding lives here, so the left half still sets the pill's height and
    the pill is exactly as tall as it was before it was split */
 .counter-add {
+  /* Both halves are real buttons inside a rounded, clipping wrapper, and iOS
+     Safari still rounds a button's corners for you unless told not to. The
+     wrapper's own radius hides that at the outer ends, but at the seam it left
+     two white wedges where the halves meet - the pill's ground showing through
+     the corners the platform had rounded. Chromium gives buttons no radius, so
+     nothing here or in the screenshot harness ever showed it. */
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 0;
   padding: 0.5rem 0.8rem;
   display: inline-flex;
   align-items: center;
@@ -1431,6 +1440,9 @@ input, select, button {
    cannot make the pill taller. min-width keeps a bare tally's single digit
    clear of the 24px target floor. */
 .counter-value {
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 0;
   align-self: stretch;
   display: inline-flex;
   align-items: center;
@@ -1486,6 +1498,10 @@ input, select, button {
    min-width, border-box, and the ring drawn as an outline rather than a
    border, because an outline costs no width. */
 .counter-entry {
+  /* Same reason as the halves it replaces: an input is rounded by the platform
+     too, and it has to be exactly the box it stands in for. */
+  appearance: none;
+  -webkit-appearance: none;
   align-self: stretch;
   flex: none;
   box-sizing: border-box;
