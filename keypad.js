@@ -143,12 +143,29 @@ class Keypad {
     const box = over.getBoundingClientRect();
     if (!box.width || !box.height) return;
 
-    const width = Math.min(box.width, 300);
-    const height = Math.min(box.height, 340);
+    const room = 8;
+    const vw = window.innerWidth || box.width;
+    const vh = window.innerHeight || box.height;
+
+    // Five rows that will not go under 44px each. Shrinking past this does not
+    // make a smaller pad, it makes a clipped one - the rows hold their height
+    // and Done falls out of the bottom of an overflow:hidden box, unreachable.
+    const floor = Keypad.MIN_HEIGHT;
+
+    const width = Math.max(160, Math.min(box.width, 300, vw - room * 2));
+    const height = Math.max(Math.min(floor, vh - room * 2),
+                            Math.min(box.height, 340));
+
+    // Centred on the calendar, then pulled back inside the screen. The
+    // calendar's box is not the viewport: on a short screen it can start above
+    // the top or run past the bottom, and a pad centred in it goes with it.
+    // In landscape that put Done off the bottom edge with only 7, 8 and 9 left.
+    const clamp = (v, size, limit) => Math.max(room, Math.min(v, limit - size - room));
+
     pad.style.width = `${width}px`;
     pad.style.height = `${height}px`;
-    pad.style.left = `${box.left + (box.width - width) / 2}px`;
-    pad.style.top = `${box.top + (box.height - height) / 2}px`;
+    pad.style.left = `${clamp(box.left + (box.width - width) / 2, width, vw)}px`;
+    pad.style.top = `${clamp(box.top + (box.height - height) / 2, height, vh)}px`;
   }
 
   // Dismissed rather than committed: the number goes back to what it was
@@ -180,3 +197,5 @@ Keypad.reflow = null;
 
 Keypad.current = null;
 Keypad.trap = null;
+// Five rows at the 44px a finger needs
+Keypad.MIN_HEIGHT = 5 * 44;
