@@ -371,7 +371,10 @@ DRIVE = """<script>
         var c = getComputedStyle(m);
         return m.className + ' | bg:' + c.backgroundColor + ' fg:' + c.color +
                ' border:' + c.borderTopColor + ' opacity:' + c.opacity +
-               ' weight:' + c.fontWeight;
+               ' weight:' + c.fontWeight +
+               ' box:' + Math.round(m.getBoundingClientRect().width) + 'x' +
+                         (Math.round(m.getBoundingClientRect().height * 100) / 100) +
+               ' top:' + Math.round(m.getBoundingClientRect().top * 100) / 100;
       }),
       iconVar: getComputedStyle(document.querySelector('.calendar')).getPropertyValue('--habit-icon-size').trim(),
       count: found.length,
@@ -512,6 +515,13 @@ def dump_dom(query, width=1024, height=900, path='index.html'):
     # that silently reports 500px layout. Screenshots are unaffected - they
     # resize the viewport for capture - and the iframes in test/index.html are
     # the way to inspect narrower widths.
+    #
+    # There is a matching trap in the other direction that cost a session:
+    # a SHORT --window-size is not honoured either. Shooting 844x390 to check
+    # landscape gives a page laid out against a much taller viewport, cropped
+    # to 390 - so anything that reads window.innerHeight, like the keypad
+    # clamping itself to the screen, cannot be tested here at all. What comes
+    # back looks like the bug it was meant to disprove.
     if width < 500:
         print(f'shoot.py: --dom clamps to a 500px window; {width}px will report 500px. '
               f'Use a screenshot or test/index.html instead.', file=sys.stderr)
