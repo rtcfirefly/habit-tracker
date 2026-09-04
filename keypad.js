@@ -152,9 +152,15 @@ class Keypad {
     // and Done falls out of the bottom of an overflow:hidden box, unreachable.
     const floor = Keypad.MIN_HEIGHT;
 
-    const width = Math.max(160, Math.min(box.width, 300, vw - room * 2));
-    const height = Math.max(Math.min(floor, vh - room * 2),
-                            Math.min(box.height, 340));
+    // The viewport caps everything last. Without that the floor could push the
+    // pad past the bottom of a short screen all by itself: a tall calendar on
+    // a 300px viewport asked for 340 and got it, which is the same overflow
+    // one step removed.
+    const roomW = vw - room * 2;
+    const roomH = vh - room * 2;
+    const width = Math.min(roomW, Math.max(160, Math.min(box.width, 300)));
+    const height = Math.min(roomH, Math.max(Math.min(floor, roomH),
+                                            Math.min(box.height, 340)));
 
     // Centred on the calendar, then pulled back inside the screen. The
     // calendar's box is not the viewport: on a short screen it can start above
