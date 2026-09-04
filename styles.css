@@ -2914,6 +2914,9 @@ input, select, button {
   gap: 0;
   padding: 0;
   overflow: hidden;
+  /* The same hairline the cells are ruled with, carried round the outside, so
+     the sheet is closed rather than trailing off at its edges */
+  border: 1px solid #ededed;
   border-radius: 12px;
   background: #fff;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
@@ -2924,6 +2927,7 @@ input, select, button {
 
 .dark-mode .keypad {
   background: #242424;
+  border-color: #333;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
 }
 
@@ -2949,23 +2953,34 @@ input, select, button {
 /* The right-hand column has nothing to be ruled off from */
 .keypad-key:nth-child(3n) { border-right: 0; }
 
+/* Only the digits take the press wash: the filled keys already have a ground,
+   and a translucent black over it just makes them muddy */
 .keypad-key:active { background: rgba(0, 0, 0, 0.05); }
+.keypad-clear:active, .keypad-back:active { background: #575C63; }
+.keypad-done:active { filter: brightness(0.92); }
+.dark-mode .keypad-clear:active, .dark-mode .keypad-back:active { background: #B7BDC4; }
 
 .dark-mode .keypad-key { color: #f0f0f0; border-color: #333; }
 .dark-mode .keypad-key:active { background: rgba(255, 255, 255, 0.07); }
 
-/* CLR and DEL are words, so they answer to the 4.5:1 a word needs rather than
-   the 3:1 an icon would. The mock's grey was 2.81 and had to go. */
+/* The keys that are not digits are filled rather than written, so the bottom
+   two rows read as controls and the nine above them read as a number.
+   Inverting costs nothing in contrast - the same two colours, the same ratio,
+   swapped over: 4.98 light and 6.32 dark. */
 .keypad-clear,
 .keypad-back {
   font-size: 0.82rem;
   font-weight: 500;
   letter-spacing: 0.08em;
-  color: #6B7078;
+  background: #6B7078;
+  color: #fff;
 }
 
 .dark-mode .keypad-clear,
-.dark-mode .keypad-back { color: #A0A6AD; }
+.dark-mode .keypad-back {
+  background: #A0A6AD;
+  color: #242424;
+}
 
 /* Done is the way out, so it spans the width - but as text, not a filled bar.
    Filled, it was the only saturated thing on screen besides the pill being
@@ -2975,8 +2990,11 @@ input, select, button {
   border: 0;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--type-good);
+  background: var(--type-good);
+  color: #fff;
 }
+
+.dark-mode .keypad-done { color: #0B1F10; }
 
 .keypad-key:focus-visible {
   outline: 2px solid var(--type-good);
