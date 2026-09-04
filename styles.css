@@ -3011,14 +3011,16 @@ input, select, button {
   position: fixed;
   inset: 0;
   z-index: 880;
-  /* Dark enough that the month reads as context rather than as content. Past
-     about 0.7 it stops being a dimmed screen and becomes a black one with a
-     pad on it, which loses the sense of where you are. */
-  background: rgba(0, 0, 0, 0.6);
+  /* Dark enough that the month reads as context rather than as content. 0.7 is
+     the far end of that: past it the screen stops being dimmed and becomes
+     black with a pad on it, which loses the sense of where you are. */
+  background: rgba(0, 0, 0, 0.7);
 }
 
+/* Dark starts from a near-black page, so the same alpha bites harder there and
+   this sits a little under the light value rather than matching it */
 .dark-mode .keypad-scrim {
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.68);
 }
 
 .keypad-open .app-header h1,
