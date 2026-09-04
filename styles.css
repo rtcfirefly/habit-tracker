@@ -2953,34 +2953,30 @@ input, select, button {
 /* The right-hand column has nothing to be ruled off from */
 .keypad-key:nth-child(3n) { border-right: 0; }
 
-/* Only the digits take the press wash: the filled keys already have a ground,
-   and a translucent black over it just makes them muddy */
+/* Done is the only key with a ground, and a translucent black over a ground
+   muddies it rather than darkening it, so it dims instead */
 .keypad-key:active { background: rgba(0, 0, 0, 0.05); }
-.keypad-clear:active, .keypad-back:active { background: #575C63; }
 .keypad-done:active { filter: brightness(0.92); }
-.dark-mode .keypad-clear:active, .dark-mode .keypad-back:active { background: #B7BDC4; }
 
 .dark-mode .keypad-key { color: #f0f0f0; border-color: #333; }
 .dark-mode .keypad-key:active { background: rgba(255, 255, 255, 0.07); }
 
-/* The keys that are not digits are filled rather than written, so the bottom
-   two rows read as controls and the nine above them read as a number.
-   Inverting costs nothing in contrast - the same two colours, the same ratio,
-   swapped over: 4.98 light and 6.32 dark. */
+/* CLR and DEL stay written rather than filled. Done is the one key that
+   changes what happens rather than what is in the field, and it is the only
+   one worth a ground of its own; filling these two as well made the whole
+   bottom of the pad heavy.
+   They are words, so they answer to the 4.5:1 a word needs and not the 3:1 an
+   icon would: 4.98 light, 6.32 dark. */
 .keypad-clear,
 .keypad-back {
   font-size: 0.82rem;
   font-weight: 500;
   letter-spacing: 0.08em;
-  background: #6B7078;
-  color: #fff;
+  color: #6B7078;
 }
 
 .dark-mode .keypad-clear,
-.dark-mode .keypad-back {
-  background: #A0A6AD;
-  color: #242424;
-}
+.dark-mode .keypad-back { color: #A0A6AD; }
 
 /* Done is the way out, so it spans the width - but as text, not a filled bar.
    Filled, it was the only saturated thing on screen besides the pill being
