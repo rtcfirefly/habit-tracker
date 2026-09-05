@@ -17,6 +17,7 @@ const ROOT = path.join(__dirname, '..');
 const SOURCES = {
   'back-trap.js': 'BackTrap',
   'keypad.js': 'Keypad',
+  'hand-manager.js': 'HandManager',
   'emoji-utils.js': 'EmojiUtils',
   'data-manager.js': 'DataManager',
   'file-backup.js': 'FileBackup',

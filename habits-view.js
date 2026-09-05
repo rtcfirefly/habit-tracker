@@ -161,8 +161,18 @@ class HabitsView {
     count.setAttribute('aria-label', count.title);
     count.addEventListener('click', () => this.editCount(pill, count, habit, value));
 
-    pill.appendChild(add);
-    pill.appendChild(count);
+    // Number first for a right hand, so the half that adds one ends up under
+    // the thumb and the half that opens the editor is the one out of reach.
+    // Done by appending rather than by reversing the row in CSS: a reversed
+    // flex row leaves the tab key and a screen reader walking the pill the
+    // opposite way round to the eye.
+    if (HandManager.numberFirst()) {
+      pill.appendChild(count);
+      pill.appendChild(add);
+    } else {
+      pill.appendChild(add);
+      pill.appendChild(count);
+    }
     return pill;
   }
 

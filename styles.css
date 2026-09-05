@@ -2884,6 +2884,16 @@ input, select, button {
 
 
 
+/* With the number on the left the pressable half is on the right, so its fill
+   grows from the pill's outer edge inwards rather than out of the seam.
+   Placed after the dark restatement above and matching it on specificity, so
+   this one rule turns both themes around. */
+.hand-right .habit-counter.good .counter-add,
+.hand-right .habit-counter.neutral .counter-add,
+.hand-right .habit-counter.bad .counter-add {
+  background-image: linear-gradient(to left, var(--fill) 0 var(--pct, 0%), transparent var(--pct, 0%));
+}
+
 /* The chip fills bottom to top, like something filling up. Kept light enough
    that the emoji inside it stays readable at 100%. */
 /* Neutral is absent on purpose: a tally has no target, so there is no

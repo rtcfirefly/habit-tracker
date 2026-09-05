@@ -98,6 +98,13 @@ habitsView.onCounterIncremented = () => {
   }).show();
 };
 
+// --- which hand ------------------------------------------------------------
+const handManager = new HandManager(document.getElementById('hand-row'));
+handManager.wire();
+// The halves are appended in hand order rather than flipped in CSS, so a change
+// has to rebuild the pills rather than merely restyle them
+handManager.onChanged = () => habitsView.render();
+
 // --- how the app is drawn -------------------------------------------------
 const lookManager = new LookManager(document.getElementById('look-row'));
 lookManager.wire();
