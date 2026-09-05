@@ -1263,9 +1263,10 @@ input, select, button {
   --tile-neutral-done: rgba(150, 110, 20, 0.34);
   --tile-bad-over: rgba(198, 40, 40, 0.34);
 
-  /* the bar that fills across as a count climbs. The counter pill and the day
-     sheet row draw the same bar and had the same four alphas written out
-     twice, once each. */
+  /* the bar that fills across a day sheet row. The counter pill used to share
+     these and now fills to --done-* instead, so that a finished count and a
+     finished tap are the same colour; the row keeps a translucent wash
+     because it is a wide band behind text rather than a small solid tile. */
   --progress-good: rgba(76, 175, 80, 0.38);
   --progress-bad: rgba(198, 40, 40, 0.28);
   --progress-neutral: rgba(184, 134, 11, 0.32);
@@ -1274,11 +1275,6 @@ input, select, button {
   --rowcount-bad: rgba(198, 40, 40, 0.14);
   --rowcount-neutral: rgba(184, 134, 11, 0.16);
 
-  /* the fill inside a calendar emoji, drawn over the ring colours above.
-     No neutral: a tally has nothing to fill toward. */
-  --chip-good: rgba(46, 125, 50, 0.5);
-  --chip-bad: rgba(198, 40, 40, 0.45);
-  --chip-counter: rgba(26, 115, 232, 0.45);
 }
 
 .dark-mode {
@@ -2866,10 +2862,15 @@ input, select, button {
   background-repeat: no-repeat;
 }
 
-.habit-counter.good    { --fill: var(--progress-good); }
-.habit-counter.neutral { --fill: var(--progress-neutral); }
-.habit-counter.bad     { --fill: var(--progress-bad); }
-.habit-counter.counter { --fill: var(--progress-counter); }
+/* The bar fills to the colour a one-tap habit turns when it is done, so a
+   counted habit at its goal and a plain one that was tapped are the same
+   green. They used to differ: the fill was a translucent wash laid over the
+   completed ground, so reaching 30 of 30 landed a shade darker than tapping
+   Water once, for no reason a reader could name. */
+.habit-counter.good    { --fill: var(--done-good); }
+.habit-counter.neutral { --fill: var(--done-neutral); }
+.habit-counter.bad     { --fill: var(--done-bad); }
+.habit-counter.counter { --fill: var(--done-counter); }
 
 /* Left to right in both hands. Mirroring it for a right hand seemed tidy and
    is wrong: a bar that fills is read the way anything else is read, and a
@@ -2899,9 +2900,19 @@ input, select, button {
   background-image: linear-gradient(to top, var(--chip) 0 var(--pct, 0%), transparent var(--pct, 0%));
 }
 
-.habit-emoji.good.filling    { --chip: var(--chip-good); }
-.habit-emoji.bad.filling     { --chip: var(--chip-bad); }
-.habit-emoji.counter.filling { --chip: var(--chip-counter); }
+/* And the same again for the calendar icon. A counted habit at its goal now
+   fills to the exact circle a tapped one gets, rather than to a darker wash
+   over the top of it.
+   That means the circle has to start empty, or there is nothing for the fill
+   to move across - it would already be the finished colour at zero. The
+   !important is not a choice: the rule it has to beat carries one, and the
+   dark restatement of that rule is a class more specific again. */
+.habit-emoji.filling,
+.dark-mode .habit-emoji.filling { background-color: transparent !important; }
+
+.habit-emoji.good.filling    { --chip: var(--ring-good); }
+.habit-emoji.bad.filling     { --chip: var(--ring-bad); }
+.habit-emoji.counter.filling { --chip: var(--ring-counter); }
 
 /* === THE NUMBER PAD === */
 /* Over the calendar, never along the bottom: the bottom is where the habit
