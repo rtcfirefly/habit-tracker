@@ -2871,7 +2871,12 @@ input, select, button {
 .habit-counter.bad     { --fill: var(--progress-bad); }
 .habit-counter.counter { --fill: var(--progress-counter); }
 
-/* Dark restates the gradient, because .dark-mode .habit-counter.good outranks
+/* Left to right in both hands. Mirroring it for a right hand seemed tidy and
+   is wrong: a bar that fills is read the way anything else is read, and a
+   quantity that grows to the left is a quantity you have to stop and decode.
+   The hand decides which side the number sits on, not which way progress runs.
+
+   Dark restates the gradient, because .dark-mode .habit-counter.good outranks
    the rules above and is itself a shorthand. It no longer restates the colour:
    the alphas are higher over a dark ground, but that difference lives in the
    palette now, not here. */
@@ -2883,16 +2888,6 @@ input, select, button {
 }
 
 
-
-/* With the number on the left the pressable half is on the right, so its fill
-   grows from the pill's outer edge inwards rather than out of the seam.
-   Placed after the dark restatement above and matching it on specificity, so
-   this one rule turns both themes around. */
-.hand-right .habit-counter.good .counter-add,
-.hand-right .habit-counter.neutral .counter-add,
-.hand-right .habit-counter.bad .counter-add {
-  background-image: linear-gradient(to left, var(--fill) 0 var(--pct, 0%), transparent var(--pct, 0%));
-}
 
 /* The chip fills bottom to top, like something filling up. Kept light enough
    that the emoji inside it stays readable at 100%. */
