@@ -124,6 +124,8 @@ SEED = """<script>
   if (params.get('nohint')) localStorage.setItem('daySheetHintSeen', '1');
   // Which of the two looks the app is drawn in, independent of light and dark
   if (params.get('look')) localStorage.setItem('look', params.get('look'));
+  // Which hand holds the phone, which decides the side the number sits on
+  if (params.get('hand')) localStorage.setItem('hand', params.get('hand'));
   // Stands in for a browser without the File System Access API - Firefox,
   // Firefox Focus, iOS Safari. That path renders differently and had never
   // been shot, which is how a hole in the backup slide reached a phone.

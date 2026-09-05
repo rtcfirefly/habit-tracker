@@ -609,6 +609,42 @@ function runHabitTrackerTests(env) {
     ok('with the stack empty', history.entries.length === 0, String(history.entries.length));
   }
 
+  section('which hand decides which side the number sits on');
+  {
+    localStorage.removeItem('hand');
+    ok('left by default, which is the layout the app already had',
+       HandManager.load() === 'left');
+    ok('and the number stays where it was', HandManager.numberFirst() === false);
+
+    localStorage.setItem('hand', 'right');
+    ok('a right hand puts the number first', HandManager.numberFirst() === true);
+
+    // A stored value that is not one of the two must not be believed - an old
+    // build, a hand-edited store, or a half-written key
+    localStorage.setItem('hand', 'sideways');
+    ok('anything else falls back to left', HandManager.load() === 'left');
+    ok('and so does the ordering', HandManager.numberFirst() === false);
+
+    localStorage.removeItem('hand');
+    const row = fixture('div');
+    const mgr = new HandManager(row);
+    ok('the body says which hand', document.body.classList.contains('hand-left'));
+    mgr.set('right');
+    ok('setting swaps the class', document.body.classList.contains('hand-right') &&
+       !document.body.classList.contains('hand-left'));
+    ok('and remembers it', localStorage.getItem('hand') === 'right');
+
+    let told = 0;
+    mgr.onChanged = () => told++;
+    mgr.set('right');
+    ok('setting the hand it already has changes nothing', told === 0);
+    mgr.set('upwards');
+    ok('and a value that is not a hand is refused', told === 0 && mgr.hand === 'right');
+    mgr.set('left');
+    ok('a real change is announced, so the pills can be rebuilt', told === 1);
+    localStorage.removeItem('hand');
+  }
+
   section('the number pad puts digits where the system keyboard would have');
   {
     // Opened with the contents selected, so the first digit replaces. Typing 3

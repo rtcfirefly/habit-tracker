@@ -31,7 +31,15 @@ class El {
       _s: new Set(),
       add(...names) { names.forEach(n => this._s.add(n)); self.attrs.class = [...this._s].join(' '); },
       remove(...names) { names.forEach(n => this._s.delete(n)); self.attrs.class = [...this._s].join(' '); },
-      contains(name) { return this._s.has(name); }
+      contains(name) { return this._s.has(name); },
+      // The second argument is the whole point of it here: the theme, the look
+      // and the hand all toggle(name, isOn) rather than branching on add and
+      // remove, and without force this would flip them on every apply()
+      toggle(name, force) {
+        const on = force === undefined ? !this._s.has(name) : Boolean(force);
+        if (on) this.add(name); else this.remove(name);
+        return on;
+      }
     };
   }
 
@@ -144,6 +152,12 @@ class El {
 
 globalThis.document = {
   activeElement: null,
+  // A body and a root element to hang classes on. The theme, the look and the
+  // hand all record themselves as a class here, and without these the managers
+  // could only be tested through their statics - the half that does not touch
+  // the page, which is the half least likely to be wrong.
+  body: new El('body'),
+  documentElement: new El('html'),
   createElement: tag => new El(tag),
   createTextNode: text => { const e = new El('#text'); e.textContent = text; return e; }
 };
